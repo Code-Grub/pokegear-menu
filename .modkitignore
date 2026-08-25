@@ -1,3 +1,5 @@
-tests/
-tools/
-docs/
+# modkit matches these by exact relative path, not by prefix
+# (tools/modkit.py:161-182): a bare directory name matches nothing.
+docs/superpowers/plans/2026-08-25-phone-start-menu.md
+docs/superpowers/specs/2026-08-25-phone-start-menu-design.md
+tests/loads_test.lua

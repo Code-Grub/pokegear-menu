@@ -14,12 +14,12 @@ return function(mod)
     end
     local chunk, compileErr = load(source, "@" .. mod.path .. "/" .. name)
     if not chunk then
-      mod.log:error("%s did not compile: %s", name, tostring(compileErr))
+      mod.log:error("%s did not compile: %s -- reinstall the mod, %s is corrupted or a partial install", name, tostring(compileErr), name)
       return nil
     end
     local ok, result = pcall(chunk)
     if not ok then
-      mod.log:error("%s failed to load: %s", name, tostring(result))
+      mod.log:error("%s failed to load: %s -- reinstall the mod, %s is corrupted or a partial install", name, tostring(result), name)
       return nil
     end
     return result
