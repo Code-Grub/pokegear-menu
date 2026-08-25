@@ -4,6 +4,7 @@ docs/superpowers/plans/2026-08-25-phone-start-menu.md
 docs/superpowers/specs/2026-08-25-phone-start-menu-design.md
 tests/apps_test.lua
 tests/assets_test.lua
+tests/chrome_test.lua
 tests/fixtures/injector_mod/main.lua
 tests/fixtures/injector_mod/manifest.json
 tests/icons_test.lua
