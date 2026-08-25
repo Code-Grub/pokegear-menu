@@ -1,0 +1,17 @@
+{
+  "id": "phone_start_menu",
+  "name": "Phone START Menu",
+  "version": "0.1.0",
+  "api": 2,
+  "entry": "main.lua",
+  "profile": "content",
+  "category": "UI",
+  "game_version": ">=0.0.0-0 <2.0.0",
+  "priority": 100,
+  "permissions": ["engine_internals"],
+  "dependencies": [],
+  "optional_dependencies": [],
+  "conflicts": [],
+  "description": "Replaces the START menu with a phone home screen: nine apps in a 3x3 grid over the overworld.",
+  "github": "Code-Grub/phone-start-menu"
+}
