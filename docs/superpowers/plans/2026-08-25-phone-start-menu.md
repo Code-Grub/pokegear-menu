@@ -2351,12 +2351,74 @@ Every pixel is declared as text in that script, so the art is original and
 carries its own provenance.
 ```
 
+- [ ] **Step 5b: Regenerate `.modkitignore` and guard it with a test**
+
+`tools/modkit.py:161-182` matches ignore entries by exact string equality
+against a file's full relative path (`if rel in ignored`). A directory entry
+like `tests/` therefore matches nothing and is silently a no-op: `pack` will
+bundle the whole test suite, this plan, and the design spec into the
+archive, and `validate --strict` reports no warning. Dot-prefixed
+directories are skipped by the walk, so `.superpowers/` is already safe.
+
+Regenerate the file with exact paths:
+
+```bash
+cd C:/Users/camwr/Desktop/Gen1Recomp/phone-start-menu
+{
+  echo "# modkit matches these by exact relative path, not by prefix:"
+  echo "# a bare directory name here would silently match nothing."
+  find tests tools docs -type f | sed 's|\|/|g' | sort
+} > .modkitignore
+cat .modkitignore
+```
+
+Then add `tests/packaging_test.lua`, which fails if anything under those
+three directories would ship:
+
+```lua
+-- Standalone: luajit mods/phone_start_menu/tests/packaging_test.lua
+--
+-- .modkitignore entries are matched by exact relative path
+-- (tools/modkit.py:161-182), so a directory entry is silently a no-op and
+-- the suite, the plan and the spec end up inside the archive with no
+-- warning from validate --strict.  This asserts the packaged file list.
+package.path = "./?.lua;./?/init.lua;" .. package.path
+local T = require("tests.modkit")
+
+local root = "mods/phone_start_menu"
+local ignored = {}
+for line in io.lines(root .. "/.modkitignore") do
+  line = line:gsub("^%s+", ""):gsub("%s+$", "")
+  if line ~= "" and line:sub(1, 1) ~= "#" then ignored[line] = true end
+end
+
+-- every file under tests/, tools/ and docs/ must be listed by exact path
+local leaked, counted = {}, 0
+local pipe = io.popen('cd "' .. root .. '" && find tests tools docs -type f')
+for path in pipe:lines() do
+  path = path:gsub("\\", "/"):gsub("^%./", "")
+  counted = counted + 1
+  if not ignored[path] then leaked[#leaked + 1] = path end
+end
+pipe:close()
+
+T.check(counted > 0, "found files under tests/, tools/ and docs/ to check")
+T.eq(#leaked, 0, "nothing under tests/, tools/ or docs/ would be packaged"
+  .. (leaked[1] and (" -- leaked: " .. table.concat(leaked, ", ")) or ""))
+
+T.finish("packaging")
+```
+
+Run: `luajit mods/phone_start_menu/tests/packaging_test.lua`
+Expected: PASS. Break it deliberately once, by deleting a line from
+`.modkitignore`, and confirm it fails naming that file, before moving on.
+
 - [ ] **Step 6: Run the full suite and the packaging gates**
 
 From the `game/` directory:
 
 ```bash
-for t in loads layout assets icons apps items chrome phone_screen save_flow paging degrade; do
+for t in loads layout assets icons apps items chrome phone_screen save_flow paging degrade packaging; do
   luajit mods/phone_start_menu/tests/${t}_test.lua || echo "FAILED: $t"
 done
 python3 tools/modkit.py validate mods/phone_start_menu --base imported
@@ -2370,7 +2432,7 @@ warns if `manifest.version` advanced without a `CHANGELOG.md` heading; the
 - [ ] **Step 7: Commit**
 
 ```bash
-git add README.md CHANGELOG.md mod.card tests/paging_test.lua tests/degrade_test.lua
+git add README.md CHANGELOG.md mod.card .modkitignore tests/paging_test.lua tests/degrade_test.lua tests/packaging_test.lua
 git commit -m "Add paging and degradation tests, and the shipping files"
 ```
 
