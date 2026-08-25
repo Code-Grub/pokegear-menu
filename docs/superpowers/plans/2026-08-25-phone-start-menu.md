@@ -1273,19 +1273,34 @@ for i, item in ipairs(composed) do
 end
 T.eq(position, saveAt - 1, "the injected row landed before SAVE")
 
--- a foreign row must be renderable: it needs a caption and an icon
-T.check(found.icon == "generic", "a foreign row gets the generic icon")
-T.check(found.display and #found.display > 0, "a foreign row gets a caption")
-T.check(#found.display <= 4, "a foreign caption is truncated to the cell")
-T.check(found.enabled, "a foreign row is selectable")
+-- a foreign row must be renderable: it needs a caption and an icon.
+-- Guarded: without the `if`, a regression that loses the row entirely
+-- crashes here on a nil index, which aborts the suite before the fallback
+-- cases below ever run and lets one regression hide another.
+if found then
+  T.check(found.icon == "generic", "a foreign row gets the generic icon")
+  T.check(found.display and #found.display > 0, "a foreign row gets a caption")
+  T.check(#found.display <= 4, "a foreign caption is truncated to the cell")
+  T.check(found.enabled, "a foreign row is selectable")
+end
 
 run.release()
 
--- ---- a wrapper returning junk must not take the menu down
-local composedFromJunk = Items.compose(newGame(), Apps.build(newGame(), deps), {
-  call = function() return "not a table" end,
-})
+-- ---- a wrapper returning junk must not take the menu down, and must say so
+local composedFromJunk, junkWhy = Items.compose(newGame(),
+  Apps.build(newGame(), deps), { call = function() return "not a table" end })
 T.eq(#composedFromJunk, 9, "a bad hook result falls back to the app list")
+T.check(junkWhy and junkWhy:find("not a table"),
+  "and reports why, so the screen can log it: " .. tostring(junkWhy))
+
+-- ---- a chain that THROWS is the pcall's real justification.  Hooks.lua
+-- already absorbs an ordinary throwing wrapper, so without this case the
+-- pcall could be deleted and every other check would stay green.
+local composedFromThrow, throwWhy = Items.compose(newGame(),
+  Apps.build(newGame(), deps), { call = function() error("boom", 0) end })
+T.eq(#composedFromThrow, 9, "a throwing hook chain falls back to the app list")
+T.check(throwWhy and throwWhy:find("threw"),
+  "and reports that it threw: " .. tostring(throwWhy))
 
 T.finish("items")
 ```
@@ -1333,20 +1348,30 @@ end
 
 -- runtime is injected so a test can pass a stand-in; in the mod it is
 -- src.mods.Runtime, reached under the engine_internals permission.
+--
+-- Returns the composed list, plus a reason string when the hook failed to
+-- produce a usable one.  The caller owns the logging: this module has no
+-- mod.log, and the builtin reports the same condition
+-- (src/ui/StartMenu.lua:131-135), so returning no signal at all would be a
+-- diagnosability regression against vanilla rather than a style choice.
 function Items.compose(game, apps, runtime)
-  local hooked = apps
   local ok, result = pcall(runtime.call, "ui.start_menu.items",
                            passthrough, game, apps)
-  if ok and type(result) == "table" then
-    hooked = result
+  if not ok then
+    return Items.decorate(apps),
+      ("the ui.start_menu.items chain threw (%s)"):format(tostring(result))
   end
-  return Items.decorate(hooked)
+  if type(result) ~= "table" then
+    return Items.decorate(apps),
+      ("ui.start_menu.items returned %s, not a table"):format(type(result))
+  end
+  return Items.decorate(result)
 end
 
 return Items
 ```
 
-Note the deliberate difference from vanilla: `src/ui/StartMenu.lua:131-135` logs when the hook returns a non-table. Here the fallback is silent at this layer because `Items` has no `mod.log`; Task 8 logs it from the screen, which does.
+`src/ui/StartMenu.lua:131-135` logs when the hook returns a non-table. `Items` has no `mod.log`, so it does not log; it returns the reason as a second value instead, and Task 8 logs it from the screen, which does have one. Returning the list alone would leave Task 8 nothing to log on.
 
 - [ ] **Step 4: Run test to verify it passes**
 
@@ -1734,7 +1759,15 @@ function PhoneScreen.build(mod, M, deps)
 
     local function reopen() deps.screens.push(game, "StartMenu") end
     local apps = Apps.build(game, deps, reopen)
-    self.items = Items.compose(game, apps, deps.runtime)
+    local composed, hookProblem = Items.compose(game, apps, deps.runtime)
+    -- vanilla logs the same condition at src/ui/StartMenu.lua:131-135; the
+    -- screen is the layer that owns a mod.log, so it does the reporting
+    if hookProblem then
+      mod.log:warn("%s -- showing the built-in apps; a mod wrapping "
+        .. "ui.start_menu.items is misbehaving and its rows are missing "
+        .. "this session", hookProblem)
+    end
+    self.items = composed
     if #self.items == 0 then
       -- cannot happen with the nine built-ins, but a wrapper may have
       -- emptied the list; an empty phone would be a dead end
