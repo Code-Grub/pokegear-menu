@@ -50,4 +50,25 @@ T.check(ok, "drawing one page of dots succeeds: " .. tostring(err))
 ok, err = pcall(function() chrome:drawDots(2, 3) end)
 T.check(ok, "drawing three pages of dots succeeds: " .. tostring(err))
 
+-- Colour restoration is genuinely assertable: love_stub tracks real
+-- setColor/getColor state even though its rectangle/draw are no-ops.
+-- Without this, a leak is invisible to the suite.
+local function leaks(fn)
+  love.graphics.setColor(0.25, 0.5, 0.75, 1)
+  fn()
+  local r, g, b, a = love.graphics.getColor()
+  return not (r == 0.25 and g == 0.5 and b == 0.75 and a == 1)
+end
+
+T.check(not leaks(function() chrome:drawBody() end),
+  "drawBody restores the colour it found")
+T.check(not leaks(function() chrome:drawStatus({}) end),
+  "drawStatus restores the colour it found")
+T.check(not leaks(function() chrome:drawFooter() end),
+  "drawFooter restores the colour it found")
+T.check(not leaks(function() chrome:drawDots(2, 3) end),
+  "drawDots restores the colour it found")
+T.check(not leaks(function() chrome:drawDots(1, 1) end),
+  "drawDots restores the colour on its early return")
+
 T.finish("chrome")

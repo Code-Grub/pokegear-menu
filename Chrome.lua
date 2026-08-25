@@ -46,7 +46,12 @@ function Chrome.linkLive(game)
   return (net ~= nil and not net.closed) and true or false
 end
 
+-- Every public draw brackets itself with the colour it found, the way
+-- Icons.lua does.  The engine fences a mod's whole render callback in
+-- push("all")/pop(), so a leak here cannot reach the engine, but it can
+-- reach whatever this mod draws next inside the same callback.
 function Chrome:drawBody()
+  local cr, cg, cb, ca = love.graphics.getColor()
   local P, S = self.L.PHONE, self.L.SCREEN
   rect(OUTLINE, P.x, P.y, P.w, P.h)
   rect(BODY, P.x + 1, P.y + 1, P.w - 2, P.h - 2)
@@ -57,9 +62,11 @@ function Chrome:drawBody()
   rect(OUTLINE, P.x + 62, P.y + 4, 4, 4)
   rect(OUTLINE, S.x - 1, S.y - 1, S.w + 2, S.h + 2)
   rect(SCREEN, S.x, S.y, S.w, S.h)
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 function Chrome:drawStatus(game)
+  local cr, cg, cb, ca = love.graphics.getColor()
   local B = self.L.STATUS
   rect(BAR, B.x, B.y, B.w, B.h)
   local okTime, now = pcall(os.date, "*t")
@@ -75,32 +82,38 @@ function Chrome:drawStatus(game)
     rect(colour, wx + (i - 1) * 3, B.y + 8 - h, 2, h)
   end
 
-  -- battery: always full, decorative
+  -- a solid cell plus a terminal nub.  Always full, so there is no
+  -- separate hollow and fill: painting one inside the other would draw
+  -- ink over ink.
   local bx = B.x + B.w - 11
   rect(BAR_INK, bx, B.y + 3, 8, 5)
-  rect(BAR_INK, bx + 1, B.y + 4, 6, 3)
   rect(BAR_INK, bx + 8, B.y + 4, 1, 3)
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 function Chrome:drawFooter()
+  local cr, cg, cb, ca = love.graphics.getColor()
   local F = self.L.FOOTER
   rect(OUTLINE, F.x, F.y, F.w, F.h)
   rect(BODY, F.x + 1, F.y + 1, F.w - 2, F.h - 2)
   local text = "PHONE"
   local x = F.x + math.floor((F.w - self.icons:labelWidth(text)) / 2)
   self.icons:drawLabel(text, x, F.y + 3, false)
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 -- Dots render only when there is more than one page, so an install with no
 -- other UI mods matches the mockup exactly.
 function Chrome:drawDots(page, pages)
   if (pages or 1) <= 1 then return end
+  local cr, cg, cb, ca = love.graphics.getColor()
   local S = self.L.SCREEN
   local span = pages * 5 - 2
   local x = S.x + math.floor((S.w - span) / 2)
   for i = 1, pages do
     rect(i == page and DOT_ON or DOT_OFF, x + (i - 1) * 5, self.L.DOTS_Y, 3, 3)
   end
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 return Chrome
