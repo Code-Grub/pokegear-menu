@@ -290,12 +290,14 @@ def build_icons():
 
 def build_font():
     mono = {".": (0, 0, 0, 0), "1": (36, 46, 46, 255)}
-    sheet = Image.new("RGBA", (4 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))
+    # 4px of ink plus a 1px gutter. At a 4px pitch every glyph touched its
+    # neighbour and a caption read as one blob at native resolution.
+    sheet = Image.new("RGBA", (5 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))
     for i, ch in enumerate(GLYPH_ORDER):
         rows = GLYPHS[ch]
         if len(rows) != 6 or any(len(r) != 4 for r in rows):
             raise SystemExit("glyph %r is not 4x6" % ch)
-        blit(sheet, rows, i * 4, 0, mono)
+        blit(sheet, rows, i * 5, 0, mono)
     sheet.save(os.path.join(OUT, "label_font.png"))
     return sheet.size
 
