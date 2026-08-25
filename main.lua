@@ -25,6 +25,9 @@ return function(mod)
     return result
   end
 
-  -- siblings are wired in later tasks
-  local _ = sibling
+  local Icons = sibling("Icons.lua")
+  local Layout = sibling("Layout.lua")
+  if not (Icons and Layout) then return end
+
+  local icons = Icons.new(mod)
 end
