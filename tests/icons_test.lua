@@ -41,4 +41,32 @@ T.check(ok, "drawing a caption succeeds: " .. tostring(err))
 ok, err = pcall(function() icons:drawLabel("optn!", 0, 0, false) end)
 T.check(ok, "a caption with odd characters succeeds: " .. tostring(err))
 
+-- The quads themselves.  love_stub's draw is a no-op and its newQuad
+-- discards the sheet dimensions, so nothing downstream ever reads these
+-- numbers: without asserting them, an off-by-one in the column maths
+-- passes every check above while the phone draws neighbouring art.
+-- One draw call is enough to force the lazy load that builds both tables.
+icons:drawIcon("dex", 0, 0, false)
+
+local q = icons.iconQuads[Icons.INDEX.dex]
+T.eq(q.x, 0, "the dex icon starts at column 0")
+T.eq(q.w, 16, "an icon quad is 16px wide")
+T.eq(q.h, 16, "an icon quad is 16px tall")
+
+q = icons.iconQuads[Icons.INDEX.generic]
+T.eq(q.x, 144, "the generic icon is the tenth 16px column")
+T.eq(q.x + q.w, 160, "the last icon quad ends exactly at the sheet edge")
+
+q = icons.glyphQuads["A"]
+T.eq(q.x, 0, "A is the first glyph")
+T.eq(q.w, 5, "a glyph quad spans 4px of ink plus its 1px gutter")
+T.eq(q.h, 6, "a glyph quad is 6px tall")
+
+q = icons.glyphQuads["D"]
+T.eq(q.x, 15, "D is the fourth glyph, at a 5px advance")
+
+q = icons.glyphQuads[" "]
+T.eq(q.x, 190, "the trailing space is the 39th glyph")
+T.eq(q.x + q.w, 195, "the last glyph quad ends exactly at the sheet edge")
+
 T.finish("icons")
