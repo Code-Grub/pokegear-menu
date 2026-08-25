@@ -31,14 +31,24 @@ end
 
 -- runtime is injected so a test can pass a stand-in; in the mod it is
 -- src.mods.Runtime, reached under the engine_internals permission.
+--
+-- Returns the composed list, plus a reason string when the hook failed to
+-- produce a usable one.  The caller owns the logging: this module has no
+-- mod.log, and the builtin reports the same condition
+-- (src/ui/StartMenu.lua:131-135), so returning no signal at all would be a
+-- diagnosability regression against vanilla rather than a style choice.
 function Items.compose(game, apps, runtime)
-  local hooked = apps
   local ok, result = pcall(runtime.call, "ui.start_menu.items",
                            passthrough, game, apps)
-  if ok and type(result) == "table" then
-    hooked = result
+  if not ok then
+    return Items.decorate(apps),
+      ("the ui.start_menu.items chain threw (%s)"):format(tostring(result))
   end
-  return Items.decorate(hooked)
+  if type(result) ~= "table" then
+    return Items.decorate(apps),
+      ("ui.start_menu.items returned %s, not a table"):format(type(result))
+  end
+  return Items.decorate(result)
 end
 
 return Items

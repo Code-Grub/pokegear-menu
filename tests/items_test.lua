@@ -69,18 +69,33 @@ for i, item in ipairs(composed) do
 end
 T.eq(position, saveAt - 1, "the injected row landed before SAVE")
 
--- a foreign row must be renderable: it needs a caption and an icon
-T.check(found.icon == "generic", "a foreign row gets the generic icon")
-T.check(found.display and #found.display > 0, "a foreign row gets a caption")
-T.check(#found.display <= 4, "a foreign caption is truncated to the cell")
-T.check(found.enabled, "a foreign row is selectable")
+-- a foreign row must be renderable: it needs a caption and an icon.
+-- Guarded: without the `if`, a regression that loses the row entirely
+-- crashes here on a nil index, which aborts the suite before the fallback
+-- cases below ever run and lets one regression hide another.
+if found then
+  T.check(found.icon == "generic", "a foreign row gets the generic icon")
+  T.check(found.display and #found.display > 0, "a foreign row gets a caption")
+  T.check(#found.display <= 4, "a foreign caption is truncated to the cell")
+  T.check(found.enabled, "a foreign row is selectable")
+end
 
 run.release()
 
--- ---- a wrapper returning junk must not take the menu down
-local composedFromJunk = Items.compose(newGame(), Apps.build(newGame(), deps), {
-  call = function() return "not a table" end,
-})
+-- ---- a wrapper returning junk must not take the menu down, and must say so
+local composedFromJunk, junkWhy = Items.compose(newGame(),
+  Apps.build(newGame(), deps), { call = function() return "not a table" end })
 T.eq(#composedFromJunk, 9, "a bad hook result falls back to the app list")
+T.check(junkWhy and junkWhy:find("not a table"),
+  "and reports why, so the screen can log it: " .. tostring(junkWhy))
+
+-- ---- a chain that THROWS is the pcall's real justification.  Hooks.lua
+-- already absorbs an ordinary throwing wrapper, so without this case the
+-- pcall could be deleted and every other check would stay green.
+local composedFromThrow, throwWhy = Items.compose(newGame(),
+  Apps.build(newGame(), deps), { call = function() error("boom", 0) end })
+T.eq(#composedFromThrow, 9, "a throwing hook chain falls back to the app list")
+T.check(throwWhy and throwWhy:find("threw"),
+  "and reports that it threw: " .. tostring(throwWhy))
 
 T.finish("items")
