@@ -313,7 +313,7 @@ git commit -m "Add phone geometry measured off the mockup"
 - Consumes: nothing.
 - Produces:
   - `assets/icons.png`: 160x16 RGBA, ten 16x16 icons in one row. Index order is `dex, pkmn, bag, id, optn, save, map, link, mods, generic`.
-  - `assets/label_font.png`: 4px per glyph, 6px tall, one row. Glyph order is the string `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- ` (39 glyphs), so the sheet is 156x6.
+  - `assets/label_font.png`: 4px of ink plus a 1px gutter per glyph (a 5px advance), 6px tall, one row. Glyph order is the string `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- ` (39 glyphs), so the sheet is 195x6.
   - `python tools/gen_assets.py` regenerates both, writing into `assets/`.
 
 - [ ] **Step 1: Write the failing test**
@@ -334,7 +334,7 @@ T.eq(icons:getWidth(), 160, "icon sheet is ten 16px icons wide")
 T.eq(icons:getHeight(), 16, "icon sheet is one 16px row tall")
 
 local font = love.graphics.newImage("mods/phone_start_menu/assets/label_font.png")
-T.eq(font:getWidth(), 156, "label font is 39 glyphs of 4px")
+T.eq(font:getWidth(), 195, "label font is 39 glyphs at a 5px advance")
 T.eq(font:getHeight(), 6, "label font is 6px tall")
 
 T.finish("assets")
@@ -642,12 +642,14 @@ def build_icons():
 
 def build_font():
     mono = {".": (0, 0, 0, 0), "1": (36, 46, 46, 255)}
-    sheet = Image.new("RGBA", (4 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))
+    # 4px of ink plus a 1px gutter. At a 4px pitch every glyph touched its
+    # neighbour and a caption read as one blob at native resolution.
+    sheet = Image.new("RGBA", (5 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))
     for i, ch in enumerate(GLYPH_ORDER):
         rows = GLYPHS[ch]
         if len(rows) != 6 or any(len(r) != 4 for r in rows):
             raise SystemExit("glyph %r is not 4x6" % ch)
-        blit(sheet, rows, i * 4, 0, mono)
+        blit(sheet, rows, i * 5, 0, mono)
     sheet.save(os.path.join(OUT, "label_font.png"))
     return sheet.size
 
@@ -672,7 +674,7 @@ assets/*.png binary
 python -m pip install --quiet Pillow
 python tools/gen_assets.py
 ```
-Expected output: `icons.png 160x16` and `label_font.png 156x6`.
+Expected output: `icons.png 160x16` and `label_font.png 195x6`.
 
 Run: `luajit mods/phone_start_menu/tests/assets_test.lua`
 Expected: PASS, both dimension assertions green.
@@ -699,7 +701,7 @@ git commit -m "Generate the app icons and the 4x6 caption face"
   - `Icons.INDEX`: map of key to 1-based sheet column, `{ dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5, save = 6, map = 7, link = 8, mods = 9, generic = 10 }`.
   - `icons:drawIcon(key, x, y, dim)`: draws one 16x16 icon; `dim` true draws it at 40 percent alpha.
   - `icons:drawLabel(text, x, y, dim)`: draws `text` in the 4x6 face, uppercased, unknown characters falling back to space.
-  - `icons:labelWidth(text)`: returns `#text * 4`.
+  - `icons:labelWidth(text)`: returns `#text * 5` (a 5px advance per glyph).
 
 Images load lazily on first draw, never at registration, so a headless load with no graphics context still succeeds.
 
@@ -731,7 +733,7 @@ local icons = Icons.new(fakeMod)
 T.eq(Icons.INDEX.dex, 1, "dex is the first icon")
 T.eq(Icons.INDEX.generic, 10, "generic is the last icon")
 
-T.eq(icons:labelWidth("DEX"), 12, "three glyphs are 12px")
+T.eq(icons:labelWidth("DEX"), 15, "three glyphs advance 15px")
 T.eq(icons:labelWidth(""), 0, "an empty caption is 0px")
 
 -- nothing may raise, with or without a loaded sheet
@@ -774,7 +776,11 @@ local Icons = {}
 Icons.__index = Icons
 
 local ICON = 16
-local GLYPH_W, GLYPH_H = 4, 6
+-- 4px of ink plus a 1px gutter.  The gutter is why the advance is 5 and
+-- not 4: at a 4px advance adjacent glyphs touch and a caption is a blob.
+-- Four glyphs at 5px is 20px, which fits the 21px cell; that is the cap
+-- Items.decorate clips foreign captions to.
+local GLYPH_INK, GLYPH_ADV, GLYPH_H = 4, 5, 6
 local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- "
 
 Icons.INDEX = {
@@ -820,7 +826,7 @@ function Icons:_sheets()
   self.glyphQuads = {}
   for ch, col in pairs(GLYPH_AT) do
     self.glyphQuads[ch] = love.graphics.newQuad(
-      col * GLYPH_W, 0, GLYPH_W, GLYPH_H,
+      col * GLYPH_ADV, 0, GLYPH_ADV, GLYPH_H,
       fontSheet:getWidth(), fontSheet:getHeight())
   end
   return self.iconSheet, self.fontSheet
@@ -839,7 +845,7 @@ function Icons:drawIcon(key, x, y, dim)
 end
 
 function Icons:labelWidth(text)
-  return #tostring(text or "") * GLYPH_W
+  return #tostring(text or "") * GLYPH_ADV
 end
 
 function Icons:drawLabel(text, x, y, dim)
@@ -851,7 +857,7 @@ function Icons:drawLabel(text, x, y, dim)
   for i = 1, #upper do
     local quad = self.glyphQuads[upper:sub(i, i)] or self.glyphQuads[" "]
     if quad then
-      love.graphics.draw(font, quad, x + (i - 1) * GLYPH_W, y)
+      love.graphics.draw(font, quad, x + (i - 1) * GLYPH_ADV, y)
     end
   end
   love.graphics.setColor(r, g, b, a)
@@ -963,8 +969,8 @@ T.eq(byKey(items, "id").label, "RED", "the id row carries the player's name")
 
 -- captions are separate from hook labels and fit five glyphs
 for _, item in ipairs(items) do
-  T.check(#item.display <= 5,
-    "caption '" .. item.display .. "' fits a 21px cell")
+  T.check(#item.display <= 4,
+    "caption '" .. item.display .. "' fits a 21px cell at a 5px advance")
 end
 
 -- each gate flips independently
@@ -1270,7 +1276,7 @@ T.eq(position, saveAt - 1, "the injected row landed before SAVE")
 -- a foreign row must be renderable: it needs a caption and an icon
 T.check(found.icon == "generic", "a foreign row gets the generic icon")
 T.check(found.display and #found.display > 0, "a foreign row gets a caption")
-T.check(#found.display <= 5, "a foreign caption is truncated to the cell")
+T.check(#found.display <= 4, "a foreign caption is truncated to the cell")
 T.check(found.enabled, "a foreign row is selectable")
 
 run.release()
@@ -1304,7 +1310,8 @@ Create `Items.lua`:
 
 local Items = {}
 
-local MAX_CAPTION = 5
+-- four glyphs at a 5px advance is 20px, the most a 21px cell holds
+local MAX_CAPTION = 4
 
 -- the vanilla identity link: with no wrapper installed, the list is returned
 -- exactly as it was handed in
