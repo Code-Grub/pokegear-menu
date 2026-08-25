@@ -167,7 +167,7 @@ its hand: Link as a link cable, Mods as a puzzle piece.
 | Id | player's name | always | `TrainerCard` |
 | Optn | `OPTION` | always | `OptionsMenu` |
 | Save | `SAVE` | always | save confirmation flow |
-| Map | `TOWN MAP` | `save.bag.TOWN_MAP` present | `TownMap` |
+| Map | `TOWN MAP` | `save.inventory.TOWN_MAP` present | `TownMap` |
 | Link | `LINK` | party non-empty | `LinkState` |
 | Mods | `MODS` | at least one mod discovered | `ManagerState` |
 
