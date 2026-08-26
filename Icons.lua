@@ -14,7 +14,7 @@ local ICON = 16
 -- much this font can draw legibly in one, not what Items.decorate actually
 -- clips foreign captions to, which is that module's own constant.
 local GLYPH_ADV, GLYPH_H = 5, 6
-local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
+local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :é"
 
 -- the face is white on the sheet so it can be tinted; this is the
 -- default ink for anything drawn on the phone's pale surfaces
@@ -27,8 +27,32 @@ Icons.INDEX = {
 
 -- character to 0-based column in label_font.png
 local GLYPH_AT = {}
-for i = 1, #GLYPH_ORDER do
-  GLYPH_AT[GLYPH_ORDER:sub(i, i)] = i - 1
+-- Walk UTF-8 sequences, never bytes.  The face carries e-acute for the
+-- POKeGEAR nameplate, and a byte-wise loop splits that one glyph into two
+-- unknown bytes, each of which falls back to a blank.  The column index has
+-- to match the generator's character index, and the generator counts
+-- characters, so this must too.
+local function chars(s)
+  local i, n = 1, #s
+  return function()
+    if i > n then return nil end
+    local b = s:byte(i)
+    local len = 1
+    if b >= 0xF0 then len = 4
+    elseif b >= 0xE0 then len = 3
+    elseif b >= 0xC0 then len = 2 end
+    local ch = s:sub(i, i + len - 1)
+    i = i + len
+    return ch
+  end
+end
+
+do
+  local col = 0
+  for ch in chars(GLYPH_ORDER) do
+    GLYPH_AT[ch] = col
+    col = col + 1
+  end
 end
 
 function Icons.new(mod)
@@ -82,7 +106,9 @@ function Icons:drawIcon(key, x, y, dim)
 end
 
 function Icons:labelWidth(text)
-  return #tostring(text or "") * GLYPH_ADV
+  local n = 0
+  for _ in chars(tostring(text or "")) do n = n + 1 end
+  return n * GLYPH_ADV
 end
 
 -- colour is optional and defaults to the dark ink.  The status bar
@@ -94,12 +120,16 @@ function Icons:drawLabel(text, x, y, dim, colour)
   local r, g, b, a = love.graphics.getColor()
   local c = colour or INK
   love.graphics.setColor(c[1], c[2], c[3], dim and 0.4 or 1)
+  -- upper() is byte-wise, which leaves a multibyte glyph untouched: the
+  -- bytes of e-acute are not ASCII letters, so they pass through unchanged.
   local upper = tostring(text or ""):upper()
-  for i = 1, #upper do
-    local quad = self.glyphQuads[upper:sub(i, i)] or self.glyphQuads[" "]
+  local i = 0
+  for ch in chars(upper) do
+    local quad = self.glyphQuads[ch] or self.glyphQuads[" "]
     if quad then
-      love.graphics.draw(font, quad, x + (i - 1) * GLYPH_ADV, y)
+      love.graphics.draw(font, quad, x + i * GLYPH_ADV, y)
     end
+    i = i + 1
   end
   love.graphics.setColor(r, g, b, a)
 end

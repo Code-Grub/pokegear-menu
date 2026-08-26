@@ -224,7 +224,7 @@ ICONS = {
 }
 
 # 4x6 face. Only the characters app captions and the footer need.
-GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
+GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :é"
 
 GLYPHS = {
     "A": [".11.", "1..1", "1..1", "1111", "1..1", "...."],
@@ -267,6 +267,10 @@ GLYPHS = {
     "-": ["....", "....", "111.", "....", "....", "...."],
     " ": ["....", "....", "....", "....", "....", "...."],
     ":": ["....", ".1..", "....", ".1..", "....", "...."],
+    # E squeezed into four rows so the acute accent has somewhere to sit.
+    # The caption face is all caps, so this reads as an accented E, which
+    # is what POKeGEAR needs.
+    "é": ["..1.", "1111", "1...", "111.", "1111", "...."],
 }
 
 

@@ -71,6 +71,19 @@ T.eq(q.x, 190, "the trailing space is the 39th glyph")
 q = icons.glyphQuads[":"]
 T.check(q, "the colon the clock needs has a quad")
 T.eq(q.x, 195, "the colon is the fortieth glyph")
-T.eq(q.x + q.w, 200, "the last glyph quad ends exactly at the sheet edge")
+T.eq(q.x + q.w, 200, "the colon quad ends where e-acute begins")
+
+-- e-acute is the last glyph and the one the nameplate needs.  It is also
+-- the only multibyte key in the sheet, so it proves the glyph map is built
+-- by UTF-8 sequence and not by byte: a byte-wise build registers two bogus
+-- one-byte keys and no e-acute at all.  Written as explicit bytes because
+-- LuaJIT has no \u escape.
+local EACUTE = "\195\169"
+q = icons.glyphQuads[EACUTE]
+T.check(q, "e-acute has a quad, so the map walked UTF-8 rather than bytes")
+T.eq(q.x, 200, "e-acute is the forty first glyph")
+T.eq(q.x + q.w, 205, "the last glyph quad ends exactly at the sheet edge")
+T.eq(icons:labelWidth("POK" .. EACUTE .. "GEAR"), 40,
+  "an accented caption measures 8 glyphs, not 9 bytes")
 
 T.finish("icons")
