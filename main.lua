@@ -41,18 +41,24 @@ return function(mod)
   -- beep the vanilla menu uses, src.ui.StartMenu is the builtin menu
   -- Save.lua calls into to reach the vanilla SAVE row rather than
   -- reproducing it (Save.lua), and src.core.Strings is how Save.lua learns
-  -- what that row's label actually is under the active translation, if any
+  -- what that row's label actually is under the active translation, if any.
+  -- Strings is handed to Save.build as the MODULE, not as an already-
+  -- resolved Strings("SAVE") string: this file's entry chunk runs as part
+  -- of Game.lua:39 (self.mods:load(Data)), which is before Game.lua:66 ever
+  -- activates the translation catalog, so any label resolved here would be
+  -- permanently frozen on the raw English text. Save.build defers the
+  -- lookup to save-press time instead, when the catalog is long since
+  -- active -- see Save.lua for the full explanation.
   local Runtime   = require("src.mods.Runtime")
   local PaletteFX = require("src.render.PaletteFX")
   local Screens   = require("src.ui.Screens")
   local Sound     = require("src.core.Sound")
-  local Strings   = require("src.core.Strings")
 
   local icons  = Icons.new(mod)
   local chrome = Chrome.new(Layout, icons)
 
   local saveFlow = Save.build(require("src.ui.StartMenu"), mod.log,
-                               Strings("SAVE"))
+                               require("src.core.Strings"))
 
   local deps = {
     screens = { push = function(game, id, opts)

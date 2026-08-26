@@ -19,18 +19,36 @@
 -- overriding "SAVE" makes that row's label something else entirely, and a
 -- literal "SAVE" comparison here would never match it again -- the phone
 -- would report a missing row and point at the wrong kind of mod to blame.
--- Passing the caller's own `Strings("SAVE")` keeps the comparison correct
--- under whatever the active catalog resolves it to.
+-- Passing the caller's own Strings MODULE, and resolving "SAVE" through it
+-- at save-press time rather than once up front, keeps the comparison
+-- correct under whatever the active catalog resolves it to -- see the
+-- comment inside Save.build's returned closure for why the timing matters.
 
 local Save = {}
 
--- builtin and log are injected so a test can drive every branch.  saveLabel
--- defaults to the literal "SAVE" so existing unit tests (which drive a
--- stand-in builtin with no translation involved) keep working unchanged;
--- main.lua passes the real, possibly-translated value.
-function Save.build(builtin, log, saveLabel)
-  saveLabel = saveLabel or "SAVE"
+-- builtin and log are injected so a test can drive every branch.  strings is
+-- the Strings MODULE (or any callable), NOT a pre-resolved label -- see the
+-- comment inside the returned closure for why that distinction matters.
+-- main.lua passes the real module; existing unit tests pass nothing, which
+-- falls back to the literal "SAVE" against a stand-in builtin with no
+-- translation involved, so they keep working unchanged.
+function Save.build(builtin, log, strings)
   return function(game)
+    -- Resolved HERE, at save-press time, not once when Save.build runs.
+    -- Game.lua:39 runs every mod's entry chunk (main.lua included) as part
+    -- of self.mods:load(Data); Game.lua:66 is the only place
+    -- src.core.Strings.load(Data) ever activates the translation catalog,
+    -- and that happens AFTER mod loading. A label resolved at Save.build
+    -- time -- e.g. `strings("SAVE")` captured into a local and handed in
+    -- here -- would therefore freeze on the raw English "SAVE" forever,
+    -- while the builtin StartMenu builds its own row lazily and picks up
+    -- the real translation. The comparison below would then silently fail
+    -- on every non-English catalog. This is the same trap the engine
+    -- documents against itself: src/battle/MoveEffects.lua:29-31 and
+    -- src/ui/BindingsMenu.lua:81-82 both call out a value "built at require
+    -- time, before Strings.load has a catalog" as frozen and wrong.  Do not
+    -- "simplify" this back into a value resolved once outside the closure.
+    local saveLabel = (strings and strings("SAVE")) or "SAVE"
     local ok, menu = pcall(builtin.new, game)
     if not ok or type(menu) ~= "table" or type(menu.items) ~= "table" then
       log:error("could not open the built in START menu to reach SAVE (%s); "

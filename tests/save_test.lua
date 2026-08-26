@@ -137,17 +137,29 @@ T.eq(pushed, 1, "invoking the real SAVE row pushes one state onto the stack")
 -- mod's merged content puts a non-empty table there, Strings.load hands
 -- that table to Strings.lookup and "SAVE" resolves to whatever the catalog
 -- says.  A literal "SAVE" comparison in Save.build would then never match
--- the real row again.  This reproduces that without a full mod install: it
--- sets Data.strings directly and calls Strings.load, the same merge point
--- LauncherMods/Game:load use, then drives the REAL StartMenu against it.
-Data.strings = { SAVE = "SAUVER" }
+-- the real row again.
+--
+-- The ordering here is the entire point of this case, and it must match
+-- real boot, not be convenient for the test: Game.lua:39 runs every mod's
+-- entry chunk (self.mods:load(Data)) BEFORE Game.lua:66 ever calls
+-- src.core.Strings.load(Data) to activate the catalog.  So Save.build is
+-- called first, while the catalog is still empty, exactly as main.lua does
+-- it; the catalog is only populated and activated afterward.  A version of
+-- Save.build that resolves and freezes Strings("SAVE") at build time would
+-- pass this case if the catalog were loaded first -- which is why it is
+-- deliberately NOT loaded first here.
 local RealStrings = require("src.core.Strings")
+
+log = newLog()
+local translatedFlow = Save.build(StartMenu, log, RealStrings)
+
+-- only now, after the flow is built, does the catalog become active --
+-- the same merge point LauncherMods/Game:load use.
+Data.strings = { SAVE = "SAUVER" }
 RealStrings.load(Data)
 T.check(RealStrings("SAVE") == "SAUVER",
   "the fixture catalog actually took effect on Strings(\"SAVE\")")
 
-log = newLog()
-local translatedFlow = Save.build(StartMenu, log, RealStrings("SAVE"))
 game = newRealGame()
 ok = pcall(translatedFlow, game)
 T.check(ok, "the real builtin StartMenu under a translated SAVE label does "
