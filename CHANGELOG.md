@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-08-26
+
+### Fixed
+
+- SAVE, MAP, LINK and MODS no longer close the phone. Those four screens
+  offer no way back to whatever opened them, so the phone now stays on the
+  stack and is revealed again when they close. The save prompt draws over
+  the phone rather than replacing it, which is how the original behaves.
+
 ## [0.1.4] - 2026-08-26
 
 ### Changed
