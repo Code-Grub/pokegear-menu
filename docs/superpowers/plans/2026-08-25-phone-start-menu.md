@@ -2015,7 +2015,7 @@ git commit -m "Register the phone as the START menu screen"
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
-- Produces `SaveFlow.build(deps)` returning `function(game)`, which pushes the vanilla save confirmation chain. `deps` is `{ textbox = <module>, badges = <module>, sound = <module>, strings = <function> }`.
+- Produces `SaveFlow.build(deps)` returning `function(game)`, which pushes the vanilla save confirmation chain. `deps` is `{ textbox = <module>, badges = <module>, sound = <module>, strings = <function>, log = <mod.log, optional> }`. `log` is optional so the module stays drivable from a test with no mod handle.
 
 This reproduces `src/ui/StartMenu.lua:55-88` because the engine exposes no seam to call it. Keep the frame delays exactly: 120 then 30.
 
@@ -2132,9 +2132,19 @@ function SaveFlow.build(deps)
     for _ in pairs(game.save.pokedex and game.save.pokedex.owned or {}) do
       owned = owned + 1
     end
+    -- A save missing badge data must never block saving, so the count is
+    -- guarded.  But it is reported: Items.compose records the same rule for
+    -- a module with no mod.log of its own, and swallowing this silently
+    -- would show BADGES 0 with no explanation anywhere.
     local badges = 0
     local okBadges, count = pcall(Badges.count, game.data, game.save)
-    if okBadges and type(count) == "number" then badges = count end
+    if okBadges and type(count) == "number" then
+      badges = count
+    elseif deps.log then
+      deps.log:warn("could not read the badge count (%s); the save panel "
+        .. "shows 0 badges but the save itself is unaffected -- report this "
+        .. "with your save file if the count stays wrong", tostring(count))
+    end
 
     local t = math.floor(game.save.playTime or 0)
     local panel = Strings("PLAYER %s\nBADGES    %d\nPOKéDEX %3d\nTIME %6d:%02d",
@@ -2178,6 +2188,7 @@ Add it to the `if not (...)` guard, then above `deps`:
     badges  = require("src.inventory.Badges"),
     sound   = require("src.core.Sound"),
     strings = require("src.core.Strings"),
+    log     = mod.log,
   })
 ```
 
