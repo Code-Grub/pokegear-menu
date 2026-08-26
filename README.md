@@ -4,6 +4,11 @@ Restyles the START menu in the [Pokemon Gen 1 Recompilation Project](https://git
 as a handheld device: nine apps in a 3x3 grid, drawn in colour over the
 overworld.
 
+<p align="center">
+  <img src="images/preview.png" width="640" alt="The PokeGear Menu: nine apps in a 3x3 grid, fully unlocked on the left and on a fresh save on the right, where Dex, Pkm, Map, Lnk and Mod are dimmed"/><br/>
+  <sub>Everything unlocked, and a fresh save. An app you have not earned yet sits dimmed in its own place, so nothing moves under your thumb.</sub>
+</p>
+
 **It is a reskin of the menu, not the Gen 2 PokéGear.** The real PokéGear had a
 clock, a map, a radio and a phone. This has the clock and the map. There is no
 radio and there are no calls, and every app it shows is somewhere the START
