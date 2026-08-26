@@ -2382,9 +2382,9 @@ return {
       "a status bar showing the real time and whether a link is live",
     },
     known = {
-      "the SAVE flow is reproduced from the engine rather than called, "
-        .. "because no seam exposes it: an engine change to that flow "
-        .. "leaves this mod drifting until it is updated to match",
+      "SAVE borrows the built in START menu to reach the engine's own "
+        .. "save flow, so opening it re-runs the ui.start_menu.items hook "
+        .. "and another mod's wrapper fires once more per save press",
       "the status bar clock reads real-world time, which sits outside "
         .. "the fiction",
       "app captions use a 4x6 face rather than the game font, which does "
@@ -2417,6 +2417,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - POKéMON dims with an empty party rather than listing and doing nothing.
+- SAVE opens the engine's own save confirmation rather than a copy of it,
+  so an engine change to saving is inherited rather than diverged from.
 
 ### Removed
 
