@@ -313,7 +313,7 @@ git commit -m "Add phone geometry measured off the mockup"
 - Consumes: nothing.
 - Produces:
   - `assets/icons.png`: 160x16 RGBA, ten 16x16 icons in one row. Index order is `dex, pkmn, bag, id, optn, save, map, link, mods, generic`.
-  - `assets/label_font.png`: 4px of ink plus a 1px gutter per glyph (a 5px advance), 6px tall, one row. Glyph order is the string `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- ` (39 glyphs), so the sheet is 195x6.
+  - `assets/label_font.png`: 4px of WHITE ink plus a 1px gutter per glyph (a 5px advance), 6px tall, one row. Glyph order is the string `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :` (40 glyphs, note the colon the clock needs), so the sheet is 200x6. White so callers can tint it.
   - `python tools/gen_assets.py` regenerates both, writing into `assets/`.
 
 - [ ] **Step 1: Write the failing test**
@@ -334,7 +334,7 @@ T.eq(icons:getWidth(), 160, "icon sheet is ten 16px icons wide")
 T.eq(icons:getHeight(), 16, "icon sheet is one 16px row tall")
 
 local font = love.graphics.newImage("mods/phone_start_menu/assets/label_font.png")
-T.eq(font:getWidth(), 195, "label font is 39 glyphs at a 5px advance")
+T.eq(font:getWidth(), 200, "label font is 40 glyphs at a 5px advance")
 T.eq(font:getHeight(), 6, "label font is 6px tall")
 
 T.finish("assets")
@@ -576,7 +576,7 @@ ICONS = {
 }
 
 # 4x6 face. Only the characters app captions and the footer need.
-GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- "
+GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
 
 GLYPHS = {
     "A": [".11.", "1..1", "1..1", "1111", "1..1", "...."],
@@ -616,6 +616,7 @@ GLYPHS = {
     "8": [".11.", "1..1", ".11.", "1..1", ".11.", "...."],
     "9": [".11.", "1..1", ".111", "...1", ".11.", "...."],
     ".": ["....", "....", "....", "....", ".1..", "...."],
+    ":": ["....", ".1..", "....", ".1..", "....", "...."],
     "-": ["....", "....", "111.", "....", "....", "...."],
     " ": ["....", "....", "....", "....", "....", "...."],
 }
@@ -641,7 +642,11 @@ def build_icons():
 
 
 def build_font():
-    mono = {".": (0, 0, 0, 0), "1": (36, 46, 46, 255)}
+    # White ink, not dark.  Drawing multiplies the sheet's RGB by the
+    # colour the caller sets, so a dark sheet can only ever draw dark:
+    # the clock was near black on a near black status bar.  White ink is
+    # tintable to anything, which is the standard shape for a bitmap face.
+    mono = {".": (0, 0, 0, 0), "1": (255, 255, 255, 255)}
     # 4px of ink plus a 1px gutter. At a 4px pitch every glyph touched its
     # neighbour and a caption read as one blob at native resolution.
     sheet = Image.new("RGBA", (5 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))
@@ -674,7 +679,7 @@ assets/*.png binary
 python -m pip install --quiet Pillow
 python tools/gen_assets.py
 ```
-Expected output: `icons.png 160x16` and `label_font.png 195x6`.
+Expected output: `icons.png 160x16` and `label_font.png 200x6`.
 
 Run: `luajit mods/phone_start_menu/tests/assets_test.lua`
 Expected: PASS, both dimension assertions green.
@@ -700,7 +705,7 @@ git commit -m "Generate the app icons and the 4x6 caption face"
 - Produces a module built by `Icons.new(mod)` returning a table with:
   - `Icons.INDEX`: map of key to 1-based sheet column, `{ dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5, save = 6, map = 7, link = 8, mods = 9, generic = 10 }`.
   - `icons:drawIcon(key, x, y, dim)`: draws one 16x16 icon; `dim` true draws it at 40 percent alpha.
-  - `icons:drawLabel(text, x, y, dim)`: draws `text` in the 4x6 face, uppercased, unknown characters falling back to space.
+  - `icons:drawLabel(text, x, y, dim, colour)`: draws `text` in the 4x6 face, uppercased, unknown characters falling back to space. `colour` defaults to the dark ink; the status bar passes a light one.
   - `icons:labelWidth(text)`: returns `#text * 5` (a 5px advance per glyph).
 
 Images load lazily on first draw, never at registration, so a headless load with no graphics context still succeeds.
@@ -781,7 +786,10 @@ local ICON = 16
 -- Four glyphs at 5px is 20px, which fits the 21px cell; that is the cap
 -- Items.decorate clips foreign captions to.
 local GLYPH_INK, GLYPH_ADV, GLYPH_H = 4, 5, 6
-local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- "
+local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
+-- the face is white on the sheet so it can be tinted; this is the
+-- default ink for anything drawn on the phone's pale surfaces
+local INK = { 0.14, 0.18, 0.18 }
 
 Icons.INDEX = {
   dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5,
@@ -848,11 +856,14 @@ function Icons:labelWidth(text)
   return #tostring(text or "") * GLYPH_ADV
 end
 
-function Icons:drawLabel(text, x, y, dim)
+-- colour is optional and defaults to the dark ink.  The status bar passes
+-- a light colour because it draws onto black; nothing else needs to.
+function Icons:drawLabel(text, x, y, dim, colour)
   local _, font = self:_sheets()
   if not font then return end
   local r, g, b, a = love.graphics.getColor()
-  love.graphics.setColor(1, 1, 1, dim and 0.4 or 1)
+  local c = colour or INK
+  love.graphics.setColor(c[1], c[2], c[3], dim and 0.4 or 1)
   local upper = tostring(text or ""):upper()
   for i = 1, #upper do
     local quad = self.glyphQuads[upper:sub(i, i)] or self.glyphQuads[" "]
@@ -969,8 +980,8 @@ T.eq(byKey(items, "id").label, "RED", "the id row carries the player's name")
 
 -- captions are separate from hook labels and fit five glyphs
 for _, item in ipairs(items) do
-  T.check(#item.display <= 4,
-    "caption '" .. item.display .. "' fits a 21px cell at a 5px advance")
+  T.check(#item.display <= 3,
+    "caption '" .. item.display .. "' leaves a readable gap to its neighbour")
 end
 
 -- each gate flips independently
@@ -1039,7 +1050,7 @@ Apps.DEFS = {
       deps.screens.push(game, "PokedexMenu", { onCancel = reopen })
     end },
 
-  { key = "pkmn", display = "PKMN",
+  { key = "pkmn", display = "PKM",
     label = function() return "POKéMON" end,
     gate = function(game) return partySize(game) > 0 end,
     open = function(game, reopen, deps)
@@ -1062,14 +1073,14 @@ Apps.DEFS = {
       deps.screens.push(game, "TrainerCard", { onCancel = reopen })
     end },
 
-  { key = "optn", display = "OPTN",
+  { key = "optn", display = "OPT",
     label = function() return "OPTION" end,
     gate = function() return true end,
     open = function(game, reopen, deps)
       deps.screens.push(game, "OptionsMenu", { onCancel = reopen })
     end },
 
-  { key = "save", display = "SAVE",
+  { key = "save", display = "SAV",
     label = function() return "SAVE" end,
     gate = function() return true end,
     open = function(game, _, deps) deps.save(game) end },
@@ -1086,12 +1097,12 @@ Apps.DEFS = {
       deps.screens.push(game, "TownMap", { onCancel = reopen })
     end },
 
-  { key = "link", display = "LINK",
+  { key = "link", display = "LNK",
     label = function() return "LINK" end,
     gate = function(game) return partySize(game) > 0 end,
     open = function(game, _, deps) deps.link(game) end },
 
-  { key = "mods", display = "MODS",
+  { key = "mods", display = "MOD",
     label = function() return "MODS" end,
     gate = function(game)
       local status = game.modStatus
@@ -1280,7 +1291,7 @@ T.eq(position, saveAt - 1, "the injected row landed before SAVE")
 if found then
   T.check(found.icon == "generic", "a foreign row gets the generic icon")
   T.check(found.display and #found.display > 0, "a foreign row gets a caption")
-  T.check(#found.display <= 4, "a foreign caption is truncated to the cell")
+  T.check(#found.display <= 3, "a foreign caption is truncated to the cell")
   T.check(found.enabled, "a foreign row is selectable")
 end
 
@@ -1325,8 +1336,10 @@ Create `Items.lua`:
 
 local Items = {}
 
--- four glyphs at a 5px advance is 20px, the most a 21px cell holds
-local MAX_CAPTION = 4
+-- Three glyphs at a 5px advance is 15px in a 21px cell, a 6px gap to the
+-- neighbouring caption.  Four filled the cell and adjacent captions read
+-- as one word: OPTNSAVE, LINKMODS.
+local MAX_CAPTION = 3
 
 -- the vanilla identity link: with no wrapper installed, the list is returned
 -- exactly as it was handed in
@@ -1566,8 +1579,10 @@ function Chrome:drawStatus(game)
   local B = self.L.STATUS
   rect(BAR, B.x, B.y, B.w, B.h)
   local okTime, now = pcall(os.date, "*t")
+  -- light ink: the bar is near black, and the face is white on the sheet
+  -- so it tints to whatever is asked for
   self.icons:drawLabel(Chrome.clockText(okTime and now or nil),
-                       B.x + 3, B.y + 3, false)
+                       B.x + 3, B.y + 3, false, BAR_INK)
 
   -- wifi: three rising bars, hollow when there is no link session
   local live = Chrome.linkLive(game)
