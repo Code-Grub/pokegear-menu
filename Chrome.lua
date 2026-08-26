@@ -95,9 +95,9 @@ end
 
 function Chrome:drawFooter()
   local cr, cg, cb, ca = love.graphics.getColor()
+  -- No plate behind the word: drawBody already fills this band with the
+  -- body colour, so the name sits straight on the phone's face.
   local F = self.L.FOOTER
-  rect(OUTLINE, F.x, F.y, F.w, F.h)
-  rect(BODY, F.x + 1, F.y + 1, F.w - 2, F.h - 2)
   local text = "PHONE"
   local x = F.x + math.floor((F.w - self.icons:labelWidth(text)) / 2)
   self.icons:drawLabel(text, x, F.y + 3, false)
