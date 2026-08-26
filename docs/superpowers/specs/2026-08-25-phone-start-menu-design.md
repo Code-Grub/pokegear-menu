@@ -151,8 +151,9 @@ Loading is via `mod.assets:image(...)` (`src/mods/Loader.lua:726-733`).
 
 The 4x6 font exists because the engine font is a flat 8px grid
 (`src/render/Font.lua:21`), and a 21px cell fits 2.6 of its characters.
-Five 4px characters fit a cell exactly. It is scoped to app labels only;
-all other text on the phone uses the engine font.
+Five 4px characters fit a cell exactly. Nothing on the phone uses the engine
+font: app captions, the status bar clock, and the "PHONE" footer all draw
+through this face instead.
 
 Icons for Link and Mods have no mockup counterpart and are designed to match
 its hand: Link as a link cable, Mods as a puzzle piece.
@@ -249,17 +250,18 @@ Plus `modkit validate --base imported` and `modkit lint`, both green, in CI.
 
 Recorded in `mod.card`'s `known` ledger rather than left implicit.
 
-- **The SAVE flow is duplicated.** `src/ui/StartMenu.lua:55-88` is 34 lines
-  of nested `TextBox` with exact frame delays (120 then 30) and a sound
-  dependency, and the engine exposes no seam to invoke it. The mod
-  reproduces it. If the engine changes that flow, this mod drifts until it
-  is updated to match.
+- **SAVE re-runs the items hook an extra time.** SAVE borrows the builtin
+  START menu to reach the engine's own save flow rather than reproducing
+  it, so an engine change to saving arrives here for free. The cost:
+  building that builtin menu re-runs `ui.start_menu.items`, so opening SAVE
+  fires another mod's wrapper once more per save press.
 - **Real-world clock.** The status bar shows system time, which is outside
   the fiction. It is a deliberate choice in service of the phone metaphor.
 - **QUIT is gone.** Players who used it must learn the soft reset chord.
   Documented in the README's first section, not buried.
-- **Two fonts coexist.** App labels use a 4x6 face while the rest of the
-  phone uses the engine font, a compromise forced by a 21px cell.
+- **A dedicated font, not the engine's.** Everything the phone draws, app
+  captions, the clock, and the footer, uses a 4x6 face because the engine
+  font does not fit a 21px cell.
 
 ## Delivery
 

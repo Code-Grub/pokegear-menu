@@ -313,7 +313,7 @@ git commit -m "Add phone geometry measured off the mockup"
 - Consumes: nothing.
 - Produces:
   - `assets/icons.png`: 160x16 RGBA, ten 16x16 icons in one row. Index order is `dex, pkmn, bag, id, optn, save, map, link, mods, generic`.
-  - `assets/label_font.png`: 4px per glyph, 6px tall, one row. Glyph order is the string `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- ` (39 glyphs), so the sheet is 156x6.
+  - `assets/label_font.png`: 4px of WHITE ink plus a 1px gutter per glyph (a 5px advance), 6px tall, one row. Glyph order is the string `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :` (40 glyphs, note the colon the clock needs), so the sheet is 200x6. White so callers can tint it.
   - `python tools/gen_assets.py` regenerates both, writing into `assets/`.
 
 - [ ] **Step 1: Write the failing test**
@@ -334,7 +334,7 @@ T.eq(icons:getWidth(), 160, "icon sheet is ten 16px icons wide")
 T.eq(icons:getHeight(), 16, "icon sheet is one 16px row tall")
 
 local font = love.graphics.newImage("mods/phone_start_menu/assets/label_font.png")
-T.eq(font:getWidth(), 156, "label font is 39 glyphs of 4px")
+T.eq(font:getWidth(), 200, "label font is 40 glyphs at a 5px advance")
 T.eq(font:getHeight(), 6, "label font is 6px tall")
 
 T.finish("assets")
@@ -576,7 +576,7 @@ ICONS = {
 }
 
 # 4x6 face. Only the characters app captions and the footer need.
-GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- "
+GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
 
 GLYPHS = {
     "A": [".11.", "1..1", "1..1", "1111", "1..1", "...."],
@@ -616,6 +616,7 @@ GLYPHS = {
     "8": [".11.", "1..1", ".11.", "1..1", ".11.", "...."],
     "9": [".11.", "1..1", ".111", "...1", ".11.", "...."],
     ".": ["....", "....", "....", "....", ".1..", "...."],
+    ":": ["....", ".1..", "....", ".1..", "....", "...."],
     "-": ["....", "....", "111.", "....", "....", "...."],
     " ": ["....", "....", "....", "....", "....", "...."],
 }
@@ -641,13 +642,19 @@ def build_icons():
 
 
 def build_font():
-    mono = {".": (0, 0, 0, 0), "1": (36, 46, 46, 255)}
-    sheet = Image.new("RGBA", (4 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))
+    # White ink, not dark.  Drawing multiplies the sheet's RGB by the
+    # colour the caller sets, so a dark sheet can only ever draw dark:
+    # the clock was near black on a near black status bar.  White ink is
+    # tintable to anything, which is the standard shape for a bitmap face.
+    mono = {".": (0, 0, 0, 0), "1": (255, 255, 255, 255)}
+    # 4px of ink plus a 1px gutter. At a 4px pitch every glyph touched its
+    # neighbour and a caption read as one blob at native resolution.
+    sheet = Image.new("RGBA", (5 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))
     for i, ch in enumerate(GLYPH_ORDER):
         rows = GLYPHS[ch]
         if len(rows) != 6 or any(len(r) != 4 for r in rows):
             raise SystemExit("glyph %r is not 4x6" % ch)
-        blit(sheet, rows, i * 4, 0, mono)
+        blit(sheet, rows, i * 5, 0, mono)
     sheet.save(os.path.join(OUT, "label_font.png"))
     return sheet.size
 
@@ -672,7 +679,7 @@ assets/*.png binary
 python -m pip install --quiet Pillow
 python tools/gen_assets.py
 ```
-Expected output: `icons.png 160x16` and `label_font.png 156x6`.
+Expected output: `icons.png 160x16` and `label_font.png 200x6`.
 
 Run: `luajit mods/phone_start_menu/tests/assets_test.lua`
 Expected: PASS, both dimension assertions green.
@@ -698,8 +705,8 @@ git commit -m "Generate the app icons and the 4x6 caption face"
 - Produces a module built by `Icons.new(mod)` returning a table with:
   - `Icons.INDEX`: map of key to 1-based sheet column, `{ dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5, save = 6, map = 7, link = 8, mods = 9, generic = 10 }`.
   - `icons:drawIcon(key, x, y, dim)`: draws one 16x16 icon; `dim` true draws it at 40 percent alpha.
-  - `icons:drawLabel(text, x, y, dim)`: draws `text` in the 4x6 face, uppercased, unknown characters falling back to space.
-  - `icons:labelWidth(text)`: returns `#text * 4`.
+  - `icons:drawLabel(text, x, y, dim, colour)`: draws `text` in the 4x6 face, uppercased, unknown characters falling back to space. `colour` defaults to the dark ink; the status bar passes a light one.
+  - `icons:labelWidth(text)`: returns `#text * 5` (a 5px advance per glyph).
 
 Images load lazily on first draw, never at registration, so a headless load with no graphics context still succeeds.
 
@@ -731,7 +738,7 @@ local icons = Icons.new(fakeMod)
 T.eq(Icons.INDEX.dex, 1, "dex is the first icon")
 T.eq(Icons.INDEX.generic, 10, "generic is the last icon")
 
-T.eq(icons:labelWidth("DEX"), 12, "three glyphs are 12px")
+T.eq(icons:labelWidth("DEX"), 15, "three glyphs advance 15px")
 T.eq(icons:labelWidth(""), 0, "an empty caption is 0px")
 
 -- nothing may raise, with or without a loaded sheet
@@ -774,8 +781,15 @@ local Icons = {}
 Icons.__index = Icons
 
 local ICON = 16
-local GLYPH_W, GLYPH_H = 4, 6
-local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- "
+-- 4px of ink plus a 1px gutter.  The gutter is why the advance is 5 and
+-- not 4: at a 4px advance adjacent glyphs touch and a caption is a blob.
+-- Four glyphs at 5px is 20px, which fits the 21px cell; that is the cap
+-- Items.decorate clips foreign captions to.
+local GLYPH_INK, GLYPH_ADV, GLYPH_H = 4, 5, 6
+local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
+-- the face is white on the sheet so it can be tinted; this is the
+-- default ink for anything drawn on the phone's pale surfaces
+local INK = { 0.14, 0.18, 0.18 }
 
 Icons.INDEX = {
   dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5,
@@ -820,7 +834,7 @@ function Icons:_sheets()
   self.glyphQuads = {}
   for ch, col in pairs(GLYPH_AT) do
     self.glyphQuads[ch] = love.graphics.newQuad(
-      col * GLYPH_W, 0, GLYPH_W, GLYPH_H,
+      col * GLYPH_ADV, 0, GLYPH_ADV, GLYPH_H,
       fontSheet:getWidth(), fontSheet:getHeight())
   end
   return self.iconSheet, self.fontSheet
@@ -839,19 +853,22 @@ function Icons:drawIcon(key, x, y, dim)
 end
 
 function Icons:labelWidth(text)
-  return #tostring(text or "") * GLYPH_W
+  return #tostring(text or "") * GLYPH_ADV
 end
 
-function Icons:drawLabel(text, x, y, dim)
+-- colour is optional and defaults to the dark ink.  The status bar passes
+-- a light colour because it draws onto black; nothing else needs to.
+function Icons:drawLabel(text, x, y, dim, colour)
   local _, font = self:_sheets()
   if not font then return end
   local r, g, b, a = love.graphics.getColor()
-  love.graphics.setColor(1, 1, 1, dim and 0.4 or 1)
+  local c = colour or INK
+  love.graphics.setColor(c[1], c[2], c[3], dim and 0.4 or 1)
   local upper = tostring(text or ""):upper()
   for i = 1, #upper do
     local quad = self.glyphQuads[upper:sub(i, i)] or self.glyphQuads[" "]
     if quad then
-      love.graphics.draw(font, quad, x + (i - 1) * GLYPH_W, y)
+      love.graphics.draw(font, quad, x + (i - 1) * GLYPH_ADV, y)
     end
   end
   love.graphics.setColor(r, g, b, a)
@@ -963,8 +980,8 @@ T.eq(byKey(items, "id").label, "RED", "the id row carries the player's name")
 
 -- captions are separate from hook labels and fit five glyphs
 for _, item in ipairs(items) do
-  T.check(#item.display <= 5,
-    "caption '" .. item.display .. "' fits a 21px cell")
+  T.check(#item.display <= 3,
+    "caption '" .. item.display .. "' leaves a readable gap to its neighbour")
 end
 
 -- each gate flips independently
@@ -1033,7 +1050,7 @@ Apps.DEFS = {
       deps.screens.push(game, "PokedexMenu", { onCancel = reopen })
     end },
 
-  { key = "pkmn", display = "PKMN",
+  { key = "pkmn", display = "PKM",
     label = function() return "POKéMON" end,
     gate = function(game) return partySize(game) > 0 end,
     open = function(game, reopen, deps)
@@ -1056,14 +1073,14 @@ Apps.DEFS = {
       deps.screens.push(game, "TrainerCard", { onCancel = reopen })
     end },
 
-  { key = "optn", display = "OPTN",
+  { key = "optn", display = "OPT",
     label = function() return "OPTION" end,
     gate = function() return true end,
     open = function(game, reopen, deps)
       deps.screens.push(game, "OptionsMenu", { onCancel = reopen })
     end },
 
-  { key = "save", display = "SAVE",
+  { key = "save", display = "SAV",
     label = function() return "SAVE" end,
     gate = function() return true end,
     open = function(game, _, deps) deps.save(game) end },
@@ -1080,12 +1097,12 @@ Apps.DEFS = {
       deps.screens.push(game, "TownMap", { onCancel = reopen })
     end },
 
-  { key = "link", display = "LINK",
+  { key = "link", display = "LNK",
     label = function() return "LINK" end,
     gate = function(game) return partySize(game) > 0 end,
     open = function(game, _, deps) deps.link(game) end },
 
-  { key = "mods", display = "MODS",
+  { key = "mods", display = "MOD",
     label = function() return "MODS" end,
     gate = function(game)
       local status = game.modStatus
@@ -1267,19 +1284,34 @@ for i, item in ipairs(composed) do
 end
 T.eq(position, saveAt - 1, "the injected row landed before SAVE")
 
--- a foreign row must be renderable: it needs a caption and an icon
-T.check(found.icon == "generic", "a foreign row gets the generic icon")
-T.check(found.display and #found.display > 0, "a foreign row gets a caption")
-T.check(#found.display <= 5, "a foreign caption is truncated to the cell")
-T.check(found.enabled, "a foreign row is selectable")
+-- a foreign row must be renderable: it needs a caption and an icon.
+-- Guarded: without the `if`, a regression that loses the row entirely
+-- crashes here on a nil index, which aborts the suite before the fallback
+-- cases below ever run and lets one regression hide another.
+if found then
+  T.check(found.icon == "generic", "a foreign row gets the generic icon")
+  T.check(found.display and #found.display > 0, "a foreign row gets a caption")
+  T.check(#found.display <= 3, "a foreign caption is truncated to the cell")
+  T.check(found.enabled, "a foreign row is selectable")
+end
 
 run.release()
 
--- ---- a wrapper returning junk must not take the menu down
-local composedFromJunk = Items.compose(newGame(), Apps.build(newGame(), deps), {
-  call = function() return "not a table" end,
-})
+-- ---- a wrapper returning junk must not take the menu down, and must say so
+local composedFromJunk, junkWhy = Items.compose(newGame(),
+  Apps.build(newGame(), deps), { call = function() return "not a table" end })
 T.eq(#composedFromJunk, 9, "a bad hook result falls back to the app list")
+T.check(junkWhy and junkWhy:find("not a table"),
+  "and reports why, so the screen can log it: " .. tostring(junkWhy))
+
+-- ---- a chain that THROWS is the pcall's real justification.  Hooks.lua
+-- already absorbs an ordinary throwing wrapper, so without this case the
+-- pcall could be deleted and every other check would stay green.
+local composedFromThrow, throwWhy = Items.compose(newGame(),
+  Apps.build(newGame(), deps), { call = function() error("boom", 0) end })
+T.eq(#composedFromThrow, 9, "a throwing hook chain falls back to the app list")
+T.check(throwWhy and throwWhy:find("threw"),
+  "and reports that it threw: " .. tostring(throwWhy))
 
 T.finish("items")
 ```
@@ -1304,7 +1336,10 @@ Create `Items.lua`:
 
 local Items = {}
 
-local MAX_CAPTION = 5
+-- Three glyphs at a 5px advance is 15px in a 21px cell, a 6px gap to the
+-- neighbouring caption.  Four filled the cell and adjacent captions read
+-- as one word: OPTNSAVE, LINKMODS.
+local MAX_CAPTION = 3
 
 -- the vanilla identity link: with no wrapper installed, the list is returned
 -- exactly as it was handed in
@@ -1326,20 +1361,30 @@ end
 
 -- runtime is injected so a test can pass a stand-in; in the mod it is
 -- src.mods.Runtime, reached under the engine_internals permission.
+--
+-- Returns the composed list, plus a reason string when the hook failed to
+-- produce a usable one.  The caller owns the logging: this module has no
+-- mod.log, and the builtin reports the same condition
+-- (src/ui/StartMenu.lua:131-135), so returning no signal at all would be a
+-- diagnosability regression against vanilla rather than a style choice.
 function Items.compose(game, apps, runtime)
-  local hooked = apps
   local ok, result = pcall(runtime.call, "ui.start_menu.items",
                            passthrough, game, apps)
-  if ok and type(result) == "table" then
-    hooked = result
+  if not ok then
+    return Items.decorate(apps),
+      ("the ui.start_menu.items chain threw (%s)"):format(tostring(result))
   end
-  return Items.decorate(hooked)
+  if type(result) ~= "table" then
+    return Items.decorate(apps),
+      ("ui.start_menu.items returned %s, not a table"):format(type(result))
+  end
+  return Items.decorate(result)
 end
 
 return Items
 ```
 
-Note the deliberate difference from vanilla: `src/ui/StartMenu.lua:131-135` logs when the hook returns a non-table. Here the fallback is silent at this layer because `Items` has no `mod.log`; Task 8 logs it from the screen, which does.
+`src/ui/StartMenu.lua:131-135` logs when the hook returns a non-table. `Items` has no `mod.log`, so it does not log; it returns the reason as a second value instead, and Task 8 logs it from the screen, which does have one. Returning the list alone would leave Task 8 nothing to log on.
 
 - [ ] **Step 4: Run test to verify it passes**
 
@@ -1428,6 +1473,27 @@ T.check(ok, "drawing one page of dots succeeds: " .. tostring(err))
 ok, err = pcall(function() chrome:drawDots(2, 3) end)
 T.check(ok, "drawing three pages of dots succeeds: " .. tostring(err))
 
+-- Colour restoration is genuinely assertable: love_stub tracks real
+-- setColor/getColor state even though its rectangle/draw are no-ops.
+-- Without this, a leak is invisible to the suite.
+local function leaks(fn)
+  love.graphics.setColor(0.25, 0.5, 0.75, 1)
+  fn()
+  local r, g, b, a = love.graphics.getColor()
+  return not (r == 0.25 and g == 0.5 and b == 0.75 and a == 1)
+end
+
+T.check(not leaks(function() chrome:drawBody() end),
+  "drawBody restores the colour it found")
+T.check(not leaks(function() chrome:drawStatus({}) end),
+  "drawStatus restores the colour it found")
+T.check(not leaks(function() chrome:drawFooter() end),
+  "drawFooter restores the colour it found")
+T.check(not leaks(function() chrome:drawDots(2, 3) end),
+  "drawDots restores the colour it found")
+T.check(not leaks(function() chrome:drawDots(1, 1) end),
+  "drawDots restores the colour on its early return")
+
 T.finish("chrome")
 ```
 
@@ -1489,7 +1555,12 @@ function Chrome.linkLive(game)
   return (net ~= nil and not net.closed) and true or false
 end
 
+-- Every public draw brackets itself with the colour it found, the way
+-- Icons.lua does.  The engine fences a mod's whole render callback in
+-- push("all")/pop(), so a leak here cannot reach the engine, but it can
+-- reach whatever this mod draws next inside the same callback.
 function Chrome:drawBody()
+  local cr, cg, cb, ca = love.graphics.getColor()
   local P, S = self.L.PHONE, self.L.SCREEN
   rect(OUTLINE, P.x, P.y, P.w, P.h)
   rect(BODY, P.x + 1, P.y + 1, P.w - 2, P.h - 2)
@@ -1500,14 +1571,18 @@ function Chrome:drawBody()
   rect(OUTLINE, P.x + 62, P.y + 4, 4, 4)
   rect(OUTLINE, S.x - 1, S.y - 1, S.w + 2, S.h + 2)
   rect(SCREEN, S.x, S.y, S.w, S.h)
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 function Chrome:drawStatus(game)
+  local cr, cg, cb, ca = love.graphics.getColor()
   local B = self.L.STATUS
   rect(BAR, B.x, B.y, B.w, B.h)
   local okTime, now = pcall(os.date, "*t")
+  -- light ink: the bar is near black, and the face is white on the sheet
+  -- so it tints to whatever is asked for
   self.icons:drawLabel(Chrome.clockText(okTime and now or nil),
-                       B.x + 3, B.y + 3, false)
+                       B.x + 3, B.y + 3, false, BAR_INK)
 
   -- wifi: three rising bars, hollow when there is no link session
   local live = Chrome.linkLive(game)
@@ -1519,32 +1594,38 @@ function Chrome:drawStatus(game)
   end
 
   -- battery: always full, decorative
+  -- a solid cell plus a terminal nub.  Always full, so there is no
+  -- separate hollow and fill: painting one inside the other would draw
+  -- ink over ink.
   local bx = B.x + B.w - 11
   rect(BAR_INK, bx, B.y + 3, 8, 5)
-  rect(BAR, bx + 1, B.y + 4, 6, 3)
-  rect(BAR_INK, bx + 1, B.y + 4, 6, 3)
   rect(BAR_INK, bx + 8, B.y + 4, 1, 3)
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 function Chrome:drawFooter()
+  local cr, cg, cb, ca = love.graphics.getColor()
   local F = self.L.FOOTER
   rect(OUTLINE, F.x, F.y, F.w, F.h)
   rect(BODY, F.x + 1, F.y + 1, F.w - 2, F.h - 2)
   local text = "PHONE"
   local x = F.x + math.floor((F.w - self.icons:labelWidth(text)) / 2)
   self.icons:drawLabel(text, x, F.y + 3, false)
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 -- Dots render only when there is more than one page, so an install with no
 -- other UI mods matches the mockup exactly.
 function Chrome:drawDots(page, pages)
   if (pages or 1) <= 1 then return end
+  local cr, cg, cb, ca = love.graphics.getColor()
   local S = self.L.SCREEN
   local span = pages * 5 - 2
   local x = S.x + math.floor((S.w - span) / 2)
   for i = 1, pages do
     rect(i == page and DOT_ON or DOT_OFF, x + (i - 1) * 5, self.L.DOTS_Y, 3, 3)
   end
+  love.graphics.setColor(cr, cg, cb, ca)
 end
 
 return Chrome
@@ -1727,7 +1808,15 @@ function PhoneScreen.build(mod, M, deps)
 
     local function reopen() deps.screens.push(game, "StartMenu") end
     local apps = Apps.build(game, deps, reopen)
-    self.items = Items.compose(game, apps, deps.runtime)
+    local composed, hookProblem = Items.compose(game, apps, deps.runtime)
+    -- vanilla logs the same condition at src/ui/StartMenu.lua:131-135; the
+    -- screen is the layer that owns a mod.log, so it does the reporting
+    if hookProblem then
+      mod.log:warn("%s -- showing the built-in apps; a mod wrapping "
+        .. "ui.start_menu.items is misbehaving and its rows are missing "
+        .. "this session", hookProblem)
+    end
+    self.items = composed
     if #self.items == 0 then
       -- cannot happen with the nine built-ins, but a wrapper may have
       -- emptied the list; an empty phone would be a dead end
@@ -1919,6 +2008,21 @@ git commit -m "Register the phone as the START menu screen"
 
 ### Task 9: The SAVE flow
 
+> **SUPERSEDED after implementation.** This task originally reproduced the
+> engine's SAVE chain because the plan assumed no seam exposed it. That
+> assumption was wrong: `require` bypasses the *screen registry*, so the
+> builtin `src.ui.StartMenu` module is still reachable even though the mod
+> claims the screen id, and its SAVE row still carries the vanilla flow.
+> Verified by probe: the builtin menu constructs, the row labelled `SAVE`
+> is present, and invoking its `onSelect` pushes the save panel. The mod
+> now calls that instead, which removes the drift risk this task's own
+> Known Limitations entry warned about. `SaveFlow.lua` and its suite are
+> deleted; `Save.lua` replaces them. The cost accepted in exchange: opening
+> the builtin menu re-runs the `ui.start_menu.items` hook, so another mod's
+> wrapper fires once more per save press. Wrappers are contracted to be
+> pure list transforms, so that is harmless, but it is a real extra call.
+
+
 **Files:**
 - Create: `SaveFlow.lua`
 - Modify: `main.lua`
@@ -1926,7 +2030,7 @@ git commit -m "Register the phone as the START menu screen"
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
-- Produces `SaveFlow.build(deps)` returning `function(game)`, which pushes the vanilla save confirmation chain. `deps` is `{ textbox = <module>, badges = <module>, sound = <module>, strings = <function> }`.
+- Produces `SaveFlow.build(deps)` returning `function(game)`, which pushes the vanilla save confirmation chain. `deps` is `{ textbox = <module>, badges = <module>, sound = <module>, strings = <function>, log = <mod.log, optional> }`. `log` is optional so the module stays drivable from a test with no mod handle.
 
 This reproduces `src/ui/StartMenu.lua:55-88` because the engine exposes no seam to call it. Keep the frame delays exactly: 120 then 30.
 
@@ -2043,9 +2147,19 @@ function SaveFlow.build(deps)
     for _ in pairs(game.save.pokedex and game.save.pokedex.owned or {}) do
       owned = owned + 1
     end
+    -- A save missing badge data must never block saving, so the count is
+    -- guarded.  But it is reported: Items.compose records the same rule for
+    -- a module with no mod.log of its own, and swallowing this silently
+    -- would show BADGES 0 with no explanation anywhere.
     local badges = 0
     local okBadges, count = pcall(Badges.count, game.data, game.save)
-    if okBadges and type(count) == "number" then badges = count end
+    if okBadges and type(count) == "number" then
+      badges = count
+    elseif deps.log then
+      deps.log:warn("could not read the badge count (%s); the save panel "
+        .. "shows 0 badges but the save itself is unaffected -- report this "
+        .. "with your save file if the count stays wrong", tostring(count))
+    end
 
     local t = math.floor(game.save.playTime or 0)
     local panel = Strings("PLAYER %s\nBADGES    %d\nPOKéDEX %3d\nTIME %6d:%02d",
@@ -2089,6 +2203,7 @@ Add it to the `if not (...)` guard, then above `deps`:
     badges  = require("src.inventory.Badges"),
     sound   = require("src.core.Sound"),
     strings = require("src.core.Strings"),
+    log     = mod.log,
   })
 ```
 
@@ -2267,9 +2382,9 @@ return {
       "a status bar showing the real time and whether a link is live",
     },
     known = {
-      "the SAVE flow is reproduced from the engine rather than called, "
-        .. "because no seam exposes it: an engine change to that flow "
-        .. "leaves this mod drifting until it is updated to match",
+      "SAVE borrows the built in START menu to reach the engine's own "
+        .. "save flow, so opening it re-runs the ui.start_menu.items hook "
+        .. "and another mod's wrapper fires once more per save press",
       "the status bar clock reads real-world time, which sits outside "
         .. "the fiction",
       "app captions use a 4x6 face rather than the game font, which does "
@@ -2302,6 +2417,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - POKéMON dims with an empty party rather than listing and doing nothing.
+- SAVE opens the engine's own save confirmation rather than a copy of it,
+  so an engine change to saving is inherited rather than diverged from.
 
 ### Removed
 
@@ -2351,12 +2468,74 @@ Every pixel is declared as text in that script, so the art is original and
 carries its own provenance.
 ```
 
+- [ ] **Step 5b: Regenerate `.modkitignore` and guard it with a test**
+
+`tools/modkit.py:161-182` matches ignore entries by exact string equality
+against a file's full relative path (`if rel in ignored`). A directory entry
+like `tests/` therefore matches nothing and is silently a no-op: `pack` will
+bundle the whole test suite, this plan, and the design spec into the
+archive, and `validate --strict` reports no warning. Dot-prefixed
+directories are skipped by the walk, so `.superpowers/` is already safe.
+
+Regenerate the file with exact paths:
+
+```bash
+cd C:/Users/camwr/Desktop/Gen1Recomp/phone-start-menu
+{
+  echo "# modkit matches these by exact relative path, not by prefix:"
+  echo "# a bare directory name here would silently match nothing."
+  find tests tools docs -type f | sed 's|\|/|g' | sort
+} > .modkitignore
+cat .modkitignore
+```
+
+Then add `tests/packaging_test.lua`, which fails if anything under those
+three directories would ship:
+
+```lua
+-- Standalone: luajit mods/phone_start_menu/tests/packaging_test.lua
+--
+-- .modkitignore entries are matched by exact relative path
+-- (tools/modkit.py:161-182), so a directory entry is silently a no-op and
+-- the suite, the plan and the spec end up inside the archive with no
+-- warning from validate --strict.  This asserts the packaged file list.
+package.path = "./?.lua;./?/init.lua;" .. package.path
+local T = require("tests.modkit")
+
+local root = "mods/phone_start_menu"
+local ignored = {}
+for line in io.lines(root .. "/.modkitignore") do
+  line = line:gsub("^%s+", ""):gsub("%s+$", "")
+  if line ~= "" and line:sub(1, 1) ~= "#" then ignored[line] = true end
+end
+
+-- every file under tests/, tools/ and docs/ must be listed by exact path
+local leaked, counted = {}, 0
+local pipe = io.popen('cd "' .. root .. '" && find tests tools docs -type f')
+for path in pipe:lines() do
+  path = path:gsub("\\", "/"):gsub("^%./", "")
+  counted = counted + 1
+  if not ignored[path] then leaked[#leaked + 1] = path end
+end
+pipe:close()
+
+T.check(counted > 0, "found files under tests/, tools/ and docs/ to check")
+T.eq(#leaked, 0, "nothing under tests/, tools/ or docs/ would be packaged"
+  .. (leaked[1] and (" -- leaked: " .. table.concat(leaked, ", ")) or ""))
+
+T.finish("packaging")
+```
+
+Run: `luajit mods/phone_start_menu/tests/packaging_test.lua`
+Expected: PASS. Break it deliberately once, by deleting a line from
+`.modkitignore`, and confirm it fails naming that file, before moving on.
+
 - [ ] **Step 6: Run the full suite and the packaging gates**
 
 From the `game/` directory:
 
 ```bash
-for t in loads layout assets icons apps items chrome phone_screen save_flow paging degrade; do
+for t in loads layout assets icons apps items chrome phone_screen save_flow paging degrade packaging; do
   luajit mods/phone_start_menu/tests/${t}_test.lua || echo "FAILED: $t"
 done
 python3 tools/modkit.py validate mods/phone_start_menu --base imported
@@ -2370,7 +2549,7 @@ warns if `manifest.version` advanced without a `CHANGELOG.md` heading; the
 - [ ] **Step 7: Commit**
 
 ```bash
-git add README.md CHANGELOG.md mod.card tests/paging_test.lua tests/degrade_test.lua
+git add README.md CHANGELOG.md mod.card .modkitignore tests/paging_test.lua tests/degrade_test.lua tests/packaging_test.lua
 git commit -m "Add paging and degradation tests, and the shipping files"
 ```
 

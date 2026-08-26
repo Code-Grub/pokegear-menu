@@ -1,0 +1,13 @@
+{
+  "id": "phone_test_injector",
+  "name": "Phone Test Injector",
+  "version": "1.0.0",
+  "api": 2,
+  "entry": "main.lua",
+  "profile": "content",
+  "category": "TOOL",
+  "game_version": ">=0.0.0-0 <2.0.0",
+  "priority": 10,
+  "dependencies": [],
+  "description": "Test fixture: injects a START menu row the way a real mod would."
+}
