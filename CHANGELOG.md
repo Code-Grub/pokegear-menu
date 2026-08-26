@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-08-26
+
+### Changed
+
+- The nameplate reads POKéGEAR. The caption face gained a real lowercase
+  e-acute for it, and the glyph lookup, measuring and drawing now walk UTF-8
+  sequences rather than bytes, which a multibyte character would otherwise
+  have split into two blanks.
+- The selection cursor has rounded corners and is a pixel smaller, so it no
+  longer sits flush against the screen's border in the first column.
+- The earpiece slot is centred on the phone body. It sat at a hardcoded
+  offset, four pixels left of centre.
+
 ## [0.1.2] - 2026-08-26
 
 ### Changed
