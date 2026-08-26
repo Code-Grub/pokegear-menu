@@ -30,7 +30,8 @@ function PhoneScreen.build(mod, M, deps)
     if hookProblem then
       mod.log:warn("%s -- showing the built-in apps; a mod wrapping "
         .. "ui.start_menu.items is misbehaving and its rows are missing "
-        .. "this session", hookProblem)
+        .. "this session; update or disable the other mod that wraps "
+        .. "ui.start_menu.items", hookProblem)
     end
     self.items = composed
     if #self.items == 0 then
@@ -38,7 +39,8 @@ function PhoneScreen.build(mod, M, deps)
       -- emptied the list; an empty phone would be a dead end
       mod.log:warn("the start menu item list came back empty -- a mod "
         .. "wrapping ui.start_menu.items removed every row; showing the "
-        .. "built-in apps instead")
+        .. "built-in apps instead; update or disable the other mod that "
+        .. "wraps ui.start_menu.items")
       self.items = Items.decorate(apps)
     end
 

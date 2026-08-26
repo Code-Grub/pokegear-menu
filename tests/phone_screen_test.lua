@@ -5,6 +5,17 @@ if not _G.love then _G.love = require("tests.love_stub") end
 local T = require("tests.modkit")
 local Data = require("tests.modkit.fixtures").fresh()
 
+-- Intercept the real src.core.Sound module (wired in main.lua) before the
+-- mod loads, so "%s plays %s" claims are actually checked rather than
+-- merely declared.
+local sounds = {}
+local function clearSounds()
+  for i = #sounds, 1, -1 do sounds[i] = nil end
+end
+package.loaded["src.core.Sound"] = {
+  play = function(_, name) sounds[#sounds + 1] = name end,
+}
+
 local run = T.sdk.loadMod("mods/phone_start_menu", { data = Data })
 T.eq(#run.errors, 0, "loads clean (" .. tostring(run.errors[1]) .. ")")
 
@@ -16,9 +27,10 @@ local held = {}
 local function press(name) held = { [name] = true } end
 local function release() held = {} end
 
-local popped, sounds
+local popped
 local function newGame(overrides)
-  popped, sounds = 0, {}
+  popped = 0
+  clearSounds()
   local g = {
     data = Data,
     save = { party = {}, flags = {}, inventory = {}, money = 0,
@@ -75,29 +87,67 @@ game.save.startMenuIndex = 3
 local reopened = factory.new(game)
 T.eq(reopened.index, 3, "reopening restores the cursor")
 
--- ---- B and START close
+-- ---- a stale, out-of-range saved index clamps instead of indexing past
+-- the list
+game.save.startMenuIndex = 50
+local reopenedOOB = factory.new(game)
+T.eq(#reopenedOOB.items, 9, "still nine apps to clamp against")
+T.eq(reopenedOOB.index, #reopenedOOB.items,
+  "an oversized saved index clamps to the last app, not 50")
+
+-- ---- B and START close; B beeps, START is silent
+-- (src/ui/StartMenu.lua:136-138: only the A/B branch replays the beep)
 game = newGame()
 screen = factory.new(game)
 press("b") screen:update(0) release()
 T.eq(popped, 1, "B closes the phone")
+T.same(sounds, { "Press_AB" }, "B plays Press_AB")
 
 game = newGame()
 screen = factory.new(game)
 press("start") screen:update(0) release()
 T.eq(popped, 1, "START closes the phone")
+T.same(sounds, {}, "START closes silently and plays nothing")
 
--- ---- a dimmed app refuses, a live one opens
+-- ---- a dimmed app refuses, a live one opens; each plays its own sound
 game = newGame()
 screen = factory.new(game)
 screen.index = 1  -- DEX, dimmed on a fresh save
 press("a") screen:update(0) release()
 T.eq(popped, 0, "selecting a dimmed app does not close the phone")
+T.same(sounds, { "Tink" }, "a dimmed app plays Tink")
 
 game = newGame()
 screen = factory.new(game)
 screen.index = 3  -- BAG, always live
 press("a") screen:update(0) release()
 T.eq(popped, 1, "selecting a live app closes the phone")
+T.same(sounds, { "Press_AB" }, "A plays Press_AB")
+
+-- ---- the stack pops before onSelect runs
+--
+-- Menu:update pops the stack BEFORE running the item's onSelect
+-- (src/ui/Menu.lua:91-93), so a submenu's onCancel can push the phone back
+-- on top of nothing. Two independent counters can't catch a reversal of
+-- this order (both still end at 1 either way), so this records the actual
+-- sequence of stack operations against the item's own onSelect marker.
+game = newGame()
+local events = {}
+game.stack = {
+  push = function() events[#events + 1] = "push" end,
+  pop = function() events[#events + 1] = "pop" end,
+}
+screen = factory.new(game)
+local bagIndex
+for i, item in ipairs(screen.items) do
+  if item.icon == "bag" then bagIndex = i end
+end
+T.check(bagIndex ~= nil, "BAG (icon 'bag') is present in the app list")
+screen.items[bagIndex].onSelect = function() events[#events + 1] = "select" end
+screen.index = bagIndex
+press("a") screen:update(0) release()
+T.eq(table.concat(events, ","), "pop,select",
+  "the stack pops before onSelect runs")
 
 run.release()
 T.finish("phone screen")
