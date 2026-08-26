@@ -1,6 +1,6 @@
 {
   "id": "phone_start_menu",
-  "name": "Phone START Menu",
+  "name": "PokéGear Menu",
   "version": "0.1.5",
   "api": 2,
   "entry": "main.lua",
@@ -12,6 +12,6 @@
   "dependencies": [],
   "optional_dependencies": [],
   "conflicts": [],
-  "description": "Replaces the START menu with a phone home screen: nine apps in a 3x3 grid over the overworld.",
+  "description": "Restyles the START menu as a PokéGear-like handheld: nine apps in a 3x3 grid over the overworld. A reskin of the menu, not the Gen 2 device.",
   "github": "Code-Grub/phone-start-menu"
 }

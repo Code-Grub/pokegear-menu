@@ -1,8 +1,13 @@
-# Phone START Menu
+# PokéGear Menu
 
-Replaces the START menu in the [Pokemon Gen 1 Recompilation Project](https://github.com/bryanthaboi/pokemon-gen1-recomp-project)
-with a phone home screen: nine apps in a 3x3 grid, drawn in colour over the
+Restyles the START menu in the [Pokemon Gen 1 Recompilation Project](https://github.com/bryanthaboi/pokemon-gen1-recomp-project)
+as a handheld device: nine apps in a 3x3 grid, drawn in colour over the
 overworld.
+
+**It is a reskin of the menu, not the Gen 2 PokéGear.** The real PokéGear had a
+clock, a map, a radio and a phone. This has the clock and the map. There is no
+radio and there are no calls, and every app it shows is somewhere the START
+menu already went.
 
 ## Try it
 
