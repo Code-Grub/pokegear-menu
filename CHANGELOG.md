@@ -4,6 +4,20 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-08-26
+
+### Changed
+
+- The Poke Ball icon is redrawn. Its centre button was a diagonal scatter of
+  pixels through the lower half rather than a button on the midline.
+- The LINK icon is now a pair of exchange arrows. The cable it used to draw
+  was an unreadable squiggle at sixteen pixels.
+- The SAVE icon is now a microSD card. It used to be a device with a screen
+  and buttons, which read as a sibling of the dex rather than as somewhere to
+  save.
+- The MAP pin is symmetric. Eleven of its sixteen rows were not, so its hole
+  sat off centre and its tip landed off the axis of its head.
+
 ## [0.1.3] - 2026-08-26
 
 ### Changed
