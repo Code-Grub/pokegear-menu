@@ -21,6 +21,39 @@ local function rect(colour, x, y, w, h)
   love.graphics.rectangle("fill", x, y, w, h)
 end
 
+-- Corner rounding, pixel-art style: per-row insets, not a real arc.  What
+-- sits behind the phone is the live overworld rather than a fill, so a
+-- corner has to be NOT DRAWN; it cannot be painted over afterwards.
+-- CORNER[r] lists the inset for each of the top r rows, mirrored at the
+-- bottom.  Radius 2 gives the 2/1 step that reads as a soft corner at this
+-- scale without looking chamfered.
+local CORNER = { [1] = { 1 }, [2] = { 2, 1 }, [3] = { 3, 2, 1 } }
+local BODY_R, SCREEN_R = 2, 1
+
+-- Inset for row i (0-based) of a shape h tall at radius r.  Exposed for
+-- testing: the drawing itself is unassertable through the love stub.
+function Chrome.cornerInset(r, i, h)
+  local steps = CORNER[r]
+  if not steps or i < 0 or i >= h then return 0 end
+  if i < #steps then return steps[i + 1] end
+  local fromBottom = h - 1 - i
+  if fromBottom < #steps then return steps[fromBottom + 1] end
+  return 0
+end
+
+-- Drawn as the two curved caps plus one full-width middle, so a 142px tall
+-- body costs five rectangles rather than 142.
+local function roundRect(colour, x, y, w, h, r)
+  local steps = CORNER[r]
+  if not steps or h < r * 2 then return rect(colour, x, y, w, h) end
+  for i = 0, r - 1 do
+    local inset = steps[i + 1]
+    rect(colour, x + inset, y + i, w - inset * 2, 1)
+    rect(colour, x + inset, y + h - 1 - i, w - inset * 2, 1)
+  end
+  rect(colour, x, y + r, w, h - r * 2)
+end
+
 function Chrome.new(layout, icons)
   return setmetatable({ L = layout, icons = icons }, Chrome)
 end
@@ -53,15 +86,17 @@ end
 function Chrome:drawBody()
   local cr, cg, cb, ca = love.graphics.getColor()
   local P, S = self.L.PHONE, self.L.SCREEN
-  rect(OUTLINE, P.x, P.y, P.w, P.h)
-  rect(BODY, P.x + 1, P.y + 1, P.w - 2, P.h - 2)
-  -- a one-pixel highlight down the left edge gives the body its moulding
-  rect(BODY_HI, P.x + 1, P.y + 1, 1, P.h - 2)
+  roundRect(OUTLINE, P.x, P.y, P.w, P.h, BODY_R)
+  roundRect(BODY, P.x + 1, P.y + 1, P.w - 2, P.h - 2, BODY_R)
+  -- a one-pixel highlight down the left edge gives the body its moulding.
+  -- It starts below the corner curve and ends above it, or it would poke
+  -- out past the rounded edge.
+  rect(BODY_HI, P.x + 1, P.y + 1 + BODY_R, 1, P.h - 2 - BODY_R * 2)
   -- earpiece slot and lens, above the screen
   rect(OUTLINE, P.x + 24, P.y + 5, 18, 2)
   rect(OUTLINE, P.x + 62, P.y + 4, 4, 4)
-  rect(OUTLINE, S.x - 1, S.y - 1, S.w + 2, S.h + 2)
-  rect(SCREEN, S.x, S.y, S.w, S.h)
+  roundRect(OUTLINE, S.x - 1, S.y - 1, S.w + 2, S.h + 2, SCREEN_R)
+  roundRect(SCREEN, S.x, S.y, S.w, S.h, SCREEN_R)
   love.graphics.setColor(cr, cg, cb, ca)
 end
 

@@ -71,4 +71,18 @@ T.check(not leaks(function() chrome:drawDots(2, 3) end),
 T.check(not leaks(function() chrome:drawDots(1, 1) end),
   "drawDots restores the colour on its early return")
 
+-- Corner rounding is per-row insets, and those numbers are the only
+-- assertable part: love_stub's rectangle is a no-op, so a wrong curve
+-- draws nothing a test can see.
+T.eq(Chrome.cornerInset(2, 0, 20), 2, "radius 2 insets the top row by 2")
+T.eq(Chrome.cornerInset(2, 1, 20), 1, "and the next row by 1")
+T.eq(Chrome.cornerInset(2, 2, 20), 0, "rows below the curve are full width")
+T.eq(Chrome.cornerInset(2, 19, 20), 2, "the bottom row mirrors the top")
+T.eq(Chrome.cornerInset(2, 18, 20), 1, "and so does the row above it")
+T.eq(Chrome.cornerInset(1, 0, 10), 1, "radius 1 insets exactly one row")
+T.eq(Chrome.cornerInset(1, 1, 10), 0, "and nothing below it")
+T.eq(Chrome.cornerInset(0, 0, 10), 0, "radius 0 leaves a square corner")
+T.eq(Chrome.cornerInset(2, -1, 20), 0, "a row before the shape insets nothing")
+T.eq(Chrome.cornerInset(2, 20, 20), 0, "nor does one past its end")
+
 T.finish("chrome")
