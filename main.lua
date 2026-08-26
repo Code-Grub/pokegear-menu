@@ -25,9 +25,51 @@ return function(mod)
     return result
   end
 
-  local Icons = sibling("Icons.lua")
-  local Layout = sibling("Layout.lua")
-  if not (Icons and Layout) then return end
+  local Layout      = sibling("Layout.lua")
+  local Icons       = sibling("Icons.lua")
+  local Apps        = sibling("Apps.lua")
+  local Items       = sibling("Items.lua")
+  local Chrome      = sibling("Chrome.lua")
+  local PhoneScreen = sibling("PhoneScreen.lua")
+  if not (Layout and Icons and Apps and Items and Chrome and PhoneScreen) then
+    return
+  end
 
-  local icons = Icons.new(mod)
+  -- engine_internals: Runtime is how the items hook is re-run, PaletteFX is
+  -- how the phone keeps its colours, and Screens/Sound are the ordinary
+  -- push and beep the vanilla menu uses
+  local Runtime   = require("src.mods.Runtime")
+  local PaletteFX = require("src.render.PaletteFX")
+  local Screens   = require("src.ui.Screens")
+  local Sound     = require("src.core.Sound")
+
+  local icons  = Icons.new(mod)
+  local chrome = Chrome.new(Layout, icons)
+
+  local SaveFlow = function() end   -- placeholder; Task 9 replaces this
+
+  local deps = {
+    screens = { push = function(game, id, opts)
+      Screens.push(game, id, opts)
+    end },
+    sound   = { play = function(data, name)
+      pcall(Sound.play, data, name)
+    end },
+    runtime = Runtime,
+    markTrueColor = function(x, y, w, h)
+      pcall(PaletteFX.markTrueColor, x, y, w, h)
+    end,
+    save = function(game) SaveFlow(game) end,   -- filled in by Task 9
+    link = function(game)
+      local LinkState = require("src.link.LinkState")
+      game.stack:push(LinkState.new(game))
+    end,
+  }
+
+  local modules = { Layout = Layout, Icons = Icons, Apps = Apps,
+                    Items = Items, Chrome = Chrome,
+                    icons = icons, chrome = chrome }
+
+  mod.content.screens:register("StartMenu",
+    PhoneScreen.build(mod, modules, deps))
 end

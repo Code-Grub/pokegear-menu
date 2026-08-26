@@ -11,4 +11,5 @@ tests/icons_test.lua
 tests/items_test.lua
 tests/layout_test.lua
 tests/loads_test.lua
+tests/phone_screen_test.lua
 tools/gen_assets.py
