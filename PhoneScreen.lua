@@ -142,9 +142,12 @@ function PhoneScreen.build(mod, M, deps)
   -- so there is no way to omit them.  Each edge is shortened by one at both
   -- ends, which is what leaves the corners bare.
   function Screen:_drawCursor(x, y)
+    -- One pixel of air around the icon, not two.  A wider frame starts at
+    -- the cell's own left edge, and for the first column that is also the
+    -- screen's interior edge, so the cursor sat flush against the border.
     local pr, pg, pb, pa = love.graphics.getColor()
-    local n = Layout.ICON + 3
-    local cx, cy = x - 2, y - 2
+    local n = Layout.ICON + 2
+    local cx, cy = x - 1, y - 1
     love.graphics.setColor(0.14, 0.18, 0.18, 1)
     love.graphics.rectangle("fill", cx + 1, cy, n - 2, 1)
     love.graphics.rectangle("fill", cx + 1, cy + n - 1, n - 2, 1)
