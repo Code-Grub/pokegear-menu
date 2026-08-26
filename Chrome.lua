@@ -92,8 +92,11 @@ function Chrome:drawBody()
   -- It starts below the corner curve and ends above it, or it would poke
   -- out past the rounded edge.
   rect(BODY_HI, P.x + 1, P.y + 1 + BODY_R, 1, P.h - 2 - BODY_R * 2)
-  -- earpiece slot and lens, above the screen
-  rect(OUTLINE, P.x + 24, P.y + 5, 18, 2)
+  -- Earpiece slot, centred on the body, with the lens off to its right.
+  -- Centred by derivation rather than a hardcoded offset, so it stays
+  -- centred if the body's width ever changes.
+  local speaker = 18
+  rect(OUTLINE, P.x + math.floor((P.w - speaker) / 2), P.y + 5, speaker, 2)
   rect(OUTLINE, P.x + 62, P.y + 4, 4, 4)
   roundRect(OUTLINE, S.x - 1, S.y - 1, S.w + 2, S.h + 2, SCREEN_R)
   roundRect(SCREEN, S.x, S.y, S.w, S.h, SCREEN_R)
