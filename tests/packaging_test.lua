@@ -16,7 +16,11 @@ end
 
 -- every file under tests/, tools/ and docs/ must be listed by exact path
 local leaked, counted = {}, 0
-local pipe = io.popen('cd "' .. root .. '" && find tests tools docs -type f')
+-- Only tests/ and tools/: docs/ was dropped when the mod was published,
+-- and naming a directory that does not exist makes find write to stderr.
+-- Kept as one plain command because io.popen goes through cmd on Windows,
+-- which cannot parse a shell loop.
+local pipe = io.popen('cd "' .. root .. '" && find tests tools -type f')
 for path in pipe:lines() do
   path = path:gsub("\\", "/"):gsub("^%./", "")
   counted = counted + 1
