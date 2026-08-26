@@ -134,11 +134,23 @@ function PhoneScreen.build(mod, M, deps)
   end
 
   -- a one-pixel frame around the focused cell, in the outline colour
+  -- A one pixel frame with its four corner pixels left off, which reads as a
+  -- soft corner at this size and matches the radius the screen itself uses.
+  --
+  -- Four fills rather than rectangle("line"): a line rect needs half pixel
+  -- offsets to land on whole pixels, and it always paints all four corners,
+  -- so there is no way to omit them.  Each edge is shortened by one at both
+  -- ends, which is what leaves the corners bare.
   function Screen:_drawCursor(x, y)
+    local pr, pg, pb, pa = love.graphics.getColor()
+    local n = Layout.ICON + 3
+    local cx, cy = x - 2, y - 2
     love.graphics.setColor(0.14, 0.18, 0.18, 1)
-    love.graphics.rectangle("line", x - 2 + 0.5, y - 2 + 0.5,
-                            Layout.ICON + 3, Layout.ICON + 3)
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.rectangle("fill", cx + 1, cy, n - 2, 1)
+    love.graphics.rectangle("fill", cx + 1, cy + n - 1, n - 2, 1)
+    love.graphics.rectangle("fill", cx, cy + 1, 1, n - 2)
+    love.graphics.rectangle("fill", cx + n - 1, cy + 1, 1, n - 2)
+    love.graphics.setColor(pr, pg, pb, pa)
   end
 
   return { new = Screen.new }
