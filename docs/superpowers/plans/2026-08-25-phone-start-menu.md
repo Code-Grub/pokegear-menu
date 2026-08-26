@@ -2008,6 +2008,21 @@ git commit -m "Register the phone as the START menu screen"
 
 ### Task 9: The SAVE flow
 
+> **SUPERSEDED after implementation.** This task originally reproduced the
+> engine's SAVE chain because the plan assumed no seam exposed it. That
+> assumption was wrong: `require` bypasses the *screen registry*, so the
+> builtin `src.ui.StartMenu` module is still reachable even though the mod
+> claims the screen id, and its SAVE row still carries the vanilla flow.
+> Verified by probe: the builtin menu constructs, the row labelled `SAVE`
+> is present, and invoking its `onSelect` pushes the save panel. The mod
+> now calls that instead, which removes the drift risk this task's own
+> Known Limitations entry warned about. `SaveFlow.lua` and its suite are
+> deleted; `Save.lua` replaces them. The cost accepted in exchange: opening
+> the builtin menu re-runs the `ui.start_menu.items` hook, so another mod's
+> wrapper fires once more per save press. Wrappers are contracted to be
+> pure list transforms, so that is harmless, but it is a real extra call.
+
+
 **Files:**
 - Create: `SaveFlow.lua`
 - Modify: `main.lua`
