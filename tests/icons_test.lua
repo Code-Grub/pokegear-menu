@@ -67,6 +67,10 @@ T.eq(q.x, 15, "D is the fourth glyph, at a 5px advance")
 
 q = icons.glyphQuads[" "]
 T.eq(q.x, 190, "the trailing space is the 39th glyph")
-T.eq(q.x + q.w, 195, "the last glyph quad ends exactly at the sheet edge")
+
+q = icons.glyphQuads[":"]
+T.check(q, "the colon the clock needs has a quad")
+T.eq(q.x, 195, "the colon is the fortieth glyph")
+T.eq(q.x + q.w, 200, "the last glyph quad ends exactly at the sheet edge")
 
 T.finish("icons")

@@ -8,8 +8,10 @@
 
 local Items = {}
 
--- four glyphs at a 5px advance is 20px, the most a 21px cell holds
-local MAX_CAPTION = 4
+-- Three glyphs at a 5px advance is 15px in a 21px cell, a 6px gap to
+-- the neighbouring caption.  Four filled the cell and adjacent
+-- captions read as one word: OPTNSAVE, LINKMODS.
+local MAX_CAPTION = 3
 
 -- the vanilla identity link: with no wrapper installed, the list is returned
 -- exactly as it was handed in

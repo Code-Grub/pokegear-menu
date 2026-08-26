@@ -11,7 +11,7 @@ T.eq(icons:getWidth(), 160, "icon sheet is ten 16px icons wide")
 T.eq(icons:getHeight(), 16, "icon sheet is one 16px row tall")
 
 local font = love.graphics.newImage("mods/phone_start_menu/assets/label_font.png")
-T.eq(font:getWidth(), 195, "label font is 39 glyphs at a 5px advance")
+T.eq(font:getWidth(), 200, "label font is 40 glyphs at a 5px advance")
 T.eq(font:getHeight(), 6, "label font is 6px tall")
 
 T.finish("assets")

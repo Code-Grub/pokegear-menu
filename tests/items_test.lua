@@ -76,7 +76,7 @@ T.eq(position, saveAt - 1, "the injected row landed before SAVE")
 if found then
   T.check(found.icon == "generic", "a foreign row gets the generic icon")
   T.check(found.display and #found.display > 0, "a foreign row gets a caption")
-  T.check(#found.display <= 4, "a foreign caption is truncated to the cell")
+  T.check(#found.display <= 3, "a foreign caption is truncated to the cell")
   T.check(found.enabled, "a foreign row is selectable")
 end
 

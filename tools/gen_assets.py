@@ -224,7 +224,7 @@ ICONS = {
 }
 
 # 4x6 face. Only the characters app captions and the footer need.
-GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- "
+GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
 
 GLYPHS = {
     "A": [".11.", "1..1", "1..1", "1111", "1..1", "...."],
@@ -266,6 +266,7 @@ GLYPHS = {
     ".": ["....", "....", "....", "....", ".1..", "...."],
     "-": ["....", "....", "111.", "....", "....", "...."],
     " ": ["....", "....", "....", "....", "....", "...."],
+    ":": ["....", ".1..", "....", ".1..", "....", "...."],
 }
 
 
@@ -289,7 +290,11 @@ def build_icons():
 
 
 def build_font():
-    mono = {".": (0, 0, 0, 0), "1": (36, 46, 46, 255)}
+    # White ink, not dark.  Drawing multiplies the sheet's RGB by the
+    # colour the caller sets, so a dark sheet can only ever draw dark:
+    # the clock was near black on a near black status bar.  White ink is
+    # tintable to anything, which is the standard shape for a bitmap face.
+    mono = {".": (0, 0, 0, 0), "1": (255, 255, 255, 255)}
     # 4px of ink plus a 1px gutter. At a 4px pitch every glyph touched its
     # neighbour and a caption read as one blob at native resolution.
     sheet = Image.new("RGBA", (5 * len(GLYPH_ORDER), 6), (0, 0, 0, 0))

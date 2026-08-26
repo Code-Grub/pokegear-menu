@@ -24,7 +24,7 @@ Apps.DEFS = {
       deps.screens.push(game, "PokedexMenu", { onCancel = reopen })
     end },
 
-  { key = "pkmn", display = "PKMN",
+  { key = "pkmn", display = "PKM",
     label = function() return "POKéMON" end,
     gate = function(game) return partySize(game) > 0 end,
     open = function(game, reopen, deps)
@@ -47,14 +47,14 @@ Apps.DEFS = {
       deps.screens.push(game, "TrainerCard", { onCancel = reopen })
     end },
 
-  { key = "optn", display = "OPTN",
+  { key = "optn", display = "OPT",
     label = function() return "OPTION" end,
     gate = function() return true end,
     open = function(game, reopen, deps)
       deps.screens.push(game, "OptionsMenu", { onCancel = reopen })
     end },
 
-  { key = "save", display = "SAVE",
+  { key = "save", display = "SAV",
     label = function() return "SAVE" end,
     gate = function() return true end,
     open = function(game, _, deps) deps.save(game) end },
@@ -71,12 +71,12 @@ Apps.DEFS = {
       deps.screens.push(game, "TownMap", { onCancel = reopen })
     end },
 
-  { key = "link", display = "LINK",
+  { key = "link", display = "LNK",
     label = function() return "LINK" end,
     gate = function(game) return partySize(game) > 0 end,
     open = function(game, _, deps) deps.link(game) end },
 
-  { key = "mods", display = "MODS",
+  { key = "mods", display = "MOD",
     label = function() return "MODS" end,
     gate = function(game)
       local status = game.modStatus

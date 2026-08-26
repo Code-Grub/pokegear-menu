@@ -54,8 +54,8 @@ T.eq(byKey(items, "id").label, "RED", "the id row carries the player's name")
 
 -- captions are separate from hook labels and fit five glyphs
 for _, item in ipairs(items) do
-  T.check(#item.display <= 4,
-    "caption '" .. item.display .. "' fits a 21px cell at a 5px advance")
+  T.check(#item.display <= 3,
+    "caption '" .. item.display .. "' leaves a readable gap to its neighbour")
 end
 
 -- each gate flips independently

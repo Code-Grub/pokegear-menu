@@ -13,7 +13,11 @@ local ICON = 16
 -- Four glyphs at 5px is 20px, which fits the 21px cell; that is the cap
 -- Items.decorate clips foreign captions to.
 local GLYPH_ADV, GLYPH_H = 5, 6
-local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- "
+local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
+
+-- the face is white on the sheet so it can be tinted; this is the
+-- default ink for anything drawn on the phone's pale surfaces
+local INK = { 0.14, 0.18, 0.18 }
 
 Icons.INDEX = {
   dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5,
@@ -80,11 +84,15 @@ function Icons:labelWidth(text)
   return #tostring(text or "") * GLYPH_ADV
 end
 
-function Icons:drawLabel(text, x, y, dim)
+-- colour is optional and defaults to the dark ink.  The status bar
+-- passes a light colour because it draws onto black; nothing else
+-- needs to.
+function Icons:drawLabel(text, x, y, dim, colour)
   local _, font = self:_sheets()
   if not font then return end
   local r, g, b, a = love.graphics.getColor()
-  love.graphics.setColor(1, 1, 1, dim and 0.4 or 1)
+  local c = colour or INK
+  love.graphics.setColor(c[1], c[2], c[3], dim and 0.4 or 1)
   local upper = tostring(text or ""):upper()
   for i = 1, #upper do
     local quad = self.glyphQuads[upper:sub(i, i)] or self.glyphQuads[" "]

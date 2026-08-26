@@ -70,8 +70,10 @@ function Chrome:drawStatus(game)
   local B = self.L.STATUS
   rect(BAR, B.x, B.y, B.w, B.h)
   local okTime, now = pcall(os.date, "*t")
+  -- light ink: the bar is near black, and the face is white on the
+  -- sheet so it tints to whatever is asked for
   self.icons:drawLabel(Chrome.clockText(okTime and now or nil),
-                       B.x + 3, B.y + 3, false)
+                       B.x + 3, B.y + 3, false, BAR_INK)
 
   -- wifi: three rising bars, hollow when there is no link session
   local live = Chrome.linkLive(game)
