@@ -1,16 +1,19 @@
-# modkit matches these by exact relative path, not by prefix
-# (tools/modkit.py:161-182): a bare directory name matches nothing.
+# modkit matches these by exact relative path, not by prefix:
+# a bare directory name here would silently match nothing.
 docs/superpowers/plans/2026-08-25-phone-start-menu.md
 docs/superpowers/specs/2026-08-25-phone-start-menu-design.md
 tests/apps_test.lua
 tests/assets_test.lua
 tests/chrome_test.lua
+tests/degrade_test.lua
 tests/fixtures/injector_mod/main.lua
 tests/fixtures/injector_mod/manifest.json
 tests/icons_test.lua
 tests/items_test.lua
 tests/layout_test.lua
 tests/loads_test.lua
+tests/packaging_test.lua
+tests/paging_test.lua
 tests/phone_screen_test.lua
 tests/save_test.lua
 tools/gen_assets.py

@@ -1,0 +1,27 @@
+-- Sharing metadata; read by tooling and the manager detail pane.
+return {
+  summary = "The START menu as a phone home screen: nine apps in a 3x3 grid.",
+  author = "camwrightdc",
+  tags = { "ui", "cosmetic", "quality-of-life" },
+  differences = {
+    changed = {
+      "the START menu is a phone home screen instead of a text list",
+      "POKéMON dims with an empty party instead of listing and doing nothing",
+      "QUIT is gone; A+B+SELECT+START returns to the title, as it always did",
+    },
+    added = {
+      "a MAP app opening the TOWN MAP, gated on holding the item",
+      "a status bar showing the real time and whether a link is live",
+    },
+    known = {
+      "SAVE borrows the built in START menu to reach the engine's own "
+        .. "save flow, so opening it re-runs the ui.start_menu.items hook "
+        .. "and another mod's wrapper fires once more per save press",
+      "the status bar clock reads real-world time, which sits outside "
+        .. "the fiction",
+      "app captions use a 4x6 face rather than the game font, which does "
+        .. "not fit a 21px cell",
+    },
+  },
+  compat = { engine = ">=1.0.0 <2.0.0", modApi = 2 },
+}
