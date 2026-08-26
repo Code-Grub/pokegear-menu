@@ -31,33 +31,25 @@ return function(mod)
   local Items       = sibling("Items.lua")
   local Chrome      = sibling("Chrome.lua")
   local PhoneScreen = sibling("PhoneScreen.lua")
-  local SaveFlow    = sibling("SaveFlow.lua")
-  if not (Layout and Icons and Apps and Items and Chrome and PhoneScreen and SaveFlow) then
+  local Save        = sibling("Save.lua")
+  if not (Layout and Icons and Apps and Items and Chrome and PhoneScreen and Save) then
     return
   end
 
   -- engine_internals: Runtime is how the items hook is re-run, PaletteFX is
   -- how the phone keeps its colours, Screens/Sound are the ordinary push and
-  -- beep the vanilla menu uses, and TextBox/Badges/Strings are what the SAVE
-  -- confirmation chain is built from (src/ui/StartMenu.lua:55-88)
+  -- beep the vanilla menu uses, and src.ui.StartMenu is the builtin menu
+  -- Save.lua calls into to reach the vanilla SAVE row rather than
+  -- reproducing it (Save.lua)
   local Runtime   = require("src.mods.Runtime")
   local PaletteFX = require("src.render.PaletteFX")
   local Screens   = require("src.ui.Screens")
   local Sound     = require("src.core.Sound")
-  local TextBox   = require("src.render.TextBox")
-  local Badges    = require("src.inventory.Badges")
-  local Strings   = require("src.core.Strings")
 
   local icons  = Icons.new(mod)
   local chrome = Chrome.new(Layout, icons)
 
-  local saveFlow = SaveFlow.build({
-    textbox = TextBox,
-    badges  = Badges,
-    sound   = Sound,
-    strings = Strings,
-    log     = mod.log,
-  })
+  local saveFlow = Save.build(require("src.ui.StartMenu"), mod.log)
 
   local deps = {
     screens = { push = function(game, id, opts)
