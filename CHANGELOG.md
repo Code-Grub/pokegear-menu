@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-08-26
+
+### Changed
+
+- The phone body and its screen have slightly rounded corners. The overworld
+  shows through behind the phone, so the corners are left undrawn rather than
+  painted over.
+- The name at the bottom of the phone sits straight on the body. The outlined
+  plate behind it was a second frame inside the phone's own outline.
+
 ## [0.1.0] - 2026-08-25
 
 ### Added
