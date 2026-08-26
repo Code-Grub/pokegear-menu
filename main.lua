@@ -31,22 +31,32 @@ return function(mod)
   local Items       = sibling("Items.lua")
   local Chrome      = sibling("Chrome.lua")
   local PhoneScreen = sibling("PhoneScreen.lua")
-  if not (Layout and Icons and Apps and Items and Chrome and PhoneScreen) then
+  local SaveFlow    = sibling("SaveFlow.lua")
+  if not (Layout and Icons and Apps and Items and Chrome and PhoneScreen and SaveFlow) then
     return
   end
 
   -- engine_internals: Runtime is how the items hook is re-run, PaletteFX is
-  -- how the phone keeps its colours, and Screens/Sound are the ordinary
-  -- push and beep the vanilla menu uses
+  -- how the phone keeps its colours, Screens/Sound are the ordinary push and
+  -- beep the vanilla menu uses, and TextBox/Badges/Strings are what the SAVE
+  -- confirmation chain is built from (src/ui/StartMenu.lua:55-88)
   local Runtime   = require("src.mods.Runtime")
   local PaletteFX = require("src.render.PaletteFX")
   local Screens   = require("src.ui.Screens")
   local Sound     = require("src.core.Sound")
+  local TextBox   = require("src.render.TextBox")
+  local Badges    = require("src.inventory.Badges")
+  local Strings   = require("src.core.Strings")
 
   local icons  = Icons.new(mod)
   local chrome = Chrome.new(Layout, icons)
 
-  local SaveFlow = function() end   -- placeholder; Task 9 replaces this
+  local saveFlow = SaveFlow.build({
+    textbox = TextBox,
+    badges  = Badges,
+    sound   = Sound,
+    strings = Strings,
+  })
 
   local deps = {
     screens = { push = function(game, id, opts)
@@ -59,7 +69,7 @@ return function(mod)
     markTrueColor = function(x, y, w, h)
       pcall(PaletteFX.markTrueColor, x, y, w, h)
     end,
-    save = function(game) SaveFlow(game) end,   -- filled in by Task 9
+    save = saveFlow,
     link = function(game)
       local LinkState = require("src.link.LinkState")
       game.stack:push(LinkState.new(game))
