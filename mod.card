@@ -1,7 +1,7 @@
 -- Sharing metadata; read by tooling and the manager detail pane.
 return {
   summary = "The START menu restyled as a handheld: nine apps in a 3x3 grid.",
-  author = "camwrightdc",
+  author = "Code-Grub",
   tags = { "ui", "cosmetic", "quality-of-life" },
   differences = {
     changed = {
