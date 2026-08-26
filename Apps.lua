@@ -54,7 +54,12 @@ Apps.DEFS = {
       deps.screens.push(game, "OptionsMenu", { onCancel = reopen })
     end },
 
-  { key = "save", display = "SAV",
+  -- keepOpen: the phone stays on the stack instead of popping, so closing
+  -- what this opens reveals it again.  TownMap, ManagerState and LinkState
+  -- all ignore an onCancel option entirely (they carry no reference to it),
+  -- so the reopen trick the other five rely on cannot work for them.  All
+  -- three are isOpaque, so the phone underneath is not even drawn.
+  { key = "save", display = "SAV", keepOpen = true,
     label = function() return "SAVE" end,
     gate = function() return true end,
     open = function(game, _, deps) deps.save(game) end },
@@ -62,28 +67,28 @@ Apps.DEFS = {
   -- Vanilla reaches the TOWN MAP by using the item (src/ui/BagMenu.lua:196).
   -- The app is a second door behind the same rule, so nothing becomes
   -- reachable that was not reachable before.
-  { key = "map", display = "MAP",
+  { key = "map", display = "MAP", keepOpen = true,
     label = function() return "TOWN MAP" end,
     gate = function(game)
       return ((game.save or {}).inventory or {}).TOWN_MAP ~= nil
     end,
     open = function(game, reopen, deps)
-      deps.screens.push(game, "TownMap", { onCancel = reopen })
+      deps.screens.push(game, "TownMap")
     end },
 
-  { key = "link", display = "LNK",
+  { key = "link", display = "LNK", keepOpen = true,
     label = function() return "LINK" end,
     gate = function(game) return partySize(game) > 0 end,
     open = function(game, _, deps) deps.link(game) end },
 
-  { key = "mods", display = "MOD",
+  { key = "mods", display = "MOD", keepOpen = true,
     label = function() return "MODS" end,
     gate = function(game)
       local status = game.modStatus
       return (status and #(status.available or {}) > 0) or false
     end,
     open = function(game, reopen, deps)
-      deps.screens.push(game, "ManagerState", { onCancel = reopen })
+      deps.screens.push(game, "ManagerState")
     end },
 }
 
@@ -98,6 +103,7 @@ function Apps.build(game, deps, reopen)
       display = def.display,
       icon = def.key,
       enabled = enabled,
+      keepOpen = def.keepOpen,
       onSelect = function()
         if not enabled then return end
         def.open(game, reopen, deps)

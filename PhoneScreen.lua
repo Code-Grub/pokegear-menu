@@ -84,8 +84,13 @@ function PhoneScreen.build(mod, M, deps)
       elseif item then
         deps.sound.play(self.game.data, "Press_AB")
         -- Menu pops before running onSelect (src/ui/Menu.lua:93-94), so a
-        -- submenu's onCancel can push the phone back on top of nothing
-        self.game.stack:pop()
+        -- submenu's onCancel can push the phone back on top of nothing.
+        --
+        -- keepOpen rows are the exception, exactly as in Menu (:91-92): the
+        -- phone stays on the stack, and closing what the row opened reveals
+        -- it again.  That is the only way back for a screen that ignores an
+        -- onCancel option, which TownMap, ManagerState and LinkState all do.
+        if not item.keepOpen then self.game.stack:pop() end
         if item.onSelect then item.onSelect() end
       end
     elseif input:wasPressed("b") or input:wasPressed("start") then

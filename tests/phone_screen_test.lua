@@ -150,4 +150,31 @@ T.eq(table.concat(events, ","), "pop,select",
   "the stack pops before onSelect runs")
 
 run.release()
+-- Rows whose screen ignores an onCancel option must NOT pop the phone, or
+-- there is no way back to it: TownMap, ManagerState and LinkState carry no
+-- reference to onCancel at all, and the save chain ends in plain text boxes.
+-- Leaving the phone on the stack is what reveals it again when they close.
+-- All three of those screens are isOpaque, so it is not drawn meanwhile.
+local function selectByIcon(key)
+  local g = newGame({ flags = { EVENT_GOT_POKEDEX = true },
+                      party = { { species = "FIXMON_A" } },
+                      inventory = { TOWN_MAP = 1 } })
+  g.modStatus = { available = { "m" } }
+  local scr = factory.new(g)
+  for i, item in ipairs(scr.items) do
+    if item.icon == key then scr.index = i end
+  end
+  press("a") scr:update(0) release()
+  return popped
+end
+
+for _, key in ipairs({ "save", "map", "link", "mods" }) do
+  T.eq(selectByIcon(key), 0,
+    key .. " keeps the phone on the stack, so closing it comes back here")
+end
+for _, key in ipairs({ "dex", "pkmn", "bag", "id", "optn" }) do
+  T.eq(selectByIcon(key), 1,
+    key .. " pops the phone, because its screen reopens it on cancel")
+end
+
 T.finish("phone screen")
