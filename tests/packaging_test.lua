@@ -1,4 +1,4 @@
--- Standalone: luajit mods/phone_start_menu/tests/packaging_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/packaging_test.lua
 --
 -- .modkitignore entries are matched by exact relative path
 -- (tools/modkit.py:161-182), so a directory entry is silently a no-op and
@@ -7,7 +7,7 @@
 package.path = "./?.lua;./?/init.lua;" .. package.path
 local T = require("tests.modkit")
 
-local root = "mods/phone_start_menu"
+local root = "mods/pokegear_menu"
 local ignored = {}
 for line in io.lines(root .. "/.modkitignore") do
   line = line:gsub("^%s+", ""):gsub("%s+$", "")

@@ -1,7 +1,7 @@
--- Standalone: luajit mods/phone_start_menu/tests/layout_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/layout_test.lua
 package.path = "./?.lua;./?/init.lua;" .. package.path
 local T = require("tests.modkit")
-local L = dofile("mods/phone_start_menu/Layout.lua")
+local L = dofile("mods/pokegear_menu/Layout.lua")
 
 -- the phone sits on the right of the 160x144 canvas, clear of both edges
 T.eq(L.PHONE.x, 84, "phone body starts at x 84")

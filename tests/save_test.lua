@@ -1,4 +1,4 @@
--- Standalone: luajit mods/phone_start_menu/tests/save_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/save_test.lua
 --
 -- Save.lua does not reproduce the vanilla SAVE confirmation chain, it reaches
 -- it: require("src.ui.StartMenu") bypasses the screen registry that this mod
@@ -11,7 +11,7 @@ package.path = "./?.lua;./?/init.lua;" .. package.path
 if not _G.love then _G.love = require("tests.love_stub") end
 
 local T = require("tests.modkit")
-local Save = dofile("mods/phone_start_menu/Save.lua")
+local Save = dofile("mods/pokegear_menu/Save.lua")
 
 -- a recording logger stand-in: proves an error was actually logged, not
 -- merely that nothing crashed

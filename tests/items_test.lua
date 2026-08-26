@@ -1,4 +1,4 @@
--- Standalone: luajit mods/phone_start_menu/tests/items_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/items_test.lua
 --
 -- The regression this file exists for: claiming the StartMenu id stops the
 -- builtin from running, and with it the ui.start_menu.items call at
@@ -8,8 +8,8 @@ package.path = "./?.lua;./?/init.lua;" .. package.path
 if not _G.love then _G.love = require("tests.love_stub") end
 
 local T = require("tests.modkit")
-local Items = dofile("mods/phone_start_menu/Items.lua")
-local Apps = dofile("mods/phone_start_menu/Apps.lua")
+local Items = dofile("mods/pokegear_menu/Items.lua")
+local Apps = dofile("mods/pokegear_menu/Apps.lua")
 
 local deps = {
   screens = { push = function() end },
@@ -26,7 +26,7 @@ end
 
 -- ---- with no other mod loaded, the list passes through unchanged
 local Data = require("tests.modkit.fixtures").fresh()
-local run = T.sdk.loadMod("mods/phone_start_menu", { data = Data })
+local run = T.sdk.loadMod("mods/pokegear_menu", { data = Data })
 T.eq(#run.errors, 0, "the phone loads clean (" .. tostring(run.errors[1]) .. ")")
 
 local Runtime = require("src.mods.Runtime")
@@ -37,8 +37,8 @@ run.release()
 
 -- ---- with an injector loaded, its row survives
 Data = require("tests.modkit.fixtures").fresh()
-run = T.sdk.loadMods({ "mods/phone_start_menu",
-                       "mods/phone_start_menu/tests/fixtures/injector_mod" },
+run = T.sdk.loadMods({ "mods/pokegear_menu",
+                       "mods/pokegear_menu/tests/fixtures/injector_mod" },
                      { data = Data })
 T.eq(#run.errors, 0, "both mods load clean (" .. tostring(run.errors[1]) .. ")")
 

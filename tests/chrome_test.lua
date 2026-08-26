@@ -1,11 +1,11 @@
--- Standalone: luajit mods/phone_start_menu/tests/chrome_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/chrome_test.lua
 package.path = "./?.lua;./?/init.lua;" .. package.path
 if not _G.love then _G.love = require("tests.love_stub") end
 
 local T = require("tests.modkit")
-local Chrome = dofile("mods/phone_start_menu/Chrome.lua")
-local Layout = dofile("mods/phone_start_menu/Layout.lua")
-local Icons = dofile("mods/phone_start_menu/Icons.lua")
+local Chrome = dofile("mods/pokegear_menu/Chrome.lua")
+local Layout = dofile("mods/pokegear_menu/Layout.lua")
+local Icons = dofile("mods/pokegear_menu/Icons.lua")
 
 -- clock formatting is pure, so assert it directly
 T.eq(Chrome.clockText({ hour = 0,  min = 0 }),  "12:00", "midnight reads 12:00")
@@ -24,9 +24,9 @@ T.check(not Chrome.linkLive({ linkNet = { closed = true } }),
 
 -- drawing must never raise, with or without art
 local fakeMod = {
-  path = "mods/phone_start_menu",
+  path = "mods/pokegear_menu",
   assets = { image = function(_, rel)
-    return love.graphics.newImage("mods/phone_start_menu/" .. rel)
+    return love.graphics.newImage("mods/pokegear_menu/" .. rel)
   end },
   log = { warn = function() end, error = function() end },
 }

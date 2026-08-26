@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2026-08-26
+
+### Changed
+
+- Renamed to PokéGear Menu, and the mod id is now `pokegear_menu`. If you
+  installed an earlier build, remove the old `phone_start_menu` entry: the
+  manager keys on the id, so it treats this as a separate mod rather than an
+  update. Nothing is carried over, because the mod saves no state of its own.
+- The README says plainly what this is not. The real PokéGear had a clock, a
+  map, a radio and a phone; this has the clock and the map, and every app it
+  shows is somewhere the START menu already went.
+
 ## [0.1.5] - 2026-08-26
 
 ### Fixed

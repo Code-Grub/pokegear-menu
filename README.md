@@ -12,9 +12,9 @@ menu already went.
 ## Try it
 
 ```sh
-python3 tools/modkit.py validate mods/phone_start_menu --base imported
-python3 tools/modkit.py lint mods/phone_start_menu
-luajit mods/phone_start_menu/tests/phone_screen_test.lua
+python3 tools/modkit.py validate mods/pokegear_menu --base imported
+python3 tools/modkit.py lint mods/pokegear_menu
+luajit mods/pokegear_menu/tests/phone_screen_test.lua
 ```
 
 ## The apps

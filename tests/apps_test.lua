@@ -1,9 +1,9 @@
--- Standalone: luajit mods/phone_start_menu/tests/apps_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/apps_test.lua
 package.path = "./?.lua;./?/init.lua;" .. package.path
 if not _G.love then _G.love = require("tests.love_stub") end
 
 local T = require("tests.modkit")
-local Apps = dofile("mods/phone_start_menu/Apps.lua")
+local Apps = dofile("mods/pokegear_menu/Apps.lua")
 
 local pushed = {}
 local deps = {

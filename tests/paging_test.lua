@@ -1,4 +1,4 @@
--- Standalone: luajit mods/phone_start_menu/tests/paging_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/paging_test.lua
 package.path = "./?.lua;./?/init.lua;" .. package.path
 if not _G.love then _G.love = require("tests.love_stub") end
 
@@ -6,8 +6,8 @@ local T = require("tests.modkit")
 local Data = require("tests.modkit.fixtures").fresh()
 
 -- loading the injector alongside pushes the list to ten rows
-local run = T.sdk.loadMods({ "mods/phone_start_menu",
-                             "mods/phone_start_menu/tests/fixtures/injector_mod" },
+local run = T.sdk.loadMods({ "mods/pokegear_menu",
+                             "mods/pokegear_menu/tests/fixtures/injector_mod" },
                            { data = Data })
 T.eq(#run.errors, 0, "both mods load clean (" .. tostring(run.errors[1]) .. ")")
 

@@ -1,4 +1,4 @@
--- Standalone: luajit mods/phone_start_menu/tests/degrade_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/degrade_test.lua
 --
 -- The START menu is the only route to SAVE.  Screens.push (src/ui/Screens.lua:
 -- 45-55) pcalls a mod-owned factory and falls back to the builtin when it
@@ -10,7 +10,7 @@ if not _G.love then _G.love = require("tests.love_stub") end
 local T = require("tests.modkit")
 local Data = require("tests.modkit.fixtures").fresh()
 
-local run = T.sdk.loadMod("mods/phone_start_menu", { data = Data })
+local run = T.sdk.loadMod("mods/pokegear_menu", { data = Data })
 T.eq(#run.errors, 0, "loads clean (" .. tostring(run.errors[1]) .. ")")
 
 local Screens = require("src.ui.Screens")

@@ -1,4 +1,4 @@
--- Standalone: luajit mods/phone_start_menu/tests/phone_screen_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/phone_screen_test.lua
 package.path = "./?.lua;./?/init.lua;" .. package.path
 if not _G.love then _G.love = require("tests.love_stub") end
 
@@ -16,7 +16,7 @@ package.loaded["src.core.Sound"] = {
   play = function(_, name) sounds[#sounds + 1] = name end,
 }
 
-local run = T.sdk.loadMod("mods/phone_start_menu", { data = Data })
+local run = T.sdk.loadMod("mods/pokegear_menu", { data = Data })
 T.eq(#run.errors, 0, "loads clean (" .. tostring(run.errors[1]) .. ")")
 
 local Screens = require("src.ui.Screens")

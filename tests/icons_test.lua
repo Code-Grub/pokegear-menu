@@ -1,16 +1,16 @@
--- Standalone: luajit mods/phone_start_menu/tests/icons_test.lua
+-- Standalone: luajit mods/pokegear_menu/tests/icons_test.lua
 package.path = "./?.lua;./?/init.lua;" .. package.path
 if not _G.love then _G.love = require("tests.love_stub") end
 
 local T = require("tests.modkit")
-local Icons = dofile("mods/phone_start_menu/Icons.lua")
+local Icons = dofile("mods/pokegear_menu/Icons.lua")
 
 -- a stand-in for the mod handle: only assets:image and log are touched
 local warned = {}
 local fakeMod = {
-  path = "mods/phone_start_menu",
+  path = "mods/pokegear_menu",
   assets = { image = function(_, rel)
-    return love.graphics.newImage("mods/phone_start_menu/" .. rel)
+    return love.graphics.newImage("mods/pokegear_menu/" .. rel)
   end },
   log = { warn = function(_, fmt, ...) warned[#warned + 1] = fmt end,
           error = function(_, fmt, ...) warned[#warned + 1] = fmt end },
