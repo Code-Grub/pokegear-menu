@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-08-26
+
+### Changed
+
+- Page one is always the nine built-in apps, in a fixed order. Rows injected
+  by other mods now follow on page two, whatever position they asked for.
+  Nothing is dropped, only moved: a row that anchored itself before SAVE was
+  shifting SAVE, MAP, LINK and MODS down for as long as that mod stayed
+  installed, which defeats the point of a grid you learn by position.
+
 ## [0.1.1] - 2026-08-26
 
 ### Changed

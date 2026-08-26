@@ -67,7 +67,21 @@ local saveAt
 for i, item in ipairs(composed) do
   if item.label == "SAVE" then saveAt = i end
 end
-T.eq(position, saveAt - 1, "the injected row landed before SAVE")
+-- The phone keeps its own nine on page one and pushes every foreign row
+-- after them, deliberately overriding where the injector asked to sit: the
+-- grid is a fixed home screen and a row landing at slot six would shift
+-- SAVE, MAP, LINK and MODS for as long as that mod stayed installed.  The
+-- row is never dropped, only moved.
+T.eq(position, 10, "the injected row is pushed past the nine built-ins")
+T.check(position > saveAt, "so it no longer displaces SAVE")
+T.eq(saveAt, 6, "and SAVE keeps its own slot")
+-- membership is by identity, not label: mod.ui's insert helpers mutate the
+-- list in place and return the same table, so a set snapshotted after the
+-- hook would count every injected row as one of ours
+local ownOrder = {}
+for i = 1, 9 do ownOrder[#ownOrder + 1] = composed[i].display end
+T.eq(table.concat(ownOrder, ","), "DEX,PKM,BAG,ID,OPT,SAV,MAP,LNK,MOD",
+  "page one is exactly the nine built-in apps, in their fixed order")
 
 -- a foreign row must be renderable: it needs a caption and an icon.
 -- Guarded: without the `if`, a regression that loses the row entirely

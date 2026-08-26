@@ -14,6 +14,9 @@ return {
       "a status bar showing the real time and whether a link is live",
     },
     known = {
+      "another mod's START menu row is moved to page two: the phone keeps "
+        .. "its own nine apps on page one so an app never changes position, "
+        .. "which overrides where the injecting mod asked its row to sit",
       "SAVE borrows the built in START menu to reach the engine's own "
         .. "save flow, so opening it re-runs the ui.start_menu.items hook "
         .. "and another mod's wrapper fires once more per save press",
