@@ -13,7 +13,7 @@ local SaveFlow = {}
 
 function SaveFlow.build(deps)
   local TextBox, Badges = deps.textbox, deps.badges
-  local Strings, Sound = deps.strings, deps.sound
+  local Strings, Sound, Log = deps.strings, deps.sound, deps.log
 
   return function(game)
     local owned = 0
@@ -21,8 +21,17 @@ function SaveFlow.build(deps)
       owned = owned + 1
     end
     local badges = 0
+    -- a save missing badge data must never block saving (the START menu is
+    -- the only route to SAVE), but a silent 0 would be a diagnosability
+    -- regression against vanilla, so it is reported when a logger is given
     local okBadges, count = pcall(Badges.count, game.data, game.save)
-    if okBadges and type(count) == "number" then badges = count end
+    if okBadges and type(count) == "number" then
+      badges = count
+    elseif Log then
+      Log:warn("could not read the badge count for the SAVE panel: %s -- "
+        .. "showing 0 badges; this does not block saving, but the save's "
+        .. "badge data may be corrupted and worth checking", tostring(count))
+    end
 
     local t = math.floor(game.save.playTime or 0)
     local panel = Strings("PLAYER %s\nBADGES    %d\nPOKéDEX %3d\nTIME %6d:%02d",

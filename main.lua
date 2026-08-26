@@ -56,6 +56,7 @@ return function(mod)
     badges  = Badges,
     sound   = Sound,
     strings = Strings,
+    log     = mod.log,
   })
 
   local deps = {
