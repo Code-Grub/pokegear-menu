@@ -2,7 +2,7 @@
 --
 -- Claiming the StartMenu screen id means the builtin StartMenu.new never
 -- runs, and with it the Runtime.call("ui.start_menu.items", ...) at
--- src/ui/StartMenu.lua:130.  Every row another mod injected would disappear
+-- src/ui/StartMenu.lua:125.  Every row another mod injected would disappear
 -- with no error.  So the phone re-runs that hook itself, over a list whose
 -- labels are byte-identical to vanilla's.
 
@@ -22,9 +22,7 @@ local function passthrough(_, items) return items end
 -- fallback icon, and selectability.
 function Items.decorate(items)
   for _, item in ipairs(items) do
-    if item.display == nil then
-      item.display = tostring(item.label or "?"):sub(1, MAX_CAPTION)
-    end
+    item.display = tostring(item.display or item.label or "?"):sub(1, MAX_CAPTION)
     if item.icon == nil then item.icon = "generic" end
     if item.enabled == nil then item.enabled = true end
   end
@@ -37,7 +35,7 @@ end
 -- Returns the composed list, plus a reason string when the hook failed to
 -- produce a usable one.  The caller owns the logging: this module has no
 -- mod.log, and the builtin reports the same condition
--- (src/ui/StartMenu.lua:131-135), so returning no signal at all would be a
+-- (src/ui/StartMenu.lua:128-131), so returning no signal at all would be a
 -- diagnosability regression against vanilla rather than a style choice.
 function Items.compose(game, apps, runtime)
   local ok, result = pcall(runtime.call, "ui.start_menu.items",

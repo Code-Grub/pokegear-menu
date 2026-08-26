@@ -17,8 +17,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - POKéMON dims with an empty party rather than listing and doing nothing.
-- SAVE opens the engine's own save confirmation rather than a copy of it,
-  so an engine change to saving is inherited rather than diverged from.
+- SAVE reaches the engine's own save confirmation directly, so an engine
+  change to saving is inherited automatically rather than needing an update
+  here to match it.
 
 ### Removed
 

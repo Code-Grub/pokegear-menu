@@ -1,7 +1,7 @@
 -- Standalone: luajit mods/phone_start_menu/tests/degrade_test.lua
 --
 -- The START menu is the only route to SAVE.  Screens.push (src/ui/Screens.lua:
--- 44-52) pcalls a mod-owned factory and falls back to the builtin when it
+-- 45-55) pcalls a mod-owned factory and falls back to the builtin when it
 -- throws.  This asserts that net actually catches a broken phone, because
 -- the alternative is a player who cannot save.
 package.path = "./?.lua;./?/init.lua;" .. package.path
@@ -43,6 +43,20 @@ local ok, err = pcall(function() Screens.push(game, "StartMenu") end)
 T.check(ok, "pushing a broken phone does not raise: " .. tostring(err))
 T.eq(#pushed, 1, "something was pushed")
 T.check(pushed[1].items and #pushed[1].items > 0,
+  "the builtin menu took over, so it has rows at all")
+
+-- having rows is not the same as SAVE being reachable: find the row the
+-- builtin itself uses for SAVE (its label is whatever the active string
+-- catalog resolves "SAVE" to, src/ui/StartMenu.lua:54) and confirm it is
+-- actually selectable, not just present
+local Strings = require("src.core.Strings")
+local saveLabel = Strings("SAVE")
+local saveRow
+for _, item in ipairs(pushed[1].items) do
+  if item.label == saveLabel then saveRow = item end
+end
+T.check(saveRow, "the fallback menu has a row labelled " .. tostring(saveLabel))
+T.check(saveRow and type(saveRow.onSelect) == "function",
   "the builtin menu took over, so SAVE is still reachable")
 
 run.release()

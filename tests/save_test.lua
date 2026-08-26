@@ -129,4 +129,36 @@ T.eq(#errors, 0,
   "no error is logged against the real builtin (" .. tostring(errors[1]) .. ")")
 T.eq(pushed, 1, "invoking the real SAVE row pushes one state onto the stack")
 
+-- ---- the Critical regression: a LANGUAGE-category mod overriding "SAVE".
+--
+-- The builtin builds its row as `Strings("SAVE")` (src/ui/StartMenu.lua:54).
+-- Strings is an identity function only while Data.strings is empty
+-- (src/core/Strings.lua:45-53 reads it, keyed on the English source); once a
+-- mod's merged content puts a non-empty table there, Strings.load hands
+-- that table to Strings.lookup and "SAVE" resolves to whatever the catalog
+-- says.  A literal "SAVE" comparison in Save.build would then never match
+-- the real row again.  This reproduces that without a full mod install: it
+-- sets Data.strings directly and calls Strings.load, the same merge point
+-- LauncherMods/Game:load use, then drives the REAL StartMenu against it.
+Data.strings = { SAVE = "SAUVER" }
+local RealStrings = require("src.core.Strings")
+RealStrings.load(Data)
+T.check(RealStrings("SAVE") == "SAUVER",
+  "the fixture catalog actually took effect on Strings(\"SAVE\")")
+
+log = newLog()
+local translatedFlow = Save.build(StartMenu, log, RealStrings("SAVE"))
+game = newRealGame()
+ok = pcall(translatedFlow, game)
+T.check(ok, "the real builtin StartMenu under a translated SAVE label does "
+  .. "not raise: " .. tostring(ok))
+T.eq(#errors, 0, "no error is logged when the injected label matches the "
+  .. "translated builtin row (" .. tostring(errors[1]) .. ")")
+T.eq(pushed, 1,
+  "the SAVE row is still found and invoked under a translated label")
+
+-- leave the catalog empty so nothing after this test leaks a translation
+Data.strings = nil
+RealStrings.load(Data)
+
 T.finish("save")

@@ -52,7 +52,7 @@ T.eq(byKey(items, "save").label, "SAVE", "the save row is labelled SAVE")
 T.eq(byKey(items, "optn").label, "OPTION", "the options row is labelled OPTION")
 T.eq(byKey(items, "id").label, "RED", "the id row carries the player's name")
 
--- captions are separate from hook labels and fit five glyphs
+-- captions are separate from hook labels and fit three glyphs
 for _, item in ipairs(items) do
   T.check(#item.display <= 3,
     "caption '" .. item.display .. "' leaves a readable gap to its neighbour")

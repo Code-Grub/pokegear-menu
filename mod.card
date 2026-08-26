@@ -19,9 +19,10 @@ return {
         .. "and another mod's wrapper fires once more per save press",
       "the status bar clock reads real-world time, which sits outside "
         .. "the fiction",
-      "app captions use a 4x6 face rather than the game font, which does "
-        .. "not fit a 21px cell",
+      "the phone draws its own 4x6 face for every label it shows -- app "
+        .. "captions, the clock, and the footer -- because the engine font "
+        .. "does not fit a 21px cell",
     },
   },
-  compat = { engine = ">=1.0.0 <2.0.0", modApi = 2 },
+  compat = { engine = ">=0.0.0-0 <2.0.0", modApi = 2 },
 }

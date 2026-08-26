@@ -3,7 +3,7 @@
 -- `label` is the hook-visible text and is byte-identical to vanilla
 -- (src/ui/StartMenu.lua), because another mod may anchor an insertion to it
 -- with mod.ui.insertBefore(out, "SAVE", ...).  `display` is the grid
--- caption, capped at five glyphs by the 21px cell.
+-- caption, capped at three glyphs by the 21px cell.
 --
 -- Engine access arrives through `deps` rather than a require, so a test can
 -- drive the gates without a real screen stack.
@@ -88,7 +88,7 @@ Apps.DEFS = {
 }
 
 -- reopen: pushed back onto the stack when a submenu cancels, mirroring
--- vanilla's `reopen` at src/ui/StartMenu.lua:24
+-- vanilla's `reopen` at src/ui/StartMenu.lua:26
 function Apps.build(game, deps, reopen)
   local items = {}
   for _, def in ipairs(Apps.DEFS) do

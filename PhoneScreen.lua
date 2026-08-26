@@ -25,7 +25,7 @@ function PhoneScreen.build(mod, M, deps)
     local function reopen() deps.screens.push(game, "StartMenu") end
     local apps = Apps.build(game, deps, reopen)
     local composed, hookProblem = Items.compose(game, apps, deps.runtime)
-    -- vanilla logs the same condition at src/ui/StartMenu.lua:131-135; the
+    -- vanilla logs the same condition at src/ui/StartMenu.lua:128-131; the
     -- screen is the layer that owns a mod.log, so it does the reporting
     if hookProblem then
       mod.log:warn("%s -- showing the built-in apps; a mod wrapping "
@@ -83,7 +83,7 @@ function PhoneScreen.build(mod, M, deps)
         deps.sound.play(self.game.data, "Tink")
       elseif item then
         deps.sound.play(self.game.data, "Press_AB")
-        -- Menu pops before running onSelect (src/ui/Menu.lua:91-93), so a
+        -- Menu pops before running onSelect (src/ui/Menu.lua:93-94), so a
         -- submenu's onCancel can push the phone back on top of nothing
         self.game.stack:pop()
         if item.onSelect then item.onSelect() end

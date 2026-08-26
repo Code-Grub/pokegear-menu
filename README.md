@@ -21,6 +21,13 @@ thumb.
 Map opens the TOWN MAP, and needs you to be carrying it, exactly as using
 the item from the bag does.
 
+## Permissions
+
+`engine_internals` is for re-running the START menu's own `ui.start_menu.items`
+hook and reaching its built-in SAVE flow. `network` is for the Link app: it
+opens the engine's own `src.link.LinkState`, the vanilla peer-to-peer link
+play screen, unmodified.
+
 ## Where did QUIT go?
 
 Hold A, B, SELECT and START together. That is the Game Boy's own soft reset,

@@ -98,4 +98,14 @@ T.eq(#composedFromThrow, 9, "a throwing hook chain falls back to the app list")
 T.check(throwWhy and throwWhy:find("threw"),
   "and reports that it threw: " .. tostring(throwWhy))
 
+-- ---- a phone-aware mod supplying its own `display` bypasses the fill-when-
+-- nil path, and PhoneScreen's centring subtracts the caption width from the
+-- cell with no lower bound: an over-long supplied caption drew outside the
+-- phone body entirely, over the live overworld.  decorate must clip every
+-- display, supplied or not, not just the ones it fills in itself.
+local overLong = Items.decorate(
+  { { label = "X", display = "WAYTOOLONGCAPTION" } })
+T.eq(overLong[1].display, "WAY",
+  "a supplied over-long display is clipped to MAX_CAPTION like a filled-in one")
+
 T.finish("items")

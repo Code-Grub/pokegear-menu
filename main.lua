@@ -38,18 +38,21 @@ return function(mod)
 
   -- engine_internals: Runtime is how the items hook is re-run, PaletteFX is
   -- how the phone keeps its colours, Screens/Sound are the ordinary push and
-  -- beep the vanilla menu uses, and src.ui.StartMenu is the builtin menu
+  -- beep the vanilla menu uses, src.ui.StartMenu is the builtin menu
   -- Save.lua calls into to reach the vanilla SAVE row rather than
-  -- reproducing it (Save.lua)
+  -- reproducing it (Save.lua), and src.core.Strings is how Save.lua learns
+  -- what that row's label actually is under the active translation, if any
   local Runtime   = require("src.mods.Runtime")
   local PaletteFX = require("src.render.PaletteFX")
   local Screens   = require("src.ui.Screens")
   local Sound     = require("src.core.Sound")
+  local Strings   = require("src.core.Strings")
 
   local icons  = Icons.new(mod)
   local chrome = Chrome.new(Layout, icons)
 
-  local saveFlow = Save.build(require("src.ui.StartMenu"), mod.log)
+  local saveFlow = Save.build(require("src.ui.StartMenu"), mod.log,
+                               Strings("SAVE"))
 
   local deps = {
     screens = { push = function(game, id, opts)
@@ -69,8 +72,7 @@ return function(mod)
     end,
   }
 
-  local modules = { Layout = Layout, Icons = Icons, Apps = Apps,
-                    Items = Items, Chrome = Chrome,
+  local modules = { Layout = Layout, Apps = Apps, Items = Items,
                     icons = icons, chrome = chrome }
 
   mod.content.screens:register("StartMenu",

@@ -10,8 +10,9 @@ Icons.__index = Icons
 local ICON = 16
 -- 4px of ink plus a 1px gutter.  The gutter is why the advance is 5 and
 -- not 4: at a 4px advance adjacent glyphs touch and a caption is a blob.
--- Four glyphs at 5px is 20px, which fits the 21px cell; that is the cap
--- Items.decorate clips foreign captions to.
+-- Four glyphs at 5px is 20px, which fits the 21px cell -- that bounds how
+-- much this font can draw legibly in one, not what Items.decorate actually
+-- clips foreign captions to, which is that module's own constant.
 local GLYPH_ADV, GLYPH_H = 5, 6
 local GLYPH_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.- :"
 
