@@ -267,10 +267,12 @@ GLYPHS = {
     "-": ["....", "....", "111.", "....", "....", "...."],
     " ": ["....", "....", "....", "....", "....", "...."],
     ":": ["....", ".1..", "....", ".1..", "....", "...."],
-    # E squeezed into four rows so the acute accent has somewhere to sit.
-    # The caption face is all caps, so this reads as an accented E, which
-    # is what POKeGEAR needs.
-    "é": ["..1.", "1111", "1...", "111.", "1111", "...."],
+    # A real lowercase e with an acute accent, and a blank row between them
+    # so the accent reads as an accent.  The earlier version stacked the
+    # mark straight onto an E's top bar and the two merged into a blob.
+    # Sitting shorter than the caps is correct: it is a lowercase letter,
+    # and it shares their baseline on row 4.
+    "é": ["...1", ".11.", "1111", "1...", ".111", "...."],
 }
 
 
