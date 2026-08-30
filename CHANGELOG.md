@@ -4,6 +4,29 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] - 2026-08-30
+
+### Changed
+
+- The MODS icon is a plug. It was a puzzle piece, which is the usual symbol
+  for this, but a puzzle tab needs a narrow neck opening into a wider head
+  before it reads as a tab at all, and there is no room for that profile at
+  sixteen pixels beside a one pixel outline: every attempt came out a
+  rectangle with bumps. Two prongs survive the size, and a plug-in is the
+  same idea.
+- The icons carry colour beyond the Poke Ball. Red was the only hue on the
+  sheet, so the other eight were one value ramp of the same desaturated teal
+  and read as each other at a glance. The dex and the ID card have blue
+  screens, the LINK arrows are blue, and the SAVE cartridge has a green
+  label on a grey body, where the colour sits in the label rather than
+  splitting the card across the middle.
+- The BAG is redrawn as a satchel in brown leather. Its two strap tabs, its
+  horizontal band and the dark shape at its centre assembled into ears, a
+  stripe and a snout at sixteen pixels, so it read as a face. The flap is
+  now the leather in shadow, which separates it from the body without a hard
+  line through the middle, a clasp drops from the flap, and the bottom
+  corners are clipped so the silhouette is a bag and not a case.
+
 ## [0.1.7] - 2026-08-26
 
 ### Changed
