@@ -1,6 +1,7 @@
 # modkit matches these by exact relative path, not by prefix
 # (tools/modkit.py:161-182): a bare directory name matches nothing.
 images/preview.png
+images/thumbnail.png
 tests/apps_test.lua
 tests/assets_test.lua
 tests/chrome_test.lua
