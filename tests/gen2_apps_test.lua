@@ -42,7 +42,7 @@ local order = {}
 for _, item in ipairs(grid) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
   "dex,pkmn,bag,map,radio,phone,save,optn,mods",
-  "DEX PKM PAK / MAP RAD PHN / SAV OPT MOD")
+  "DEX PKM BAG / MAP RAD PHN / SAV OPT MOD")
 
 -- the six ordinary apps delegate to Gen 2's own dispatch
 for _, pair in ipairs({
@@ -71,8 +71,10 @@ for _, item in ipairs(grid) do
   T.check(item.keepOpen, item.icon .. " leaves the phone on the stack")
 end
 
--- PAK draws the bag icon under its own key
-T.eq(byIcon(grid, "bag").display, "PAK", "the PACK is captioned PAK")
+-- the caption is BAG, as on Gen 1, while the hook-visible label stays the
+-- cart's own PACK
+T.eq(byIcon(grid, "bag").display, "BAG", "the PACK is captioned BAG")
+T.eq(byIcon(grid, "bag").label, "PACK", "the PACK row keeps the cart's label")
 
 -- the three card apps carry the cart's own card labels, not Gen 1's item name
 T.eq(byIcon(grid, "map").label, "MAP", "the map app uses the cart's MAP")

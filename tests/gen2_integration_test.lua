@@ -76,7 +76,7 @@ local order = {}
 for _, item in ipairs(screen.items) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
   "dex,pkmn,bag,map,radio,phone,save,optn,mods",
-  "the Gen 2 nine (DEX PKM PAK / MAP RAD PHN / SAV OPT MOD), not the Gen 1 nine")
+  "the Gen 2 nine (DEX PKM BAG / MAP RAD PHN / SAV OPT MOD), not the Gen 1 nine")
 
 -- ---- RADIO and PHONE: the Critical this whole test exists to catch.
 --

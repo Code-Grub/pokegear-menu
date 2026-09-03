@@ -207,10 +207,11 @@ Apps.GEN2_DEFS = {
     label = function() return "POKéMON" end,
     gate = row("party"), open = delegate("pokemon") },
 
-  -- Gen 2 calls the bag a PACK, and the row label has to match the cart's
-  -- so a mod anchoring an insertion to it still finds it.  The icon stays
-  -- `bag`: it is the same bag, and drawing a second one would be a lie.
-  { key = "pak", icon = "bag", display = "PAK", keepOpen = true,
+  -- Gen 2 calls the bag a PACK, and the row LABEL has to match the cart's
+  -- so a mod anchoring an insertion to it still finds it.  The caption and
+  -- the key stay `BAG`/`bag`, the same as Gen 1: it is the same bag drawn
+  -- with the same icon, and the grid reads the same in both games.
+  { key = "bag", display = "BAG", keepOpen = true,
     label = function() return "PACK" end,
     gate = function(game)
       return Apps.gen2Row(game, "pack") and not contestActive(game)
@@ -271,7 +272,7 @@ function Apps.build(game, deps, reopen, defs)
     items[#items + 1] = {
       label = def.label(game),
       display = def.display,
-      icon = def.icon or def.key,
+      icon = def.key,
       enabled = enabled,
       keepOpen = def.keepOpen,
       onSelect = function()

@@ -8,7 +8,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- The mod runs on Gold, Silver and Crystal. The Gen 2 grid is DEX PKM PAK /
+- The mod runs on Gold, Silver and Crystal. The Gen 2 grid is DEX PKM BAG /
   MAP RAD PHN / SAV OPT MOD. ID and LINK are Gen 1 only: LINK comes off on
   Gen 2 because Gen 2 link runs through `LinkBattle2` and the launcher
   arenas, a path this mod does not drive, and shipping it would ship a dead

@@ -30,7 +30,7 @@ learn on your first badge is the layout you still have on your eighth.
 
 | | Gen 1 | Gen 2 |
 |---|---|---|
-| Row 1 | DEX PKM BAG | DEX PKM PAK |
+| Row 1 | DEX PKM BAG | DEX PKM BAG |
 | Row 2 | ID OPT SAV | MAP RAD PHN |
 | Row 3 | MAP LNK MOD | SAV OPT MOD |
 
