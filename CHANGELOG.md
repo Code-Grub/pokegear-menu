@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-09-03
+
+### Added
+
+- The mod runs on Gold, Silver and Crystal. The Gen 2 grid is DEX PKM PAK /
+  MAP RAD PHN / SAV OPT MOD. ID and LINK are Gen 1 only: LINK comes off on
+  Gen 2 because Gen 2 link runs through `LinkBattle2` and the launcher
+  arenas, a path this mod does not drive, and shipping it would ship a dead
+  app.
+- On Gen 2, MAP, RADIO and PHONE are not a reskin: they open the engine's own
+  PokéGear cards, the actual town map, the tunable radio and the phone that
+  can place calls. Each stays dimmed until the cart hands it over: the Guide
+  Gent for MAP, the Radio Tower quiz for RADIO, Mom for PHONE.
+
+### Changed
+
+- SAVE closes the phone on Gen 2 rather than returning to the grid. That is
+  what the cart's own save does, inherited on purpose, not a bug.
+
 ## [0.1.8] - 2026-08-30
 
 ### Changed
