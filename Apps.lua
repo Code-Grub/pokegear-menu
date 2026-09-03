@@ -14,6 +14,49 @@ local function partySize(game)
   return #((game.save and game.save.party) or {})
 end
 
+-- Gen 2's own unlock rules, read straight off the save.
+--
+-- These mirror src/ui/gen2/StartMenu.lua:availability and
+-- src/ui/gen2/Pokegear.lua:flags rather than reaching into either module,
+-- so nothing here needs engine_internals and nothing breaks if the screens
+-- move.  The numbers are `setflag` ids in save.engineFlags, in
+-- constants/engine_flags.asm const order, written through World:setEngineFlag.
+local ENGINE_POKEGEAR, ENGINE_POKEDEX = 4, 11
+local CARD_ENGINE_FLAGS = { radio = 0, map = 1, phone = 2 }
+
+function Apps.gen2Row(game, key)
+  local save = (game or {}).save or {}
+  local engine = save.engineFlags or {}
+  if key == "pack" then
+    -- the cart gates the PACK on nothing
+    return true
+  elseif key == "pokedex" then
+    return engine[ENGINE_POKEDEX] == true or save.pokedexReceived == true
+  elseif key == "party" then
+    return #(save.party or {}) > 0
+  elseif key == "pokegear" then
+    return engine[ENGINE_POKEGEAR] == true
+      or ((save.inventory or {}).POKEGEAR or 0) > 0
+      or save.pokegearReceived == true
+  elseif key == "mods" then
+    local status = (game or {}).modStatus
+    return (status and #(status.available or {}) > 0) or false
+  end
+  return false
+end
+
+-- A card needs the gear as well as the card.  The engine's own visibleCards
+-- tests only the card bit, because the only way in is the POKEGEAR row,
+-- which is already gear-gated.  These apps are a second door, so they carry
+-- both halves of that rule rather than becoming reachable a step early.
+function Apps.gen2Card(game, key)
+  if not Apps.gen2Row(game, "pokegear") then return false end
+  local save = (game or {}).save or {}
+  if (save.pokegearFlags or {})[key] then return true end
+  local id = CARD_ENGINE_FLAGS[key]
+  return id ~= nil and (save.engineFlags or {})[id] == true
+end
+
 Apps.DEFS = {
   { key = "dex", display = "DEX",
     label = function() return "POKéDEX" end,
