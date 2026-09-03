@@ -135,6 +135,88 @@ Apps.DEFS = {
     end },
 }
 
+-- The Gen 2 nine.  DEX PKM PAK / MAP RAD PHN / SAV OPT MOD.
+--
+-- ID and LNK come off to make room for the three PokeGear cards: Gen 2 link
+-- runs through src/link/LinkBattle2.lua and the launcher arenas, and
+-- src/link/LinkState.lua has no Gen 2 arm at all, so shipping it here would
+-- ship a dead app.
+--
+-- Every row is keepOpen.  Game2:closeStartMenuItem pops the screen it
+-- pushed, which reveals the phone underneath, so the Gen 1 `reopen` closure
+-- has no counterpart on this arm and is never called.
+--
+-- The six ordinary apps delegate to Game2:openStartMenuItem rather than
+-- reproducing its pushes.  That inherits, and keeps inheriting, the cart's
+-- white-fade transitions (Gen2MenuFade), the save.write veto firing at the
+-- moment the cart writes, useFieldItem on the PACK, and the party list's
+-- submenu flavour.
+local function delegate(id)
+  return function(game, _, deps) deps.startMenuItem(game, id) end
+end
+
+local function card(name)
+  return function(game, _, deps) deps.pokegear(game, name) end
+end
+
+local function row(key)
+  return function(game) return Apps.gen2Row(game, key) end
+end
+
+Apps.GEN2_DEFS = {
+  { key = "dex", display = "DEX", keepOpen = true,
+    label = function() return "POKéDEX" end,
+    gate = row("pokedex"), open = delegate("pokedex") },
+
+  { key = "pkmn", display = "PKM", keepOpen = true,
+    label = function() return "POKéMON" end,
+    gate = row("party"), open = delegate("pokemon") },
+
+  -- Gen 2 calls the bag a PACK, and the row label has to match the cart's
+  -- so a mod anchoring an insertion to it still finds it.  The icon stays
+  -- `bag`: it is the same bag, and drawing a second one would be a lie.
+  { key = "pak", icon = "bag", display = "PAK", keepOpen = true,
+    label = function() return "PACK" end,
+    gate = row("pack"), open = delegate("pack") },
+
+  -- The MAP card has a supported single-card door of its own; RADIO and
+  -- PHONE do not.  deps.pokegear owns that difference (main.lua).
+  { key = "map", display = "MAP", keepOpen = true,
+    label = function() return "TOWN MAP" end,
+    gate = function(game) return Apps.gen2Card(game, "map") end,
+    open = card("map") },
+
+  { key = "radio", display = "RAD", keepOpen = true,
+    label = function() return "RADIO" end,
+    gate = function(game) return Apps.gen2Card(game, "radio") end,
+    open = card("radio") },
+
+  { key = "phone", display = "PHN", keepOpen = true,
+    label = function() return "PHONE" end,
+    gate = function(game) return Apps.gen2Card(game, "phone") end,
+    open = card("phone") },
+
+  -- SAVE is the one app that does NOT come back to the grid: Game2's save
+  -- branch pops the save screen and the start menu both, "like .Exit does".
+  -- That is the cart's behaviour and it is inherited on purpose.
+  { key = "save", display = "SAV", keepOpen = true,
+    label = function() return "SAVE" end,
+    gate = function() return true end,
+    open = delegate("save") },
+
+  { key = "optn", display = "OPT", keepOpen = true,
+    label = function() return "OPTION" end,
+    gate = function() return true end,
+    open = delegate("option") },
+
+  -- Game2 pushes ManagerState with no close callback, exactly as the Gen 1
+  -- arm documents: TownMap, ManagerState and LinkState carry no reference
+  -- to an onCancel and ignore one entirely.
+  { key = "mods", display = "MOD", keepOpen = true,
+    label = function() return "MODS" end,
+    gate = row("mods"), open = delegate("mods") },
+}
+
 -- reopen: pushed back onto the stack when a submenu cancels, mirroring
 -- vanilla's `reopen` at src/ui/StartMenu.lua:26.  `defs` selects the
 -- generation's app list and defaults to Gen 1's, so every existing caller
