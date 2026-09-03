@@ -6,7 +6,8 @@
 -- caption, capped at three glyphs by the 21px cell.
 --
 -- Engine access arrives through `deps` rather than a require, so a test can
--- drive the gates without a real screen stack.
+-- drive the gates without a real screen stack.  The Bug Catching Contest
+-- below is the one exception, and it is read the defensive way for it.
 
 local Apps = {}
 
@@ -23,6 +24,40 @@ end
 -- constants/engine_flags.asm const order, written through World:setEngineFlag.
 local ENGINE_POKEGEAR, ENGINE_POKEDEX = 4, 11
 local CARD_ENGINE_FLAGS = { radio = 0, map = 1, phone = 2 }
+
+-- The Bug Catching Contest.
+--
+-- src/ui/gen2/StartMenu.lua's visibleItems hides the PACK and swaps SAVE for
+-- QUIT for the duration of a contest (pokecrystal
+-- engine/menus/start_menu.asm:309 and :330), and nothing downstream repeats
+-- the check: Gen2PackMenu has no contest guard of its own.  So an app that
+-- opened the PACK here would hand back the twenty PARK BALLs and the whole
+-- bag the cart takes away, which is an item exploit rather than a
+-- convenience.  Both rows are gated OFF instead and dim in place, the same
+-- thing every other locked app does.
+--
+-- QUIT is deliberately NOT reproduced: `quitContest` never leaves the Gen 2
+-- StartMenu screen (StartMenu.lua:262 sets phase = "confirmContest" and
+-- StartMenu:confirmQuitContest runs it), so it is unreachable through
+-- Game2:pushStartMenuItem and there is nothing here to delegate to.
+--
+-- The module is reached the way main.lua reaches LinkState: lazily, at the
+-- moment a grid is built rather than at load, and through pcall, because an
+-- engine with no src/core/gen2/ tree must read as "no contest" rather than
+-- dying inside a gate.  Resolved once and remembered; `false` is the
+-- remembered miss.
+local BugContest
+local function contestActive(game)
+  if BugContest == nil then
+    local ok, module = pcall(require, "src.core.gen2.BugContest")
+    BugContest = (ok and type(module) == "table" and module) or false
+  end
+  if not BugContest or type(BugContest.isActive) ~= "function" then
+    return false
+  end
+  local ok, active = pcall(BugContest.isActive, (game or {}).save)
+  return ok and active == true
+end
 
 function Apps.gen2Row(game, key)
   local save = (game or {}).save or {}
@@ -177,7 +212,10 @@ Apps.GEN2_DEFS = {
   -- `bag`: it is the same bag, and drawing a second one would be a lie.
   { key = "pak", icon = "bag", display = "PAK", keepOpen = true,
     label = function() return "PACK" end,
-    gate = row("pack"), open = delegate("pack") },
+    gate = function(game)
+      return Apps.gen2Row(game, "pack") and not contestActive(game)
+    end,
+    open = delegate("pack") },
 
   -- The MAP card has a supported single-card door of its own; RADIO and
   -- PHONE do not.  deps.pokegear owns that difference (main.lua).
@@ -206,7 +244,7 @@ Apps.GEN2_DEFS = {
   -- That is the cart's behaviour and it is inherited on purpose.
   { key = "save", display = "SAV", keepOpen = true,
     label = function() return "SAVE" end,
-    gate = function() return true end,
+    gate = function(game) return not contestActive(game) end,
     open = delegate("save") },
 
   { key = "optn", display = "OPT", keepOpen = true,
