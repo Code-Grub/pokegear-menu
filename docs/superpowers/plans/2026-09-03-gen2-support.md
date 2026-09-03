@@ -577,7 +577,7 @@ git commit -m "Read Gen 2's unlock rules off the save"
 The nine defs. Six delegate to Gen 2's own dispatch; three open the real PokéGear.
 
 **Files:**
-- Modify: `Apps.lua` (add `Apps.GEN2_DEFS`), `Gen.lua` (attach it)
+- Modify: `Apps.lua` (add `Apps.GEN2_DEFS`). `Gen.lua` is NOT touched — it already defines `attach`, and `main.lua` is the caller, in Task 6.
 - Test: `tests/gen2_apps_test.lua` (create)
 
 **Interfaces:**
