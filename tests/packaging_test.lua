@@ -16,11 +16,12 @@ end
 
 -- every file under tests/, tools/ and docs/ must be listed by exact path
 local leaked, counted = {}, 0
--- Only tests/ and tools/: docs/ was dropped when the mod was published,
--- and naming a directory that does not exist makes find write to stderr.
+-- docs/ is back (the Gen 2 design spec), so it is walked again.  Naming a
+-- directory that does not exist makes find write to stderr, so each one is
+-- listed only while it exists; drop it here again if docs/ ever goes away.
 -- Kept as one plain command because io.popen goes through cmd on Windows,
 -- which cannot parse a shell loop.
-local pipe = io.popen('cd "' .. root .. '" && find tests tools -type f')
+local pipe = io.popen('cd "' .. root .. '" && find tests tools docs -type f')
 for path in pipe:lines() do
   path = path:gsub("\\", "/"):gsub("^%./", "")
   counted = counted + 1

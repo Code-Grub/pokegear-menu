@@ -17,3 +17,4 @@ tests/paging_test.lua
 tests/phone_screen_test.lua
 tests/save_test.lua
 tools/gen_assets.py
+docs/superpowers/specs/2026-09-03-gen2-support-design.md
