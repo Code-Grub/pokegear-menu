@@ -12,14 +12,26 @@ return {
     added = {
       "a MAP app opening the TOWN MAP, gated on holding the item",
       "a status bar showing the real time and whether a link is live",
+      "on Gold, Silver and Crystal, MAP, RADIO and PHONE open the engine's "
+        .. "own PokéGear cards instead of a reskin, each staying dark until "
+        .. "the cart hands it over",
     },
     known = {
       "another mod's START menu row is moved to page two: the phone keeps "
         .. "its own nine apps on page one so an app never changes position, "
         .. "which overrides where the injecting mod asked its row to sit",
-      "SAVE borrows the built in START menu to reach the engine's own "
-        .. "save flow, so opening it re-runs the ui.start_menu.items hook "
-        .. "and another mod's wrapper fires once more per save press",
+      "on Gen 1, SAVE borrows the built in START menu to reach the "
+        .. "engine's own save flow, so opening it re-runs the "
+        .. "ui.start_menu.items hook and another mod's wrapper fires once "
+        .. "more per save press; Gen 2 delegates to the cart's own SAVE "
+        .. "instead and has no such reach-around",
+      "on Gen 2, confirming or cancelling SAVE both close the phone rather "
+        .. "than returning to the grid; that is exactly what the cart's "
+        .. "own start menu does",
+      "on Gen 2, PACK and SAVE dim during a Bug Catching Contest, matching "
+        .. "the cart hiding PACK and swapping SAVE for QUIT; the contest "
+        .. "cannot be quit from the phone, because quitContest never leaves "
+        .. "the engine's own start menu screen",
       "the status bar clock reads real-world time, which sits outside "
         .. "the fiction",
       "the phone draws its own 4x6 face for every label it shows -- app "

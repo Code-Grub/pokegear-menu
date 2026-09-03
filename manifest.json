@@ -13,6 +13,6 @@
   "dependencies": [],
   "optional_dependencies": [],
   "conflicts": [],
-  "description": "Restyles the START menu as a PokéGear-like handheld: nine apps in a 3x3 grid over the overworld. A reskin of the menu, not the Gen 2 device.",
+  "description": "Restyles the START menu as a PokéGear-like handheld: nine apps in a 3x3 grid over the overworld, and on Gold, Silver and Crystal it opens the real PokéGear for MAP, RADIO and PHONE.",
   "github": "Code-Grub/pokegear-menu"
 }

@@ -21,7 +21,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - SAVE closes the phone on Gen 2 rather than returning to the grid. That is
-  what the cart's own save does, inherited on purpose, not a bug.
+  what the cart's own save does, inherited on purpose, not a bug. Cancelling
+  SAVE closes the phone too, not just confirming it: `SaveMenu:finish(false)`
+  fires the same `onDone` as a confirmed save, and this is exact parity with
+  the cart's own start menu, not a shortcut this mod added.
+
+### Known limitations
+
+- During a Bug Catching Contest, PACK and SAVE are dimmed rather than
+  removed. The cart hides PACK entirely and swaps SAVE for QUIT for the
+  duration of the contest; this mod cannot reach QUIT, because `quitContest`
+  never leaves the engine's own StartMenu screen, so there is nothing to
+  delegate to. The contest cannot be quit from the phone as a result -- use
+  the contest's own exit, or let it end.
 
 ## [0.1.8] - 2026-08-30
 
