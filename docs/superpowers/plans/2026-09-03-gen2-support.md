@@ -549,7 +549,7 @@ end
 luajit mods/pokegear_menu/tests/gen2_gating_test.lua
 ```
 
-Expected: PASS, 17 checks.
+Expected: PASS (18 checks).
 
 - [ ] **Step 5: Register the test and commit**
 
@@ -830,7 +830,7 @@ and add `Gen` to the `if not (...)` guard on the following line.
 
 - [ ] **Step 2: Point the Gen 1 screen ids through the profile**
 
-Replace the `deps` table's Gen 1 screen pushes so both arms share one builder. After the existing `local deps = { ... }` block, add:
+The existing `local deps = { ... }` block is unchanged — it stays the Gen 1 arm. Immediately after it, add a second table that starts as a copy and overrides what Gen 2 does differently:
 
 ```lua
   -- Gen 2 needs two doors Gen 1 has no use for.
