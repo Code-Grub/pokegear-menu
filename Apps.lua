@@ -93,15 +93,17 @@ Apps.DEFS = {
 }
 
 -- reopen: pushed back onto the stack when a submenu cancels, mirroring
--- vanilla's `reopen` at src/ui/StartMenu.lua:26
-function Apps.build(game, deps, reopen)
+-- vanilla's `reopen` at src/ui/StartMenu.lua:26.  `defs` selects the
+-- generation's app list and defaults to Gen 1's, so every existing caller
+-- and test keeps working with three arguments.
+function Apps.build(game, deps, reopen, defs)
   local items = {}
-  for _, def in ipairs(Apps.DEFS) do
+  for _, def in ipairs(defs or Apps.DEFS) do
     local enabled = def.gate(game) and true or false
     items[#items + 1] = {
       label = def.label(game),
       display = def.display,
-      icon = def.key,
+      icon = def.icon or def.key,
       enabled = enabled,
       keepOpen = def.keepOpen,
       onSelect = function()
