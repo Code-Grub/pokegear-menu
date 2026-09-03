@@ -744,8 +744,12 @@ Apps.GEN2_DEFS = {
 
   -- The MAP card has a supported single-card door of its own; RADIO and
   -- PHONE do not.  deps.pokegear owns that difference (main.lua).
+  -- "MAP" is the cart's own string for this card (Pokegear.lua's CARDS and
+  -- TOWN_MAP_CARD both say MAP).  Gen 1's "TOWN MAP" is the BAG ITEM's name
+  -- and has no Gen 2 counterpart -- the only "TOWN MAP" on Gold is a wall
+  -- poster decoration -- so using it here would match nothing.
   { key = "map", display = "MAP", keepOpen = true,
-    label = function() return "TOWN MAP" end,
+    label = function() return "MAP" end,
     gate = function(game) return Apps.gen2Card(game, "map") end,
     open = card("map") },
 
