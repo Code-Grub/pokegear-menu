@@ -68,15 +68,15 @@ local function byIcon(list, icon)
   end
 end
 
--- ---- the grid is the Gen 2 nine, built through the real registration
+-- ---- the grid is the Gen 2 ten, built through the real registration
 local game = newGame()
 local screen = factory.new(game)
-T.eq(#screen.items, 9, "nine apps on a Gen 2 boot")
+T.eq(#screen.items, 10, "ten apps on a Gen 2 boot")
 local order = {}
 for _, item in ipairs(screen.items) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,save,optn,mods",
-  "the Gen 2 nine (DEX PKM BAG / MAP RAD PHN / SAV OPT MOD), not the Gen 1 nine")
+  "dex,pkmn,bag,map,radio,phone,save,optn,id,mods",
+  "the Gen 2 ten (DEX PKM BAG / MAP RAD PHN / SAV OPT ID, MOD on page two)")
 
 -- ---- RADIO and PHONE: the Critical this whole test exists to catch.
 --

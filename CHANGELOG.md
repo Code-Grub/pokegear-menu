@@ -9,10 +9,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - The mod runs on Gold, Silver and Crystal. The Gen 2 grid is DEX PKM BAG /
-  MAP RAD PHN / SAV OPT MOD. ID and LINK are Gen 1 only: LINK comes off on
+  MAP RAD PHN / SAV OPT ID, with MOD alone on a second page. LINK comes off on
   Gen 2 because Gen 2 link runs through `LinkBattle2` and the launcher
   arenas, a path this mod does not drive, and shipping it would ship a dead
-  app.
+  app. The trainer card stays on the grid because the START menu is the
+  engine's only door to it, and this mod replaces the START menu.
 - On Gen 2, MAP, RADIO and PHONE are not a reskin: they open the engine's own
   PokéGear cards, the actual town map, the tunable radio and the phone that
   can place calls. Each stays dimmed until the cart hands it over: the Guide

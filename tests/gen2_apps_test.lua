@@ -35,19 +35,20 @@ local function byIcon(list, icon)
 end
 
 local grid = Apps.build(fullGame(), deps, nil, Apps.GEN2_DEFS)
-T.eq(#grid, 9, "nine apps on Gen 2 too")
+T.eq(#grid, 10, "ten apps on Gen 2: the nine plus MOD on page two")
 
 -- grid order, reading left to right, top to bottom
 local order = {}
 for _, item in ipairs(grid) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,save,optn,mods",
-  "DEX PKM BAG / MAP RAD PHN / SAV OPT MOD")
+  "dex,pkmn,bag,map,radio,phone,save,optn,id,mods",
+  "DEX PKM BAG / MAP RAD PHN / SAV OPT ID, then MOD on page two")
 
--- the six ordinary apps delegate to Gen 2's own dispatch
+-- the seven ordinary apps delegate to Gen 2's own dispatch
 for _, pair in ipairs({
   { "dex", "pokedex" }, { "pkmn", "pokemon" }, { "bag", "pack" },
-  { "save", "save" }, { "optn", "option" }, { "mods", "mods" },
+  { "save", "save" }, { "optn", "option" }, { "id", "status" },
+  { "mods", "mods" },
 }) do
   items = {}
   byIcon(grid, pair[1]).onSelect()
@@ -86,12 +87,15 @@ local fresh = { save = { party = {}, engineFlags = {}, inventory = {},
                          player = { name = "GOLD" } },
                 data = {}, stack = {}, modStatus = nil }
 local new = Apps.build(fresh, deps, nil, Apps.GEN2_DEFS)
-T.eq(#new, 9, "a fresh save still shows nine apps")
+T.eq(#new, 10, "a fresh save still shows all ten apps")
 T.check(byIcon(new, "bag").enabled, "the PACK is there from the start")
 T.check(not byIcon(new, "dex").enabled, "the dex is dark before Oak")
 T.check(not byIcon(new, "map").enabled, "MAP is dark before the Guide Gent")
 T.check(not byIcon(new, "radio").enabled, "RADIO is dark before the quiz")
 T.check(not byIcon(new, "phone").enabled, "PHONE is dark before Mom")
 T.check(byIcon(new, "save").enabled, "SAVE always works")
+T.check(byIcon(new, "id").enabled, "the trainer card is always available")
+T.eq(byIcon(new, "id").label, "GOLD",
+  "the trainer card row is labelled with the player's name")
 
 T.finish("gen2 apps")

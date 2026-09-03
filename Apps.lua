@@ -170,18 +170,22 @@ Apps.DEFS = {
     end },
 }
 
--- The Gen 2 nine.  DEX PKM PAK / MAP RAD PHN / SAV OPT MOD.
+-- The Gen 2 ten.  DEX PKM BAG / MAP RAD PHN / SAV OPT ID, then MOD alone on
+-- page two.
 --
--- ID and LNK come off to make room for the three PokeGear cards: Gen 2 link
--- runs through src/link/LinkBattle2.lua and the launcher arenas, and
--- src/link/LinkState.lua has no Gen 2 arm at all, so shipping it here would
--- ship a dead app.
+-- LNK is the only Gen 1 app that comes off: Gen 2 link runs through
+-- src/link/LinkBattle2.lua and the launcher arenas, and src/link/LinkState.lua
+-- has no Gen 2 arm at all, so shipping it here would ship a dead app.
+--
+-- Nothing else had to come off.  Layout.pageCount pages any number of apps
+-- and the page dots already draw, because a mod injecting a row through
+-- ui.start_menu.items could always push the count past nine.
 --
 -- Every row is keepOpen.  Game2:closeStartMenuItem pops the screen it
 -- pushed, which reveals the phone underneath, so the Gen 1 `reopen` closure
 -- has no counterpart on this arm and is never called.
 --
--- The six ordinary apps delegate to Game2:openStartMenuItem rather than
+-- The seven ordinary apps delegate to Game2:openStartMenuItem rather than
 -- reproducing its pushes.  That inherits, and keeps inheriting, the cart's
 -- white-fade transitions (Gen2MenuFade), the save.write veto firing at the
 -- moment the cart writes, useFieldItem on the PACK, and the party list's
@@ -253,6 +257,28 @@ Apps.GEN2_DEFS = {
     gate = function() return true end,
     open = delegate("option") },
 
+  -- The trainer card.  Gen 2's own row carries no label of its own -- the
+  -- player's name IS the label (StartMenu.lua's `id = "status", label = nil`,
+  -- filled in from save.player.name and defaulting to GOLD) -- so this
+  -- mirrors that rather than inventing a caption for the row.
+  --
+  -- It has to be here.  Gen2TrainerCard's only door in the whole engine is
+  -- Game2:pushStartMenuItem("status") (Game2.lua:488), and this mod replaces
+  -- the start menu, so leaving the app out would make the trainer card
+  -- unreachable on Gen 2 rather than merely inconvenient.
+  { key = "id", display = "ID", keepOpen = true,
+    label = function(game)
+      return ((game.save or {}).player or {}).name or "GOLD"
+    end,
+    gate = function() return true end,
+    open = delegate("status") },
+
+  -- Tenth, so it opens page two on its own.  Layout.pageCount already pages
+  -- any number of apps and the page dots already draw, because a mod
+  -- injecting a row through ui.start_menu.items could always push the count
+  -- past nine.  MOD is the one that moves because everything on page one is
+  -- either core to playing or is the Gen 2 arm's whole point.
+  --
   -- Game2 pushes ManagerState with no close callback, exactly as the Gen 1
   -- arm documents: TownMap, ManagerState and LinkState carry no reference
   -- to an onCancel and ignore one entirely.

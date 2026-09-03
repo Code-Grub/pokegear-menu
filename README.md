@@ -32,7 +32,8 @@ learn on your first badge is the layout you still have on your eighth.
 |---|---|---|
 | Row 1 | DEX PKM BAG | DEX PKM BAG |
 | Row 2 | ID OPT SAV | MAP RAD PHN |
-| Row 3 | MAP LNK MOD | SAV OPT MOD |
+| Row 3 | MAP LNK MOD | SAV OPT ID |
+| Page 2 | — | MOD |
 
 Three glyphs is what a 21px cell holds, so each caption is abbreviated to fit
 under its icon. A status bar across the top of the screen carries a clock, a
@@ -50,9 +51,14 @@ Guide Gent for the map, the Radio Tower quiz for the radio, and Mom's call for
 the phone. SAVE closes the phone rather than returning to the grid, because
 that is what the cart's own save does.
 
-ID and LINK are Gen 1 only. Gen 2 link runs through the engine's own
-`LinkBattle2` and the launcher arenas, a path this mod does not drive, so LINK
-comes off rather than shipping as a dead app.
+LINK is Gen 1 only. Gen 2 link runs through the engine's own `LinkBattle2`
+and the launcher arenas, a path this mod does not drive, so it comes off rather
+than shipping as a dead app.
+
+Gen 2 runs to ten apps, so MOD sits alone on a second page, reached with L and
+R or by walking off the edge of the grid. The trainer card has to be there:
+the START menu is the engine's only door to it, and this mod replaces the
+START menu.
 
 ## Install
 
