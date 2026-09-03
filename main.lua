@@ -119,7 +119,24 @@ return function(mod)
   end
 
   gen2Deps.pokegear = function(game, name)
-    local opts = { onClose = function() end }
+    -- B is the only way out of the gear, and who pops the stack on it
+    -- depends on which card is up.  Pokegear:updateTownMap pops the stack
+    -- ITSELF and then calls onClose (src/ui/gen2/Pokegear.lua), while the
+    -- card strip and every other card only call onClose and never pop.  So
+    -- MAP must hand over a callback that does nothing -- popping a second
+    -- time would take the phone underneath with it -- and the other two
+    -- must hand over the pop, which is what every engine push site does
+    -- here (Game2.lua's `onClose = back`, World.lua's explicit pop).  A
+    -- no-op for all three leaves RADIO and PHONE with no way out at all.
+    local opts = {}
+    if name == "map" then
+      opts.townMap = true
+      opts.onClose = function() end
+    else
+      opts.onClose = function()
+        if game.stack then game.stack:pop() end
+      end
+    end
     if type(game.currentLandmark) == "function" then
       local ok, id = pcall(game.currentLandmark, game)
       if ok then opts.currentLandmark = id end
@@ -127,7 +144,6 @@ return function(mod)
     if type(game.runPokegearCall) == "function" then
       opts.onCall = function(call) return game:runPokegearCall(call) end
     end
-    if name == "map" then opts.townMap = true end
 
     local gear = Screens.push(game, "Gen2Pokegear", opts)
     if name ~= "map" and type(gear) == "table" and type(gear.cards) == "table" then
@@ -141,6 +157,10 @@ return function(mod)
     return gear
   end
 
+  -- Before both registrations, not after: PhoneScreen.build captures
+  -- profile.defs by value, so a Gen.attach that runs later would hand the
+  -- Gen 2 factory an empty app list -- an empty grid, with no error and no
+  -- failing test to say so.
   Gen.attach(Apps.DEFS, Apps.GEN2_DEFS)
 
   -- Two factories, one per generation.  A Gen 1 boot never resolves
