@@ -244,21 +244,25 @@ ICONS = {
         "................",
         "................",
     ],
-    # A handset seen face on: two earpieces joined by the grip.
+    # A handset seen face on: two earpieces joined by the grip, the ear and
+    # mouth pieces sunk in mid shadow and a shadow band along the grip.  It
+    # stands as tall as dex and id rather than sitting small in its cell, and
+    # its outline is the only non-box in the set, which is what makes it read
+    # at 21px next to four rounded rectangles.
     "phone": [
         "................",
-        "................",
-        "................",
-        "................",
         "..1111....1111..",
-        ".133331..133331.",
-        ".133331..133331.",
-        ".131111..111131.",
-        ".13333333333331.",
-        ".13333333333331.",
-        ".11111111111111.",
-        "................",
-        "................",
+        ".144441..144441.",
+        ".142241..142241.",
+        ".142241..142241.",
+        ".144441..144441.",
+        ".114441..144411.",
+        "..144411114441..",
+        "..144444444441..",
+        "..142222222241..",
+        "..144444444441..",
+        "..114444444411..",
+        "...1111111111...",
         "................",
         "................",
         "................",
