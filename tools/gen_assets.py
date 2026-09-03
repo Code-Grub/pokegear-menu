@@ -244,26 +244,31 @@ ICONS = {
         "................",
         "................",
     ],
-    # A telephone receiver, seen from the side.  The ear and mouth pieces
-    # stand proud above and below the grip rather than sitting on top of it,
-    # which is the whole point: it is the gap either side of the grip that
-    # makes the silhouette read as a handset instead of a bench.  The grip
-    # carries the mid shadow so the middle does not go flat.
+    # The call glyph: the receiver tipped onto the diagonal, earpiece up at
+    # the left, mouthpiece down at the right, with the big concave bite out
+    # of the top right corner that makes the shape read.
+    #
+    # Generated as a thick quarter arc rather than placed by hand.  At this
+    # size a hand-drawn diagonal ends up with one end heavier than the other
+    # and a lumpy inner curve; sweeping both ends off one circle keeps them
+    # matched.  Left solid, the way the glyph is drawn on a dial button --
+    # the outline carries the definition, and a shadow inside a shape this
+    # narrow only muddies it.
     "phone": [
         "................",
-        "................",
-        ".1111......1111.",
-        ".1441......1441.",
-        ".1441......1441.",
-        ".14411111111441.",
-        ".14444444444441.",
-        ".14422222222441.",
-        ".14444444444441.",
-        ".14411111111441.",
-        ".1441......1441.",
-        ".1441......1441.",
-        ".1111......1111.",
-        "................",
+        ".1111111........",
+        ".1444441........",
+        ".1444441........",
+        ".1444441........",
+        ".11444411.......",
+        "..14444411......",
+        "..1444444111....",
+        "..114444444111..",
+        "...11444444441..",
+        "....1144444441..",
+        ".....114444441..",
+        "......11144441..",
+        "........111111..",
         "................",
         "................",
     ],
