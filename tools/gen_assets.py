@@ -244,27 +244,29 @@ ICONS = {
         "................",
         "................",
     ],
-    # A handset seen face on: two earpieces joined by the grip, the ear and
-    # mouth pieces sunk in mid shadow and a shadow band along the grip.  It
-    # stands as tall as dex and id rather than sitting small in its cell, and
-    # its outline is the only non-box in the set, which is what makes it read
-    # at 21px next to four rounded rectangles.
+    # The call glyph a phone puts on its dial button: the handset tipped on
+    # the diagonal, earpiece up at the left, mouthpiece down at the right,
+    # both ends flaring off a pinched shaft.  Drawn as a thick quarter arc
+    # rather than by hand, which is what keeps the two ends the same weight
+    # and the inner curve smooth at this size.  The concave edge carries the
+    # mid shadow, so the shape reads as a rounded body rather than a flat
+    # boomerang.
     "phone": [
         "................",
-        "..1111....1111..",
-        ".144441..144441.",
-        ".142241..142241.",
-        ".142241..142241.",
-        ".144441..144441.",
-        ".114441..144411.",
-        "..144411114441..",
-        "..144444444441..",
-        "..142222222241..",
-        "..144444444441..",
-        "..114444444411..",
-        "...1111111111...",
-        "................",
-        "................",
+        ".11111111.......",
+        ".14444221.......",
+        ".14444221.......",
+        ".11444421.......",
+        "..1444421.......",
+        "..11444211......",
+        "...114442111111.",
+        "....11444222221.",
+        ".....1144444221.",
+        "......114444441.",
+        ".......11444441.",
+        "........1144441.",
+        ".........111441.",
+        "...........1111.",
         "................",
     ],
     # The fallback for a row injected by another mod: a blank app tile.
