@@ -12,8 +12,13 @@ local function clamp(n, lo, hi)
   return n
 end
 
-function PhoneScreen.build(mod, M, deps)
+function PhoneScreen.build(mod, M, deps, profile)
   local Layout, Apps, Items = M.Layout, M.Apps, M.Items
+  -- Which id this factory was registered under.  A Gen 1 boot never resolves
+  -- "Gen2StartMenu" and a Gen 2 boot never resolves "StartMenu", so the
+  -- profile is settled at registration and never tested for at runtime.
+  local reopenId = (profile and profile.reopenId) or "StartMenu"
+  local defs = profile and profile.defs
 
   local Screen = {}
   Screen.__index = Screen
@@ -22,8 +27,8 @@ function PhoneScreen.build(mod, M, deps)
     local self = setmetatable({}, Screen)
     self.game = game
 
-    local function reopen() deps.screens.push(game, "StartMenu") end
-    local apps = Apps.build(game, deps, reopen)
+    local function reopen() deps.screens.push(game, reopenId) end
+    local apps = Apps.build(game, deps, reopen, defs)
     local composed, hookProblem = Items.compose(game, apps, deps.runtime)
     -- vanilla logs the same condition at src/ui/StartMenu.lua:128-131; the
     -- screen is the layer that owns a mod.log, so it does the reporting
