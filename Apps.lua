@@ -170,7 +170,7 @@ Apps.DEFS = {
     end },
 }
 
--- The Gen 2 ten.  DEX PKM BAG / MAP RAD PHN / SAV OPT ID, then MOD alone on
+-- The Gen 2 ten.  DEX PKM BAG / MAP RAD PHN / ID OPT SAV, then MOD alone on
 -- page two.
 --
 -- LNK is the only Gen 1 app that comes off: Gen 2 link runs through
@@ -244,19 +244,6 @@ Apps.GEN2_DEFS = {
     gate = function(game) return Apps.gen2Card(game, "phone") end,
     open = card("phone") },
 
-  -- SAVE is the one app that does NOT come back to the grid: Game2's save
-  -- branch pops the save screen and the start menu both, "like .Exit does".
-  -- That is the cart's behaviour and it is inherited on purpose.
-  { key = "save", display = "SAV", keepOpen = true,
-    label = function() return "SAVE" end,
-    gate = function(game) return not contestActive(game) end,
-    open = delegate("save") },
-
-  { key = "optn", display = "OPT", keepOpen = true,
-    label = function() return "OPTION" end,
-    gate = function() return true end,
-    open = delegate("option") },
-
   -- The trainer card.  Gen 2's own row carries no label of its own -- the
   -- player's name IS the label (StartMenu.lua's `id = "status", label = nil`,
   -- filled in from save.player.name and defaulting to GOLD) -- so this
@@ -272,6 +259,19 @@ Apps.GEN2_DEFS = {
     end,
     gate = function() return true end,
     open = delegate("status") },
+
+  { key = "optn", display = "OPT", keepOpen = true,
+    label = function() return "OPTION" end,
+    gate = function() return true end,
+    open = delegate("option") },
+
+  -- SAVE is the one app that does NOT come back to the grid: Game2's save
+  -- branch pops the save screen and the start menu both, "like .Exit does".
+  -- That is the cart's behaviour and it is inherited on purpose.
+  { key = "save", display = "SAV", keepOpen = true,
+    label = function() return "SAVE" end,
+    gate = function(game) return not contestActive(game) end,
+    open = delegate("save") },
 
   -- Tenth, so it opens page two on its own.  Layout.pageCount already pages
   -- any number of apps and the page dots already draw, because a mod

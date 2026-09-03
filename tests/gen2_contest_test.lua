@@ -80,7 +80,7 @@ T.eq(#running, 10, "the grid is still ten apps during a contest")
 local order = {}
 for _, item in ipairs(running) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,save,optn,id,mods",
+  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods",
   "the two gated apps dim in place rather than collapsing the grid")
 
 T.check(not byIcon(running, "bag").enabled,

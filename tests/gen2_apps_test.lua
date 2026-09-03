@@ -41,8 +41,8 @@ T.eq(#grid, 10, "ten apps on Gen 2: the nine plus MOD on page two")
 local order = {}
 for _, item in ipairs(grid) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,save,optn,id,mods",
-  "DEX PKM BAG / MAP RAD PHN / SAV OPT ID, then MOD on page two")
+  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods",
+  "DEX PKM BAG / MAP RAD PHN / ID OPT SAV, then MOD on page two")
 
 -- the seven ordinary apps delegate to Gen 2's own dispatch
 for _, pair in ipairs({

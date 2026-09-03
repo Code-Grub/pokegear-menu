@@ -9,7 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - The mod runs on Gold, Silver and Crystal. The Gen 2 grid is DEX PKM BAG /
-  MAP RAD PHN / SAV OPT ID, with MOD alone on a second page. LINK comes off on
+  MAP RAD PHN / ID OPT SAV, with MOD alone on a second page. LINK comes off on
   Gen 2 because Gen 2 link runs through `LinkBattle2` and the launcher
   arenas, a path this mod does not drive, and shipping it would ship a dead
   app. The trainer card stays on the grid because the START menu is the

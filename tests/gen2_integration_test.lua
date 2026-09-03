@@ -75,8 +75,8 @@ T.eq(#screen.items, 10, "ten apps on a Gen 2 boot")
 local order = {}
 for _, item in ipairs(screen.items) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,save,optn,id,mods",
-  "the Gen 2 ten (DEX PKM BAG / MAP RAD PHN / SAV OPT ID, MOD on page two)")
+  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods",
+  "the Gen 2 ten (DEX PKM BAG / MAP RAD PHN / ID OPT SAV, MOD on page two)")
 
 -- ---- RADIO and PHONE: the Critical this whole test exists to catch.
 --

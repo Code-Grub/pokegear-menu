@@ -32,7 +32,7 @@ learn on your first badge is the layout you still have on your eighth.
 |---|---|---|
 | Row 1 | DEX PKM BAG | DEX PKM BAG |
 | Row 2 | ID OPT SAV | MAP RAD PHN |
-| Row 3 | MAP LNK MOD | SAV OPT ID |
+| Row 3 | MAP LNK MOD | ID OPT SAV |
 | Page 2 | — | MOD |
 
 Three glyphs is what a 21px cell holds, so each caption is abbreviated to fit
