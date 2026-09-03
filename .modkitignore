@@ -11,6 +11,7 @@ tests/fixtures/injector_mod/manifest.json
 tests/gen2_apps_test.lua
 tests/gen2_contest_test.lua
 tests/gen2_gating_test.lua
+tests/gen2_integration_test.lua
 tests/gen_profiles_test.lua
 tests/icons_test.lua
 tests/items_test.lua
