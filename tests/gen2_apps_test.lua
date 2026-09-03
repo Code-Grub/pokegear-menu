@@ -74,6 +74,11 @@ end
 -- PAK draws the bag icon under its own key
 T.eq(byIcon(grid, "bag").display, "PAK", "the PACK is captioned PAK")
 
+-- the three card apps carry the cart's own card labels, not Gen 1's item name
+T.eq(byIcon(grid, "map").label, "MAP", "the map app uses the cart's MAP")
+T.eq(byIcon(grid, "radio").label, "RADIO", "the radio app uses the cart's RADIO")
+T.eq(byIcon(grid, "phone").label, "PHONE", "the phone app uses the cart's PHONE")
+
 -- a fresh save dims what has not been earned
 local fresh = { save = { party = {}, engineFlags = {}, inventory = {},
                          player = { name = "GOLD" } },
