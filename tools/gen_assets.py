@@ -250,24 +250,31 @@ ICONS = {
     # carry an outline as well, and the other icons show the set does not
     # require one.
     #
+    # Built to be exactly mirror-symmetric about x=7.5, which is also where
+    # the bar sits, so the ring and the bar share a centre.  The first cut
+    # had the ring centred on 7.0 against a bar on 7.5 and every ring row
+    # asymmetric, which at this size reads as a visibly lopsided icon.  The
+    # ring's gap is wide enough that its arm tips leave a clear column
+    # either side of the bar rather than merging into it.
+    #
     # Red, the pokeball red already used for the dex lamp and the save
     # cartridge, because this is the one app that does not come back.
     "quit": [
         "................",
         "................",
-        "................",
         ".......55.......",
-        "....5..55.5.....",
-        "...555.55555....",
-        "..555..55.555...",
-        "..55...55..55...",
-        "..55...55..55...",
-        "..55.......55...",
-        "..55.......55...",
-        "..555.....555...",
-        "...555555555....",
-        "....5555555.....",
-        "......555.......",
+        ".......55.......",
+        ".......55.......",
+        "...55..55..55...",
+        "..5555.55.5555..",
+        "..555..55..555..",
+        "..555......555..",
+        "..555......555..",
+        "..5555....5555..",
+        "...5555..5555...",
+        "...5555555555...",
+        ".....555555.....",
+        "................",
         "................",
     ],
     # A handset seen face on: two earpieces joined by the grip.
