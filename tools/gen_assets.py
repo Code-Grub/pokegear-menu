@@ -244,31 +244,22 @@ ICONS = {
         "................",
         "................",
     ],
-    # The call glyph: the receiver tipped onto the diagonal, earpiece up at
-    # the left, mouthpiece down at the right, with the big concave bite out
-    # of the top right corner that makes the shape read.
-    #
-    # Generated as a thick quarter arc rather than placed by hand.  At this
-    # size a hand-drawn diagonal ends up with one end heavier than the other
-    # and a lumpy inner curve; sweeping both ends off one circle keeps them
-    # matched.  Left solid, the way the glyph is drawn on a dial button --
-    # the outline carries the definition, and a shadow inside a shape this
-    # narrow only muddies it.
+    # A handset seen face on: two earpieces joined by the grip.
     "phone": [
         "................",
-        ".1111111........",
-        ".1444441........",
-        ".1444441........",
-        ".1444441........",
-        ".11444411.......",
-        "..14444411......",
-        "..1444444111....",
-        "..114444444111..",
-        "...11444444441..",
-        "....1144444441..",
-        ".....114444441..",
-        "......11144441..",
-        "........111111..",
+        "................",
+        "................",
+        "................",
+        "..1111....1111..",
+        ".133331..133331.",
+        ".133331..133331.",
+        ".131111..111131.",
+        ".13333333333331.",
+        ".13333333333331.",
+        ".11111111111111.",
+        "................",
+        "................",
+        "................",
         "................",
         "................",
     ],
