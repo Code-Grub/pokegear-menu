@@ -250,17 +250,18 @@ ICONS = {
     # carry an outline as well, and the other icons show the set does not
     # require one.
     #
-    # Mirror-symmetric about x=7.5 by construction, which is also where the
-    # bar sits, so the ring and the bar share a centre.
+    # EVERY stroke here is exactly two pixels, the ring's included, which is
+    # the same weight optn and link draw at.  That is the fix for a bar that
+    # looked bent: it was always dead straight on x7-x8, but the ring around
+    # it was three and four pixels thick, and a line at half the weight of
+    # everything touching it reads as thin and unsteady rather than as a
+    # deliberate stroke.
     #
-    # Two measurements keep this readable, and they are independent.  The
-    # ring's width per row runs 12, 12, 14, 14, 14, 12, 12, 10, 8, 4 -- a
-    # smooth taper in and out, which is what makes it read as a circle
-    # rather than a rounded rectangle; that comes from the RADIUS.  And the
-    # arm tips leave two clear columns either side of the bar at every row
-    # the bar occupies; that comes from the GAP ANGLE.  An earlier cut
-    # narrowed the gap to lengthen the arms and left only one column, which
-    # closes up at this size -- the bar and the ring merged into one blob.
+    # Mirror-symmetric about x=7.5 by construction, which is also where the
+    # bar sits, so the ring and the bar share a centre.  The gap angle is
+    # set so the arm tips leave at least two clear columns either side of
+    # the bar at every row the bar occupies -- one column closes up at this
+    # size and the two merge into a blob.
     #
     # Red, the pokeball red already used for the dex lamp and the save
     # cartridge, because this is the one app that does not come back.
@@ -270,16 +271,16 @@ ICONS = {
         ".......55.......",
         ".......55.......",
         ".......55.......",
-        "..555..55..555..",
-        "..555..55..555..",
-        ".5555..55..5555.",
-        ".5555......5555.",
-        ".5555......5555.",
-        "..555......555..",
-        "..5555....5555..",
-        "...5555555555...",
-        "....55555555....",
-        "......5555......",
+        "...55..55..55...",
+        "..55...55...55..",
+        "..55...55...55..",
+        "..55........55..",
+        "..55........55..",
+        "..55........55..",
+        "...55......55...",
+        "....55....55....",
+        ".....555555.....",
+        "................",
         "................",
     ],
     # A handset seen face on: two earpieces joined by the grip.
