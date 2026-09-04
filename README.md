@@ -4,7 +4,7 @@
 
 **A START menu overhaul for the [Pokémon Gen 1 Recompilation Project](https://github.com/bryanthaboi/pokemon-gen1-recomp-project).**
 
-Nine apps in a 3x3 grid, drawn in colour over the overworld · runs on Red, Blue, Yellow, Gold, Silver and Crystal · nothing ever moves under your thumb
+A 3x3 grid of apps, drawn in colour over the overworld · runs on Red, Blue, Yellow, Gold, Silver and Crystal · nothing ever moves under your thumb
 
 <p align="center">
   <a href="https://github.com/Code-Grub/pokegear-menu/releases/latest"><img src="https://img.shields.io/github/v/release/Code-Grub/pokegear-menu?style=flat&label=release&color=306230" alt="Latest release"/></a>
@@ -17,7 +17,7 @@ Nine apps in a 3x3 grid, drawn in colour over the overworld · runs on Red, Blue
 ---
 
 PokéGear Menu replaces the text list you get from START with a handheld device:
-nine apps laid out in a grid, each one always in the same place. An app you have
+a grid of apps, each one always in the same place. An app you have
 not earned yet sits dimmed where it will eventually live, so the layout you
 learn on your first badge is the layout you still have on your eighth.
 
@@ -55,10 +55,10 @@ LINK is Gen 1 only. Gen 2 link runs through the engine's own `LinkBattle2`
 and the launcher arenas, a path this mod does not drive, so it comes off rather
 than shipping as a dead app.
 
-Gen 2 runs to ten apps, so MOD sits alone on a second page, reached with L and
-R or by walking off the edge of the grid. The trainer card has to be there:
-the START menu is the engine's only door to it, and this mod replaces the
-START menu.
+Page one is nine apps on both generations, so anything past that pages: EXT on
+Gen 1, MOD then EXT on Gen 2, reached with L and R or by walking off the edge of
+the grid. The trainer card has to be on the grid: the START menu is the engine's
+only door to it, and this mod replaces the START menu.
 
 ## Install
 
