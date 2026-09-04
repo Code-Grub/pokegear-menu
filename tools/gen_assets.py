@@ -250,12 +250,17 @@ ICONS = {
     # carry an outline as well, and the other icons show the set does not
     # require one.
     #
-    # Built to be exactly mirror-symmetric about x=7.5, which is also where
-    # the bar sits, so the ring and the bar share a centre.  The first cut
-    # had the ring centred on 7.0 against a bar on 7.5 and every ring row
-    # asymmetric, which at this size reads as a visibly lopsided icon.  The
-    # ring's gap is wide enough that its arm tips leave a clear column
-    # either side of the bar rather than merging into it.
+    # Mirror-symmetric about x=7.5 by construction, which is also where the
+    # bar sits, so the ring and the bar share a centre.  An earlier cut had
+    # the ring on 7.0 against a bar on 7.5, and half a pixel at this size is
+    # a visible lean.
+    #
+    # The ring's width per row runs 8, 10, 12, 12, 14, 14, 14, 12, 12, 10,
+    # 8, 4 -- a smooth taper in and out, which is what makes it read as a
+    # circle.  A wider gap and a smaller radius flattens the sides into five
+    # rows of identical width, and a horseshoe stops looking round.  The gap
+    # is still wide enough that the arm tips leave a clear column either
+    # side of the bar rather than merging into it.
     #
     # Red, the pokeball red already used for the dex lamp and the save
     # cartridge, because this is the one app that does not come back.
@@ -263,18 +268,18 @@ ICONS = {
         "................",
         "................",
         ".......55.......",
-        ".......55.......",
-        ".......55.......",
-        "...55..55..55...",
+        "....55.55.55....",
+        "...555.55.555...",
         "..5555.55.5555..",
         "..555..55..555..",
-        "..555......555..",
+        ".5555..55..5555.",
+        ".5555......5555.",
+        ".5555......5555.",
         "..555......555..",
         "..5555....5555..",
-        "...5555..5555...",
         "...5555555555...",
-        ".....555555.....",
-        "................",
+        "....55555555....",
+        "......5555......",
         "................",
     ],
     # A handset seen face on: two earpieces joined by the grip.
