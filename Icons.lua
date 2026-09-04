@@ -23,7 +23,7 @@ local INK = { 0.14, 0.18, 0.18 }
 Icons.INDEX = {
   dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5,
   save = 6, map = 7, link = 8, mods = 9,
-  radio = 10, phone = 11, generic = 12,
+  radio = 10, phone = 11, quit = 12, generic = 13,
 }
 
 -- character to 0-based column in label_font.png

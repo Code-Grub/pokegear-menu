@@ -7,7 +7,7 @@ if not _G.love then _G.love = require("tests.love_stub") end
 local T = require("tests.modkit")
 
 local icons = love.graphics.newImage("mods/pokegear_menu/assets/icons.png")
-T.eq(icons:getWidth(), 192, "icon sheet is twelve 16px icons wide")
+T.eq(icons:getWidth(), 208, "icon sheet is thirteen 16px icons wide")
 T.eq(icons:getHeight(), 16, "icon sheet is one 16px row tall")
 
 local font = love.graphics.newImage("mods/pokegear_menu/assets/label_font.png")

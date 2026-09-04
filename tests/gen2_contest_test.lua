@@ -50,7 +50,7 @@ end
 package.loaded["src.core.gen2.BugContest"] = nil
 local absent = loadApps()
 local grid = absent.build(game(nil), deps, nil, absent.GEN2_DEFS)
-T.eq(#grid, 10, "ten apps with no contest module on the engine")
+T.eq(#grid, 11, "eleven apps with no contest module on the engine")
 T.check(byIcon(grid, "bag").enabled, "the PACK is live when nothing answers")
 T.check(byIcon(grid, "save").enabled, "SAVE is live when nothing answers")
 
@@ -68,19 +68,19 @@ package.loaded["src.core.gen2.BugContest"] = {
 
 local Apps = loadApps()
 grid = Apps.build(game({ active = false }), deps, nil, Apps.GEN2_DEFS)
-T.eq(#grid, 10, "ten apps outside a contest")
+T.eq(#grid, 11, "eleven apps outside a contest")
 T.check(byIcon(grid, "bag").enabled, "the PACK is live outside a contest")
 T.check(byIcon(grid, "save").enabled, "SAVE is live outside a contest")
 T.check(#asked > 0, "the gates actually asked BugContest")
 
 -- ---- a contest is running
 local running = Apps.build(game({ active = true }), deps, nil, Apps.GEN2_DEFS)
-T.eq(#running, 10, "the grid is still ten apps during a contest")
+T.eq(#running, 11, "the grid is still eleven apps during a contest")
 
 local order = {}
 for _, item in ipairs(running) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods",
+  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods,quit",
   "the two gated apps dim in place rather than collapsing the grid")
 
 T.check(not byIcon(running, "bag").enabled,

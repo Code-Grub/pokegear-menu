@@ -51,10 +51,10 @@ T.check(factory ~= require("src.ui.StartMenu"),
 -- ---- structure
 local game = newGame()
 local screen = factory.new(game)
-T.eq(#screen.items, 9, "nine apps on a fresh save")
+T.eq(#screen.items, 10, "ten apps on a fresh save")
 T.eq(screen.index, 1, "the cursor starts on the first app")
 T.eq(screen.page, 1, "the phone opens on page one")
-T.eq(screen:pageCount(), 1, "nine apps are one page")
+T.eq(screen:pageCount(), 2, "ten apps are two pages")
 
 -- ---- drawing never raises, empty or populated
 local ok, err = pcall(function() screen:draw() end)
@@ -79,7 +79,7 @@ T.eq(screen.index, 4, "left moves back one cell")
 press("up") screen:update(0) release()
 T.eq(screen.index, 1, "up moves back a row")
 press("up") screen:update(0) release()
-T.eq(screen.index, 7, "up from the top row wraps to the bottom")
+T.eq(screen.index, 8, "up from the top row wraps to the bottom")
 
 -- ---- the cursor position survives closing
 T.eq(game.save.startMenuIndex, screen.index, "the cursor index is remembered")
@@ -91,7 +91,7 @@ T.eq(reopened.index, 3, "reopening restores the cursor")
 -- the list
 game.save.startMenuIndex = 50
 local reopenedOOB = factory.new(game)
-T.eq(#reopenedOOB.items, 9, "still nine apps to clamp against")
+T.eq(#reopenedOOB.items, 10, "still ten apps to clamp against")
 T.eq(reopenedOOB.index, #reopenedOOB.items,
   "an oversized saved index clamps to the last app, not 50")
 

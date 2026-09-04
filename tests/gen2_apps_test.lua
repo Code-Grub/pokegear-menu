@@ -6,11 +6,13 @@ local T = require("tests.modkit")
 local Apps = dofile("mods/pokegear_menu/Apps.lua")
 
 local items, cards
+local quits = 0
 local deps = {
   screens = { push = function() end },
   sound = { play = function() end },
   startMenuItem = function(_, id) items[#items + 1] = id end,
   pokegear = function(_, card) cards[#cards + 1] = card end,
+  quit = function() quits = quits + 1 end,
 }
 
 -- everything unlocked: the dex, the gear and all three cards
@@ -35,14 +37,14 @@ local function byIcon(list, icon)
 end
 
 local grid = Apps.build(fullGame(), deps, nil, Apps.GEN2_DEFS)
-T.eq(#grid, 10, "ten apps on Gen 2: the nine plus MOD on page two")
+T.eq(#grid, 11, "eleven apps on Gen 2: nine, then MOD and QUIT on page two")
 
 -- grid order, reading left to right, top to bottom
 local order = {}
 for _, item in ipairs(grid) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods",
-  "DEX PKM BAG / MAP RAD PHN / ID OPT SAV, then MOD on page two")
+  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods,quit",
+  "DEX PKM BAG / MAP RAD PHN / ID OPT SAV, then MOD QUIT on page two")
 
 -- the seven ordinary apps delegate to Gen 2's own dispatch
 for _, pair in ipairs({
@@ -87,13 +89,16 @@ local fresh = { save = { party = {}, engineFlags = {}, inventory = {},
                          player = { name = "GOLD" } },
                 data = {}, stack = {}, modStatus = nil }
 local new = Apps.build(fresh, deps, nil, Apps.GEN2_DEFS)
-T.eq(#new, 10, "a fresh save still shows all ten apps")
+T.eq(#new, 11, "a fresh save still shows all eleven apps")
 T.check(byIcon(new, "bag").enabled, "the PACK is there from the start")
 T.check(not byIcon(new, "dex").enabled, "the dex is dark before Oak")
 T.check(not byIcon(new, "map").enabled, "MAP is dark before the Guide Gent")
 T.check(not byIcon(new, "radio").enabled, "RADIO is dark before the quiz")
 T.check(not byIcon(new, "phone").enabled, "PHONE is dark before Mom")
 T.check(byIcon(new, "save").enabled, "SAVE always works")
+T.check(byIcon(new, "quit").enabled, "QUIT always works")
+byIcon(grid, "quit").onSelect()
+T.eq(quits, 1, "QUIT goes through deps.quit on Gen 2 too")
 T.check(byIcon(new, "id").enabled, "the trainer card is always available")
 T.eq(byIcon(new, "id").label, "GOLD",
   "the trainer card row is labelled with the player's name")

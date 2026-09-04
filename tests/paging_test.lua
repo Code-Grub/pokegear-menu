@@ -5,7 +5,7 @@ if not _G.love then _G.love = require("tests.love_stub") end
 local T = require("tests.modkit")
 local Data = require("tests.modkit.fixtures").fresh()
 
--- loading the injector alongside pushes the list to ten rows
+-- loading the injector alongside pushes the list to eleven rows
 local run = T.sdk.loadMods({ "mods/pokegear_menu",
                              "mods/pokegear_menu/tests/fixtures/injector_mod" },
                            { data = Data })
@@ -24,14 +24,19 @@ local game = {
 }
 
 local screen = Screens.get(game, "StartMenu").new(game)
-T.eq(#screen.items, 10, "the injected row makes ten")
-T.eq(screen:pageCount(), 2, "ten apps are two pages")
+T.eq(#screen.items, 11, "the injected row makes eleven")
+T.eq(screen:pageCount(), 2, "eleven apps are two pages")
 T.eq(screen.page, 1, "the phone opens on page one")
 
 -- R flips to page two
 held = { r = true } screen:update(0) held = {}
 T.eq(screen.page, 2, "R flips to page two")
 T.eq(screen.index, 10, "R lands on the tenth app")
+
+-- page two holds the eleventh app as well as the tenth
+held = { right = true } screen:update(0) held = {}
+T.eq(screen.index, 11, "right moves on to the eleventh app")
+T.eq(screen.page, 2, "which is still page two")
 
 -- and walking forward from the last app wraps to the first
 held = { right = true } screen:update(0) held = {}

@@ -7,18 +7,19 @@ return {
     changed = {
       "the START menu is a phone home screen instead of a text list",
       "POKéMON dims with an empty party instead of listing and doing nothing",
-      "QUIT is gone; A+B+SELECT+START returns to the title, as it always did",
     },
     added = {
       "a MAP app opening the TOWN MAP, gated on holding the item",
+      "QUIT as EXT on page two, with the same confirm the built in menu "
+        .. "puts up, on both generations",
       "a status bar showing the real time and whether a link is live",
       "on Gold, Silver and Crystal, MAP, RADIO and PHONE open the engine's "
         .. "own PokéGear cards instead of a reskin, each staying dark until "
         .. "the cart hands it over",
     },
     known = {
-      "another mod's START menu row is moved to page two: the phone keeps "
-        .. "its own nine apps on page one so an app never changes position, "
+      "another mod's START menu row is moved past our own: the phone keeps "
+        .. "its own apps in a fixed order so one never changes position, "
         .. "which overrides where the injecting mod asked its row to sit",
       "on Gen 1, SAVE borrows the built in START menu to reach the "
         .. "engine's own save flow, so opening it re-runs the "

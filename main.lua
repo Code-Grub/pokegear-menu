@@ -77,6 +77,32 @@ return function(mod)
       local LinkState = require("src.link.LinkState")
       game.stack:push(LinkState.new(game))
     end,
+    -- QUIT.  Both engines do the same two things behind their own doors --
+    -- a defaultNo confirm, then returnToTitle -- so one function serves both
+    -- arms.  Neither door is open from here: Gen 1 keeps it on the builtin
+    -- menu's QUIT row (src/ui/StartMenu.lua) and Gen 2 inside a confirm
+    -- phase of its own StartMenu screen, which Game2:pushStartMenuItem has
+    -- no branch for.  Pushing the same TextBox the engines push is six
+    -- lines; reaching the Gen 1 row the way Save.lua reaches SAVE would
+    -- rebuild the whole builtin menu, re-running every other mod's
+    -- ui.start_menu.items wrapper, to press one row.
+    --
+    -- The prompt is resolved HERE, at press time, and not once at load, for
+    -- the reason Save.lua sets out at length: this chunk runs as part of
+    -- Game.lua:39, before Strings.load has a catalog, so a label captured
+    -- now would be frozen on the raw English for the session.
+    quit = function(game)
+      local TextBox = require("src.render.TextBox")
+      local Strings = require("src.core.Strings")
+      game.stack:push(TextBox.new(game, Strings("RETURN TO MAIN\nMENU?"), nil, {
+        defaultNo = true,
+        choice = function(yes)
+          if yes and type(game.returnToTitle) == "function" then
+            game:returnToTitle()
+          end
+        end,
+      }))
+    end,
   }
 
   local modules = { Layout = Layout, Apps = Apps, Items = Items,

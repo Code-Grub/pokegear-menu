@@ -33,7 +33,7 @@ learn on your first badge is the layout you still have on your eighth.
 | Row 1 | DEX PKM BAG | DEX PKM BAG |
 | Row 2 | ID OPT SAV | MAP RAD PHN |
 | Row 3 | MAP LNK MOD | ID OPT SAV |
-| Page 2 | — | MOD |
+| Page 2 | EXT | MOD EXT |
 
 Three glyphs is what a 21px cell holds, so each caption is abbreviated to fit
 under its icon. A status bar across the top of the screen carries a clock, a
@@ -70,10 +70,15 @@ the zip into the save directory's `imports/mods/` folder and rescan.
 It claims the `StartMenu` screen id, so it takes over the START menu with no
 further configuration.
 
-## Where did QUIT go?
+## QUIT
 
-Hold A, B, SELECT and START together. That is the Game Boy's own soft reset, it
-returns you to the title from anywhere, and it is what QUIT called.
+EXT on page two, in the pokeball red no other app uses, because it is the one
+that does not come back. It asks before it goes, starting on NO, and then
+returns you to the title -- the same confirm the built-in menu's own QUIT row
+puts up, on both generations.
+
+The Game Boy's own soft reset still works too: hold A, B, SELECT and START
+together.
 
 ## Permissions
 

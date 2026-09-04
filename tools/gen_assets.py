@@ -32,7 +32,7 @@ PALETTE = {
 }
 
 ICON_ORDER = ["dex", "pkmn", "bag", "id", "optn", "save", "map", "link",
-              "mods", "radio", "phone", "generic"]
+              "mods", "radio", "phone", "quit", "generic"]
 
 # 16 rows of 16 characters each, per icon.
 ICONS = {
@@ -242,6 +242,32 @@ ICONS = {
         "..1444444444441.",
         "..1111111111111.",
         "................",
+        "................",
+    ],
+    # The power symbol: a broken ring with a bar rising through the gap.
+    # Drawn as flat strokes with no fill or outline, the way optn's sliders
+    # and link's arrows are -- a ring thin enough to read at 16px cannot
+    # carry an outline as well, and the other icons show the set does not
+    # require one.
+    #
+    # Red, the pokeball red already used for the dex lamp and the save
+    # cartridge, because this is the one app that does not come back.
+    "quit": [
+        "................",
+        "................",
+        "................",
+        ".......55.......",
+        "....5..55.5.....",
+        "...555.55555....",
+        "..555..55.555...",
+        "..55...55..55...",
+        "..55...55..55...",
+        "..55.......55...",
+        "..55.......55...",
+        "..555.....555...",
+        "...555555555....",
+        "....5555555.....",
+        "......555.......",
         "................",
     ],
     # A handset seen face on: two earpieces joined by the grip.

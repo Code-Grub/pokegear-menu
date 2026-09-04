@@ -44,7 +44,7 @@ end
 -- no profile: the old three-argument behaviour, unchanged
 local deps = depsFor()
 local screen = PhoneScreen.build(modStub, M, deps).new(gameStub())
-T.eq(#screen.items, 9, "no profile still builds the Gen 1 nine")
+T.eq(#screen.items, 10, "no profile still builds the Gen 1 ten")
 
 -- a profile with an empty def list builds an empty grid, which proves the
 -- fourth argument reaches Apps.build at all

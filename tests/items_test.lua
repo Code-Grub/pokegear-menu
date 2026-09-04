@@ -32,7 +32,7 @@ T.eq(#run.errors, 0, "the phone loads clean (" .. tostring(run.errors[1]) .. ")"
 local Runtime = require("src.mods.Runtime")
 local game = newGame()
 local composed = Items.compose(game, Apps.build(game, deps), Runtime)
-T.eq(#composed, 9, "nine apps with no other mod loaded")
+T.eq(#composed, 10, "ten apps with no other mod loaded")
 run.release()
 
 -- ---- with an injector loaded, its row survives
@@ -54,7 +54,7 @@ T.check(labels["OPTION"], "the hook sees a row labelled exactly OPTION")
 T.check(labels["ITEM"], "the hook sees a row labelled exactly ITEM")
 
 composed = Items.compose(game, apps, Runtime)
-T.eq(#composed, 10, "the injected row survives")
+T.eq(#composed, 11, "the injected row survives")
 
 local found, position
 for i, item in ipairs(composed) do
@@ -72,16 +72,16 @@ end
 -- grid is a fixed home screen and a row landing at slot six would shift
 -- SAVE, MAP, LINK and MODS for as long as that mod stayed installed.  The
 -- row is never dropped, only moved.
-T.eq(position, 10, "the injected row is pushed past the nine built-ins")
+T.eq(position, 11, "the injected row is pushed past the ten built-ins")
 T.check(position > saveAt, "so it no longer displaces SAVE")
 T.eq(saveAt, 6, "and SAVE keeps its own slot")
 -- membership is by identity, not label: mod.ui's insert helpers mutate the
 -- list in place and return the same table, so a set snapshotted after the
 -- hook would count every injected row as one of ours
 local ownOrder = {}
-for i = 1, 9 do ownOrder[#ownOrder + 1] = composed[i].display end
-T.eq(table.concat(ownOrder, ","), "DEX,PKM,BAG,ID,OPT,SAV,MAP,LNK,MOD",
-  "page one is exactly the nine built-in apps, in their fixed order")
+for i = 1, 10 do ownOrder[#ownOrder + 1] = composed[i].display end
+T.eq(table.concat(ownOrder, ","), "DEX,PKM,BAG,ID,OPT,SAV,MAP,LNK,MOD,EXT",
+  "our ten apps come first, in their fixed order, before any injected row")
 
 -- a foreign row must be renderable: it needs a caption and an icon.
 -- Guarded: without the `if`, a regression that loses the row entirely
@@ -99,7 +99,7 @@ run.release()
 -- ---- a wrapper returning junk must not take the menu down, and must say so
 local composedFromJunk, junkWhy = Items.compose(newGame(),
   Apps.build(newGame(), deps), { call = function() return "not a table" end })
-T.eq(#composedFromJunk, 9, "a bad hook result falls back to the app list")
+T.eq(#composedFromJunk, 10, "a bad hook result falls back to the app list")
 T.check(junkWhy and junkWhy:find("not a table"),
   "and reports why, so the screen can log it: " .. tostring(junkWhy))
 
@@ -108,7 +108,7 @@ T.check(junkWhy and junkWhy:find("not a table"),
 -- pcall could be deleted and every other check would stay green.
 local composedFromThrow, throwWhy = Items.compose(newGame(),
   Apps.build(newGame(), deps), { call = function() error("boom", 0) end })
-T.eq(#composedFromThrow, 9, "a throwing hook chain falls back to the app list")
+T.eq(#composedFromThrow, 10, "a throwing hook chain falls back to the app list")
 T.check(throwWhy and throwWhy:find("threw"),
   "and reports that it threw: " .. tostring(throwWhy))
 

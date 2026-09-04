@@ -14,6 +14,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   arenas, a path this mod does not drive, and shipping it would ship a dead
   app. The trainer card stays on the grid because the START menu is the
   engine's only door to it, and this mod replaces the START menu.
+- QUIT is back, as EXT on page two of both grids. It puts up the same
+  confirm the built-in menu does, defaulting to NO, and returns to the title
+  on yes. Earlier versions left it out and pointed at the Game Boy's soft
+  reset instead; that still works, but the menu no longer loses a row the
+  vanilla one had.
 - On Gen 2, MAP, RADIO and PHONE are not a reskin: they open the engine's own
   PokéGear cards, the actual town map, the tunable radio and the phone that
   can place calls. Each stays dimmed until the cart hands it over: the Guide

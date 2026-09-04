@@ -71,12 +71,12 @@ end
 -- ---- the grid is the Gen 2 ten, built through the real registration
 local game = newGame()
 local screen = factory.new(game)
-T.eq(#screen.items, 10, "ten apps on a Gen 2 boot")
+T.eq(#screen.items, 11, "eleven apps on a Gen 2 boot")
 local order = {}
 for _, item in ipairs(screen.items) do order[#order + 1] = item.icon end
 T.eq(table.concat(order, ","),
-  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods",
-  "the Gen 2 ten (DEX PKM BAG / MAP RAD PHN / ID OPT SAV, MOD on page two)")
+  "dex,pkmn,bag,map,radio,phone,id,optn,save,mods,quit",
+  "the Gen 2 eleven (DEX PKM BAG / MAP RAD PHN / ID OPT SAV, MOD QUIT on page two)")
 
 -- ---- RADIO and PHONE: the Critical this whole test exists to catch.
 --

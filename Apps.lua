@@ -1,4 +1,4 @@
--- The nine apps: what gates each one, and what it opens.
+-- The Gen 1 ten: what gates each one, and what it opens.
 --
 -- `label` is the hook-visible text and is byte-identical to vanilla
 -- (src/ui/StartMenu.lua), because another mod may anchor an insertion to it
@@ -168,10 +168,22 @@ Apps.DEFS = {
     open = function(game, reopen, deps)
       deps.screens.push(game, "ManagerState")
     end },
+
+  -- Tenth, so it opens page two on its own.  Captions are capped at three
+  -- glyphs, so QUIT abbreviates to EXT the way POKeDEX does to DEX; the
+  -- hook-visible label stays the vanilla "QUIT" for insertBefore anchors.
+  --
+  -- keepOpen, because the confirm is pushed OVER the phone: answering NO
+  -- pops the box and reveals the grid again, which is what the builtin
+  -- menu's own QUIT row does.
+  { key = "quit", display = "EXT", keepOpen = true,
+    label = function() return "QUIT" end,
+    gate = function() return true end,
+    open = function(game, _, deps) deps.quit(game) end },
 }
 
--- The Gen 2 ten.  DEX PKM BAG / MAP RAD PHN / ID OPT SAV, then MOD alone on
--- page two.
+-- The Gen 2 eleven.  DEX PKM BAG / MAP RAD PHN / ID OPT SAV, then MOD and
+-- QUIT on page two.
 --
 -- LNK is the only Gen 1 app that comes off: Gen 2 link runs through
 -- src/link/LinkBattle2.lua and the launcher arenas, and src/link/LinkState.lua
@@ -285,6 +297,17 @@ Apps.GEN2_DEFS = {
   { key = "mods", display = "MOD", keepOpen = true,
     label = function() return "MODS" end,
     gate = row("mods"), open = delegate("mods") },
+
+  -- Eleventh, so page two reads MOD then QUIT.
+  --
+  -- Not delegated.  Gen 2's own QUIT never leaves its StartMenu screen --
+  -- StartMenu.lua:255 sets phase = "confirm" and StartMenu:confirmQuit runs
+  -- it -- so Game2:pushStartMenuItem has no branch to reach, exactly as with
+  -- quitContest.  deps.quit pushes the same confirm both engines push.
+  { key = "quit", display = "EXT", keepOpen = true,
+    label = function() return "QUIT" end,
+    gate = function() return true end,
+    open = function(game, _, deps) deps.quit(game) end },
 }
 
 -- reopen: pushed back onto the stack when a submenu cancels, mirroring

@@ -19,7 +19,7 @@ local fakeMod = {
 local icons = Icons.new(fakeMod)
 
 T.eq(Icons.INDEX.dex, 1, "dex is the first icon")
-T.eq(Icons.INDEX.generic, 12, "generic is the last icon")
+T.eq(Icons.INDEX.generic, 13, "generic is the last icon")
 
 T.eq(icons:labelWidth("DEX"), 15, "three glyphs advance 15px")
 T.eq(icons:labelWidth(""), 0, "an empty caption is 0px")
@@ -54,8 +54,8 @@ T.eq(q.w, 16, "an icon quad is 16px wide")
 T.eq(q.h, 16, "an icon quad is 16px tall")
 
 q = icons.iconQuads[Icons.INDEX.generic]
-T.eq(q.x, 176, "the generic icon is the twelfth 16px column")
-T.eq(q.x + q.w, 192, "the last icon quad ends exactly at the sheet edge")
+T.eq(q.x, 192, "the generic icon is the thirteenth 16px column")
+T.eq(q.x + q.w, 208, "the last icon quad ends exactly at the sheet edge")
 
 q = icons.glyphQuads["A"]
 T.eq(q.x, 0, "A is the first glyph")

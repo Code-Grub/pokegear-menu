@@ -6,11 +6,13 @@ local T = require("tests.modkit")
 local Apps = dofile("mods/pokegear_menu/Apps.lua")
 
 local pushed = {}
+local quits = 0
 local deps = {
   screens = { push = function(_, id) pushed[#pushed + 1] = id end },
   sound = { play = function() end },
   save = function() end,
   link = function() end,
+  quit = function() quits = quits + 1 end,
 }
 
 local function gameWith(overrides)
@@ -33,12 +35,18 @@ end
 
 -- a brand new save: the always-on apps are live, the gated ones are not
 local items = Apps.build(gameWith(), deps)
-T.eq(#items, 9, "nine apps, always")
+T.eq(#items, 10, "ten apps, always")
 
 T.check(byKey(items, "bag").enabled, "ITEM is always available")
 T.check(byKey(items, "id").enabled, "the trainer card is always available")
 T.check(byKey(items, "optn").enabled, "OPTION is always available")
 T.check(byKey(items, "save").enabled, "SAVE is always available")
+T.check(byKey(items, "quit").enabled, "QUIT is always available")
+T.eq(byKey(items, "quit").display, "EXT", "the QUIT caption abbreviates to fit three glyphs")
+T.eq(byKey(items, "quit").label, "QUIT", "the QUIT row keeps the vanilla label")
+T.check(byKey(items, "quit").keepOpen, "QUIT keeps the phone under the confirm")
+byKey(items, "quit").onSelect()
+T.eq(quits, 1, "QUIT goes through deps.quit")
 
 T.check(not byKey(items, "dex").enabled, "the dex is dimmed before Oak's gift")
 T.check(not byKey(items, "pkmn").enabled, "POKéMON is dimmed with no party")
