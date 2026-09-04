@@ -251,16 +251,16 @@ ICONS = {
     # require one.
     #
     # Mirror-symmetric about x=7.5 by construction, which is also where the
-    # bar sits, so the ring and the bar share a centre.  An earlier cut had
-    # the ring on 7.0 against a bar on 7.5, and half a pixel at this size is
-    # a visible lean.
+    # bar sits, so the ring and the bar share a centre.
     #
-    # The ring's width per row runs 8, 10, 12, 12, 14, 14, 14, 12, 12, 10,
-    # 8, 4 -- a smooth taper in and out, which is what makes it read as a
-    # circle.  A wider gap and a smaller radius flattens the sides into five
-    # rows of identical width, and a horseshoe stops looking round.  The gap
-    # is still wide enough that the arm tips leave a clear column either
-    # side of the bar rather than merging into it.
+    # Two measurements keep this readable, and they are independent.  The
+    # ring's width per row runs 12, 12, 14, 14, 14, 12, 12, 10, 8, 4 -- a
+    # smooth taper in and out, which is what makes it read as a circle
+    # rather than a rounded rectangle; that comes from the RADIUS.  And the
+    # arm tips leave two clear columns either side of the bar at every row
+    # the bar occupies; that comes from the GAP ANGLE.  An earlier cut
+    # narrowed the gap to lengthen the arms and left only one column, which
+    # closes up at this size -- the bar and the ring merged into one blob.
     #
     # Red, the pokeball red already used for the dex lamp and the save
     # cartridge, because this is the one app that does not come back.
@@ -268,9 +268,9 @@ ICONS = {
         "................",
         "................",
         ".......55.......",
-        "....55.55.55....",
-        "...555.55.555...",
-        "..5555.55.5555..",
+        ".......55.......",
+        ".......55.......",
+        "..555..55..555..",
         "..555..55..555..",
         ".5555..55..5555.",
         ".5555......5555.",
