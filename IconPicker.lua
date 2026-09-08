@@ -97,10 +97,10 @@ function IconPicker.build(mod, M, deps)
       if i == self.index then self:_drawCursor(x, y) end
     end
 
-    local caption = tostring(self.label or "ICON"):sub(1, 8)
-    local width = icons:labelWidth(caption)
-    icons:drawLabel(caption,
-      L.FOOTER.x + math.floor((L.FOOTER.w - width) / 2), L.FOOTER.y + 3, false)
+    -- The footer always reads POKéGEAR, the same as the phone underneath
+    -- it -- not the row's label. It is the phone's nameplate, not a status
+    -- line, and every other screen this mod draws leaves it alone.
+    M.chrome:drawFooter()
     love.graphics.setColor(1, 1, 1, 1)
   end
 

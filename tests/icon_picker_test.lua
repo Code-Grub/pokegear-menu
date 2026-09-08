@@ -19,7 +19,10 @@ local fakeMod = {
   log = { warn = function() end, error = function() end },
 }
 local iconsInstance = Icons.new(fakeMod)
-local chromeStub = setmetatable({}, { __index = function() return function() end end })
+local footerDraws
+local chromeStub = setmetatable({
+  drawFooter = function() footerDraws = footerDraws + 1 end,
+}, { __index = function() return function() end end })
 local M = { Layout = Layout, Icons = Icons, icons = iconsInstance, chrome = chromeStub }
 
 local sounds, popped
@@ -103,7 +106,13 @@ T.eq(popped, 1, "B closes the picker")
 T.check(next(game.save.modIconOverrides) == nil, "B saves nothing")
 
 -- ---- drawing never raises, with or without a loaded icon sheet
+footerDraws = 0
 local ok, err = pcall(function() screen:draw() end)
 T.check(ok, "drawing the picker succeeds: " .. tostring(err))
+
+-- ---- the footer is the phone's own POKéGEAR plate (Chrome:drawFooter),
+-- not the row's label -- an earlier version drew the label there instead,
+-- so the nameplate changed every time this screen opened
+T.eq(footerDraws, 1, "the picker draws the shared POKéGEAR footer")
 
 T.finish("icon picker")
