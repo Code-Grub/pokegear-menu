@@ -60,6 +60,16 @@ Gen 1, MOD then EXT on Gen 2, reached with L and R or by walking off the edge of
 the grid. The trainer card has to be on the grid: the START menu is the engine's
 only door to it, and this mod replaces the START menu.
 
+## Icons for other mods' rows
+
+A row another mod adds shows a "?" by default. Hold A over it, instead of
+tapping, to open a small picker offering a sparkle, a heart, a flag or a
+bolt in its place -- or "?" itself, to go back. The choice is saved and
+survives the phone closing and reopening. A short tap still opens the row
+as it always has; only a press held past half a second opens the picker,
+and only a foreign row offers it at all -- none of the phone's own nine can
+be recoloured this way.
+
 ## Install
 
 **Mod manager:** grab the release zip from

@@ -24,7 +24,14 @@ Icons.INDEX = {
   dex = 1, pkmn = 2, bag = 3, id = 4, optn = 5,
   save = 6, map = 7, link = 8, mods = 9,
   radio = 10, phone = 11, quit = 12, generic = 13,
+  -- offered in the icon-customize picker in place of "generic"
+  star = 14, heart = 15, flag = 16, bolt = 17,
 }
+
+-- The icons a player may pick for a mod's own row, in picker order.
+-- "generic" is first: it is the way back to the fallback "?", not just
+-- another option.
+Icons.CUSTOM_ORDER = { "generic", "star", "heart", "flag", "bolt" }
 
 -- character to 0-based column in label_font.png
 local GLYPH_AT = {}

@@ -12,12 +12,20 @@ local function clamp(n, lo, hi)
   return n
 end
 
+-- How long A has to stay down over a mod's own row before it opens the icon
+-- customize picker instead of the row itself.  Long enough that a normal
+-- tap-to-select never clips it -- the shortest a human press-and-release
+-- reads on a controller is well over 100ms -- short enough that a player
+-- fishing for the gesture is not stuck holding the button for a second.
+local HOLD_TO_CUSTOMIZE = 0.5
+
 function PhoneScreen.build(mod, M, deps, profile)
   local Layout, Apps, Items = M.Layout, M.Apps, M.Items
   -- Which id this factory was registered under.  A Gen 1 boot never resolves
   -- "Gen2StartMenu" and a Gen 2 boot never resolves "StartMenu", so the
   -- profile is settled at registration and never tested for at runtime.
   local reopenId = (profile and profile.reopenId) or "StartMenu"
+  local iconPickerId = (profile and profile.iconPickerId) or "PokegearIconPicker"
   local defs = profile and profile.defs
 
   local Screen = {}
@@ -46,11 +54,13 @@ function PhoneScreen.build(mod, M, deps, profile)
         .. "wrapping ui.start_menu.items removed every row; showing the "
         .. "built-in apps instead; update or disable the other mod that "
         .. "wraps ui.start_menu.items")
-      self.items = Items.decorate(apps)
+      self.items = Items.decorate(apps, game)
     end
 
     self.index = clamp(game.save.startMenuIndex or 1, 1, #self.items)
     self.page = (Layout.locate(self.index))
+    self.holdArmed = false
+    self.holdTimer = 0
     return self
   end
 
@@ -68,7 +78,70 @@ function PhoneScreen.build(mod, M, deps, profile)
     self.page = (Layout.locate(self.index))
   end
 
-  function Screen:update(_)
+  -- The ordinary tap: run or refuse the row under the cursor.  Shared by a
+  -- short A press and by a long one released before it crossed the hold
+  -- threshold, so letting go early still selects rather than doing nothing.
+  function Screen:_selectCurrent()
+    local item = self.items[self.index]
+    if item and item.enabled == false then
+      deps.sound.play(self.game.data, "Tink")
+    elseif item then
+      deps.sound.play(self.game.data, "Press_AB")
+      -- Menu pops before running onSelect (src/ui/Menu.lua:93-94), so a
+      -- submenu's onCancel can push the phone back on top of nothing.
+      --
+      -- keepOpen rows are the exception, exactly as in Menu (:91-92): the
+      -- phone stays on the stack, and closing what the row opened reveals
+      -- it again.  That is the only way back for a screen that ignores an
+      -- onCancel option, which TownMap, ManagerState and LinkState all do.
+      if not item.keepOpen then self.game.stack:pop() end
+      if item.onSelect then item.onSelect() end
+    end
+  end
+
+  -- Only a foreign row can be customized, so only a foreign row's A gets
+  -- this treatment; every one of the phone's own nine keeps selecting the
+  -- instant A is pressed, exactly as before.  Re-armed against the item
+  -- itself (not just the index) so moving the cursor onto a different row
+  -- mid-hold cannot fire the picker for whatever is now underneath it.
+  function Screen:_updateA(dt, input)
+    local item = self.items[self.index]
+    if not (item and item.foreign) then
+      self.holdArmed = false
+      if input:wasPressed("a") then self:_selectCurrent() end
+      return
+    end
+
+    if input:wasPressed("a") then
+      self.holdArmed, self.holdItem, self.holdTimer = true, item, 0
+    end
+    if not self.holdArmed or self.holdItem ~= item then
+      self.holdArmed = false
+      return
+    end
+
+    if input:isDown("a") then
+      self.holdTimer = self.holdTimer + (dt or 0)
+      if self.holdTimer >= HOLD_TO_CUSTOMIZE then
+        self.holdArmed = false
+        deps.sound.play(self.game.data, "Press_AB")
+        -- onChosen patches this same row's icon directly, so the new one
+        -- shows the instant the picker closes.  The save write the picker
+        -- also does is what makes the choice outlive this session; without
+        -- onChosen too, the row would keep drawing "?" until the phone next
+        -- closed and reopened rebuilt self.items from that save data.
+        deps.screens.push(self.game, iconPickerId, {
+          label = item.label,
+          onChosen = function(key) item.icon = key end,
+        })
+      end
+    else
+      self.holdArmed = false
+      self:_selectCurrent()
+    end
+  end
+
+  function Screen:update(dt)
     local input = self.game.input
     if input:wasPressed("right") then
       self:_move(1)
@@ -82,22 +155,6 @@ function PhoneScreen.build(mod, M, deps, profile)
       self:_move(Layout.PER_PAGE)
     elseif input:wasPressed("l") then
       self:_move(-Layout.PER_PAGE)
-    elseif input:wasPressed("a") then
-      local item = self.items[self.index]
-      if item and item.enabled == false then
-        deps.sound.play(self.game.data, "Tink")
-      elseif item then
-        deps.sound.play(self.game.data, "Press_AB")
-        -- Menu pops before running onSelect (src/ui/Menu.lua:93-94), so a
-        -- submenu's onCancel can push the phone back on top of nothing.
-        --
-        -- keepOpen rows are the exception, exactly as in Menu (:91-92): the
-        -- phone stays on the stack, and closing what the row opened reveals
-        -- it again.  That is the only way back for a screen that ignores an
-        -- onCancel option, which TownMap, ManagerState and LinkState all do.
-        if not item.keepOpen then self.game.stack:pop() end
-        if item.onSelect then item.onSelect() end
-      end
     elseif input:wasPressed("b") or input:wasPressed("start") then
       -- the start menu's mask watches START (draw_start_menu.asm), and only
       -- the A/B branch replays the beep, so START closes silently
@@ -106,6 +163,7 @@ function PhoneScreen.build(mod, M, deps, profile)
       end
       self.game.stack:pop()
     end
+    self:_updateA(dt, input)
     self.game.save.startMenuIndex = self.index
   end
 

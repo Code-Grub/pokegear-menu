@@ -20,10 +20,24 @@ local function passthrough(_, items) return items end
 -- A row that came from another mod carries only { label, onSelect }.  Give
 -- it what the grid needs to draw: a caption clipped to the cell, the
 -- fallback icon, and selectability.
-function Items.decorate(items)
+--
+-- game is optional -- existing callers and tests that decorate a bare list
+-- with no session behind it keep working, just with no override applied --
+-- and is where a player's own icon choice for a foreign row lives:
+-- game.save.modIconOverrides, keyed by label the same way Save.lua matches
+-- the builtin SAVE row across a rebuilt menu.  Table identity resets every
+-- session (Items.ownSet snapshots a fresh table each time the phone opens),
+-- so label is the only handle stable enough to save against.
+function Items.decorate(items, game)
+  local overrides = (game and game.save and game.save.modIconOverrides) or {}
   for _, item in ipairs(items) do
     item.display = tostring(item.display or item.label or "?"):sub(1, MAX_CAPTION)
-    if item.icon == nil then item.icon = "generic" end
+    local chosen = item.foreign and item.label and overrides[item.label]
+    if chosen then
+      item.icon = chosen
+    elseif item.icon == nil then
+      item.icon = "generic"
+    end
     if item.enabled == nil then item.enabled = true end
   end
   return items
@@ -55,12 +69,17 @@ function Items.ownSet(apps)
   return isOwn
 end
 
+-- Tags each foreign row with `foreign = true` as it is sorted, which is the
+-- only signal Items.decorate and the phone's icon-customize prompt have for
+-- "this row is not one of ours" -- an own row's icon is def.key, chosen by
+-- this mod and never something a player should be offered a picker over.
 function Items.partition(isOwn, hooked)
   local ordered, foreign = {}, {}
   for _, item in ipairs(hooked) do
     if isOwn[item] then
       ordered[#ordered + 1] = item
     else
+      item.foreign = true
       foreign[#foreign + 1] = item
     end
   end
@@ -81,14 +100,14 @@ function Items.compose(game, apps, runtime)
   local ok, result = pcall(runtime.call, "ui.start_menu.items",
                            passthrough, game, apps)
   if not ok then
-    return Items.decorate(apps),
+    return Items.decorate(apps, game),
       ("the ui.start_menu.items chain threw (%s)"):format(tostring(result))
   end
   if type(result) ~= "table" then
-    return Items.decorate(apps),
+    return Items.decorate(apps, game),
       ("ui.start_menu.items returned %s, not a table"):format(type(result))
   end
-  return Items.decorate(Items.partition(isOwn, result))
+  return Items.decorate(Items.partition(isOwn, result), game)
 end
 
 return Items

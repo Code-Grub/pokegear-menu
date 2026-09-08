@@ -31,9 +31,11 @@ return function(mod)
   local Items       = sibling("Items.lua")
   local Chrome      = sibling("Chrome.lua")
   local PhoneScreen = sibling("PhoneScreen.lua")
+  local IconPicker  = sibling("IconPicker.lua")
   local Save        = sibling("Save.lua")
   local Gen         = sibling("Gen.lua")
-  if not (Layout and Icons and Apps and Items and Chrome and PhoneScreen and Save and Gen) then
+  if not (Layout and Icons and Apps and Items and Chrome and PhoneScreen
+          and IconPicker and Save and Gen) then
     return
   end
 
@@ -106,7 +108,7 @@ return function(mod)
   }
 
   local modules = { Layout = Layout, Apps = Apps, Items = Items,
-                    icons = icons, chrome = chrome }
+                    Icons = Icons, icons = icons, chrome = chrome }
 
   -- Gen 2 needs two doors Gen 1 has no use for.
   --
@@ -197,4 +199,12 @@ return function(mod)
     PhoneScreen.build(mod, modules, deps, Gen.GEN1))
   mod.content.screens:register("Gen2StartMenu",
     PhoneScreen.build(mod, modules, gen2Deps, Gen.GEN2))
+
+  -- One registration per generation, mirroring the two above and for the
+  -- same reason: each closes over its own deps.markTrueColor, and Gen 2's
+  -- is a no-op where Gen 1's punches the phone rect true-colour.
+  mod.content.screens:register(Gen.GEN1.iconPickerId,
+    IconPicker.build(mod, modules, deps))
+  mod.content.screens:register(Gen.GEN2.iconPickerId,
+    IconPicker.build(mod, modules, gen2Deps))
 end

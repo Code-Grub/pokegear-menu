@@ -8,11 +8,19 @@
 -- ("test for the capability the code needs instead of the version") and it
 -- keeps the entry chunk clear of MK410, since nothing has to read a game
 -- that is not up yet.
+--
+-- iconPickerId is the same trick applied to IconPicker.lua: each profile's
+-- markTrueColor differs (Gen 1 punches the phone rect true-colour, Gen 2 is
+-- already in colour and no-ops it), so the picker needs its own registered
+-- factory per generation too, not one shared registration guessing which
+-- deps table to have closed over.
 
 local Gen = {}
 
-Gen.GEN1 = { name = "gen1", reopenId = "StartMenu",     defs = nil }
-Gen.GEN2 = { name = "gen2", reopenId = "Gen2StartMenu", defs = {}  }
+Gen.GEN1 = { name = "gen1", reopenId = "StartMenu",
+             iconPickerId = "PokegearIconPicker",     defs = nil }
+Gen.GEN2 = { name = "gen2", reopenId = "Gen2StartMenu",
+             iconPickerId = "Gen2PokegearIconPicker", defs = {}  }
 
 -- Apps.lua fills GEN1.defs with its existing nine and GEN2.defs with the
 -- Gen 2 nine; the profiles are declared here so both modules can see the

@@ -92,6 +92,15 @@ if found then
   T.check(found.display and #found.display > 0, "a foreign row gets a caption")
   T.check(#found.display <= 3, "a foreign caption is truncated to the cell")
   T.check(found.enabled, "a foreign row is selectable")
+  -- PhoneScreen's hold-to-customize gesture (PhoneScreen.lua's _updateA) is
+  -- the only thing gating the icon picker offer, and it gates on this flag
+  T.check(found.foreign == true, "a foreign row is tagged foreign")
+end
+
+-- one of the phone's own ten must never be tagged foreign: it is what
+-- would let a player "customize" DEX's own icon, which is not the feature
+for i = 1, 10 do
+  T.check(composed[i].foreign == nil, "own app #" .. i .. " is not tagged foreign")
 end
 
 run.release()
@@ -121,5 +130,26 @@ local overLong = Items.decorate(
   { { label = "X", display = "WAYTOOLONGCAPTION" } })
 T.eq(overLong[1].display, "WAY",
   "a supplied over-long display is clipped to MAX_CAPTION like a filled-in one")
+
+-- ---- a player's saved icon choice (IconPicker.lua) overrides "generic",
+-- but only for the foreign row it was chosen for, and never touches one of
+-- the phone's own apps even if a label collides
+local overrideGame = { save = { modIconOverrides = { INJECTED = "bolt",
+                                                       SAVE = "star" } } }
+local withOverride = Items.decorate({
+  { label = "INJECTED", foreign = true },
+  { label = "OTHER", foreign = true },
+  { label = "SAVE", icon = "save" },
+}, overrideGame)
+T.eq(withOverride[1].icon, "bolt", "a foreign row picks up its saved override")
+T.eq(withOverride[2].icon, "generic",
+  "a foreign row with no saved override still falls back to generic")
+T.eq(withOverride[3].icon, "save",
+  "an own row keeps its own icon even if its label matches a saved override")
+
+-- ---- decorate with no game (every existing caller before this feature,
+-- and the two calls above) must not raise indexing a nil save
+local ok = pcall(Items.decorate, { { label = "INJECTED", foreign = true } })
+T.check(ok, "decorate with no game at all does not raise")
 
 T.finish("items")
