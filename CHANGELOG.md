@@ -16,7 +16,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   rebuilt menu, so it survives the phone closing and reopening. Only ever
   offered for a row another mod injected -- none of the phone's own nine
   can be recoloured this way, and a short tap still selects a row exactly
-  as it always has; only a press held past half a second opens the picker.
+  as it always has; only a press held for about a second opens the picker.
 
 ## [0.2.0] - 2026-09-03
 

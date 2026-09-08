@@ -15,9 +15,9 @@ end
 -- How long A has to stay down over a mod's own row before it opens the icon
 -- customize picker instead of the row itself.  Long enough that a normal
 -- tap-to-select never clips it -- the shortest a human press-and-release
--- reads on a controller is well over 100ms -- short enough that a player
--- fishing for the gesture is not stuck holding the button for a second.
-local HOLD_TO_CUSTOMIZE = 0.5
+-- reads on a controller is well over 100ms -- and long enough past that to
+-- read as a deliberate hold rather than a slightly slow tap.
+local HOLD_TO_CUSTOMIZE = 0.9
 
 function PhoneScreen.build(mod, M, deps, profile)
   local Layout, Apps, Items = M.Layout, M.Apps, M.Items

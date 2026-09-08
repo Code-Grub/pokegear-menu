@@ -87,7 +87,7 @@ deps = depsFor()
 screen = PhoneScreen.build(modStub, M, deps).new(gameStub())
 screen.index = injectedAt
 down = { a = true }
-for _ = 1, 40 do tick(screen, 0.016) end -- 640ms, past the 500ms threshold
+for _ = 1, 60 do tick(screen, 0.016) end -- 960ms, past the 900ms threshold
 T.check(not screen.game._foreignSelected, "a long hold does not run the row's onSelect")
 T.eq(#pushed, 1, "a long hold pushes exactly one screen")
 T.eq(pushed[1] and pushed[1].id, "PokegearIconPicker", "it pushes the icon picker")
@@ -127,7 +127,7 @@ screen.index = bagAt
 down = { a = true }
 tick(screen, 0.016)
 T.check(not pushedPicker(), "tapping a built-in app does not open the icon picker")
-for _ = 1, 40 do tick(screen, 0.016) end
+for _ = 1, 60 do tick(screen, 0.016) end
 T.check(not pushedPicker(), "holding A on a built-in app never opens the icon picker")
 down = {}
 
@@ -139,7 +139,7 @@ screen.index = injectedAt
 down = { a = true }
 for _ = 1, 10 do tick(screen, 0.016) end -- armed, short of the threshold
 screen.index = bagAt
-for _ = 1, 40 do tick(screen, 0.016) end
+for _ = 1, 60 do tick(screen, 0.016) end
 down = {}
 T.eq(#pushed, 0, "a hold started on one row cannot fire against a different one")
 

@@ -66,7 +66,7 @@ A row another mod adds shows a "?" by default. Hold A over it, instead of
 tapping, to open a small picker offering a sparkle, a heart, a flag or a
 bolt in its place -- or "?" itself, to go back. The choice is saved and
 survives the phone closing and reopening. A short tap still opens the row
-as it always has; only a press held past half a second opens the picker,
+as it always has; only a press held for about a second opens the picker,
 and only a foreign row offers it at all -- none of the phone's own nine can
 be recoloured this way.
 
