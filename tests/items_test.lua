@@ -95,6 +95,15 @@ if found then
   -- PhoneScreen's hold-to-customize gesture (PhoneScreen.lua's _updateA) is
   -- the only thing gating the icon picker offer, and it gates on this flag
   T.check(found.foreign == true, "a foreign row is tagged foreign")
+  -- This fixture's row sets no keepOpen of its own (tests/fixtures/
+  -- injector_mod/main.lua). Popping the phone first, the way an own
+  -- non-keepOpen row does, bets on the row's own onSelect screen reopening
+  -- it -- a bet this mod cannot make on another mod's behalf, and one that
+  -- was previously losing for every injecting mod that never set
+  -- keepOpen. Defaulting it true is what makes closing that screen return
+  -- to the phone instead of the overworld.
+  T.check(found.keepOpen == true,
+    "a foreign row defaults to keepOpen, so its own screen closing returns to the phone")
 end
 
 -- one of the phone's own ten must never be tagged foreign: it is what
@@ -151,5 +160,19 @@ T.eq(withOverride[3].icon, "save",
 -- and the two calls above) must not raise indexing a nil save
 local ok = pcall(Items.decorate, { { label = "INJECTED", foreign = true } })
 T.check(ok, "decorate with no game at all does not raise")
+
+-- ---- a foreign row defaults to keepOpen so PhoneScreen leaves the phone
+-- on the stack, but a mod that sets the field itself is never overridden
+-- in either direction, and an own row never gets the default at all
+local keepOpenCases = Items.decorate({
+  { label = "A", foreign = true },                    -- unset -> defaults true
+  { label = "B", foreign = true, keepOpen = false },   -- explicit opt-out survives
+  { label = "C", foreign = true, keepOpen = true },    -- explicit opt-in survives
+  { label = "D", icon = "bag" },                       -- own row, untouched
+})
+T.eq(keepOpenCases[1].keepOpen, true, "an unset foreign keepOpen defaults to true")
+T.eq(keepOpenCases[2].keepOpen, false, "an explicit false is not overridden")
+T.eq(keepOpenCases[3].keepOpen, true, "an explicit true is left alone")
+T.eq(keepOpenCases[4].keepOpen, nil, "an own row gets no keepOpen default at all")
 
 T.finish("items")

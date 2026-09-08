@@ -119,7 +119,10 @@ carries its own provenance.
   There is no in-game clock on Gen 1 to read instead.
 - If another mod adds a row to the START menu, it lands on page two. The phone
   keeps its own nine apps on page one so an app never changes position, which
-  overrides where the injecting mod asked its row to sit.
+  overrides where the injecting mod asked its row to sit. Selecting it also
+  defaults to keeping the phone on the stack, so closing whatever screen it
+  opens comes back to the phone rather than the overworld -- unless that
+  row sets its own `keepOpen` field, which always wins.
 - SAVE borrows the built-in START menu to reach the engine's own save flow, so
   opening it re-runs the `ui.start_menu.items` hook. Another mod's wrapper
   fires once more per save press as a result.

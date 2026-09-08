@@ -39,6 +39,18 @@ function Items.decorate(items, game)
       item.icon = "generic"
     end
     if item.enabled == nil then item.enabled = true end
+    -- A foreign row's onSelect pushes whatever screen the other mod wrote,
+    -- and that screen's own cancel path is out of this mod's hands -- it
+    -- may reopen the phone itself (as an own row's target screen does,
+    -- through the `reopen` closure Apps.build hands it), or it may not.
+    -- Popping first, the way an own non-keepOpen row does, bets on the
+    -- latter and loses whenever it is not the case: the phone is gone and
+    -- nothing brings it back. Defaulting a foreign row to keepOpen leaves
+    -- the phone on the stack instead, so closing whatever it opened always
+    -- reveals the phone again -- exactly what an own keepOpen row already
+    -- gets from SAVE, MAP, LINK and MODS. A mod that sets keepOpen itself,
+    -- true or false, keeps that choice; this only fills in a nil.
+    if item.foreign and item.keepOpen == nil then item.keepOpen = true end
   end
   return items
 end

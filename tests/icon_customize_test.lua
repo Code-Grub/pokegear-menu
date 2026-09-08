@@ -58,10 +58,12 @@ local function tick(screen, dt)
   for k, v in pairs(down) do prevDown[k] = v end
 end
 
+local popped
 local function gameStub()
+  popped = 0
   return {
     save = { party = {}, flags = {}, inventory = {}, player = { name = "RED" } },
-    stack = { push = function() end, pop = function() end },
+    stack = { push = function() end, pop = function() popped = popped + 1 end },
   }
 end
 
@@ -75,12 +77,18 @@ for i, item in ipairs(screen.items) do
 end
 T.check(injectedAt, "the injected row is present")
 T.check(screen.items[injectedAt].foreign, "the injected row is tagged foreign")
+-- the fixture sets no keepOpen of its own -- Items.decorate must default it
+T.eq(screen.items[injectedAt].keepOpen, true,
+  "a foreign row with no keepOpen of its own defaults to true")
 
 screen.index = injectedAt
 down = { a = true };  tick(screen, 0.016)
 down = {};             tick(screen, 0.016)
 T.check(screen.game._foreignSelected, "a short A tap still selects a foreign row")
 T.eq(#pushed, 0, "a short tap does not open the icon picker")
+T.eq(popped, 0,
+  "selecting a foreign row leaves the phone on the stack, so its own screen "
+  .. "closing returns to it instead of the overworld")
 
 -- ---- holding A past the threshold opens the picker instead of selecting
 deps = depsFor()

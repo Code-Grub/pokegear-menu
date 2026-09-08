@@ -10,13 +10,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - A mod's own row on the grid can be given a different icon than the
   fallback "?". Holding A over it (instead of tapping) opens a small picker
-  offering a sparkle, a heart, a flag or a bolt in place of the question
-  mark, or "?" itself to go back to it. The choice is saved per row label,
-  the same way Save.lua already finds the vanilla SAVE row again across a
-  rebuilt menu, so it survives the phone closing and reopening. Only ever
-  offered for a row another mod injected -- none of the phone's own nine
-  can be recoloured this way, and a short tap still selects a row exactly
-  as it always has; only a press held for about a second opens the picker.
+  offering a sparkle, a heart, a flag, a bolt, a shield, a moon, a gem or a
+  leaf in place of the question mark, or "?" itself to go back to it. The
+  choice is saved per row label, the same way Save.lua already finds the
+  vanilla SAVE row again across a rebuilt menu, so it survives the phone
+  closing and reopening. Only ever offered for a row another mod injected
+  -- none of the phone's own nine can be recoloured this way, and a short
+  tap still selects a row exactly as it always has; only a press held for
+  about a second opens the picker.
+
+### Fixed
+
+- A row another mod injects now defaults to keepOpen, so closing whatever
+  screen it opens returns to the phone instead of the overworld. Previously
+  this depended on the injecting mod setting keepOpen itself: some did (and
+  came back to the phone correctly) and most didn't (and closed it instead,
+  same as tapping DEX or BAG does). A mod that sets the field itself, true
+  or false, is unaffected -- this only fills in a row that leaves it unset.
 
 ## [0.2.0] - 2026-09-03
 
