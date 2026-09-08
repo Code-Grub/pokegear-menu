@@ -26,12 +26,16 @@ Icons.INDEX = {
   radio = 10, phone = 11, quit = 12, generic = 13,
   -- offered in the icon-customize picker in place of "generic"
   star = 14, heart = 15, flag = 16, bolt = 17,
+  shield = 18, moon = 19, gem = 20, leaf = 21,
 }
 
 -- The icons a player may pick for a mod's own row, in picker order.
 -- "generic" is first: it is the way back to the fallback "?", not just
--- another option.
-Icons.CUSTOM_ORDER = { "generic", "star", "heart", "flag", "bolt" }
+-- another option.  Nine in total, which is deliberate: IconPicker.lua lays
+-- these out on the same 3-wide grid the phone itself uses, and nine is a
+-- full 3x3 with no ragged last row to wrap awkwardly out of.
+Icons.CUSTOM_ORDER = { "generic", "star", "heart", "flag", "bolt",
+                        "shield", "moon", "gem", "leaf" }
 
 -- character to 0-based column in label_font.png
 local GLYPH_AT = {}
