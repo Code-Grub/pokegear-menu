@@ -328,22 +328,28 @@ ICONS = {
     # abandoned above for "mods" hit the same wall this would -- a five
     # point star's arms collapse into a blob at 16px with a 1px outline --
     # and a sparkle's arms stay legible at this size where a star's do not.
+    #
+    # Points sit on the diagonals, not up/down/left/right: an axis-aligned
+    # cross is exactly what a crosshair or reticle looks like, and read as
+    # one. Nothing that actually is a reticle in games or optics ever has
+    # its arms on the diagonal, so an X reads as a sparkle where a + does
+    # not.
     "star": [
         "................",
-        ".......11.......",
-        ".......11.......",
-        ".......11.......",
-        ".......11.......",
-        ".......11.......",
+        "................",
+        "................",
+        "...1........1...",
+        "....11....11....",
+        "....131..131....",
+        ".....131131.....",
         "......1331......",
-        ".11111333311111.",
-        ".11111333311111.",
         "......1331......",
-        ".......11.......",
-        ".......11.......",
-        ".......11.......",
-        ".......11.......",
-        ".......11.......",
+        ".....131131.....",
+        "....131..131....",
+        "....11....11....",
+        "...1........1...",
+        "................",
+        "................",
         "................",
     ],
     # A small gloss highlight in the upper-left lobe -- two of solid red's
