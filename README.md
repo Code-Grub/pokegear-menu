@@ -2,9 +2,9 @@
 
 <img src="images/logo.png" alt="PokéGear Menu" width="640"/>
 
-**A START menu overhaul for the [Pokémon Gen 1 Recompilation Project](https://github.com/bryanthaboi/pokemon-gen1-recomp-project).**
+**A new START menu for the [Pokémon Gen 1 Recompilation Project](https://github.com/bryanthaboi/pokemon-gen1-recomp-project).**
 
-A 3x3 grid of apps, drawn in colour over the overworld · runs on Red, Blue, Yellow, Gold, Silver and Crystal · nothing ever moves under your thumb
+Turns START into a handheld device with a grid of apps, drawn in full colour over the world. Works on Red, Blue, Yellow, Gold, Silver and Crystal.
 
 <p align="center">
   <a href="https://github.com/Code-Grub/pokegear-menu/releases/latest"><img src="https://img.shields.io/github/v/release/Code-Grub/pokegear-menu?style=flat&label=release&color=306230" alt="Latest release"/></a>
@@ -16,17 +16,17 @@ A 3x3 grid of apps, drawn in colour over the overworld · runs on Red, Blue, Yel
 
 ---
 
-PokéGear Menu replaces the text list you get from START with a handheld device:
-a grid of apps, each one always in the same place. An app you have
-not earned yet sits dimmed where it will eventually live, so the layout you
-learn on your first badge is the layout you still have on your eighth.
+Press START and instead of a plain text list, you get a phone: a 3x3 grid
+of app icons sitting right over the game world. Every app has a fixed
+spot. If you haven't unlocked something yet, it just sits there dimmed
+until you do — nothing shuffles around as you play.
 
 <p align="center">
   <img src="images/preview.png" width="560" alt="The PokéGear Menu: nine apps in a 3x3 grid, fully unlocked on the left and on a fresh save on the right, where Dex, Pkm, Map, Lnk and Mod are dimmed"/><br/>
-  <sub>Everything unlocked, and a fresh save. A locked app keeps its place rather than collapsing the grid.</sub>
+  <sub>Fully unlocked, and a brand new save. Locked apps stay in place instead of disappearing.</sub>
 </p>
 
-## The apps
+## What's on the grid
 
 | | Gen 1 | Gen 2 |
 |---|---|---|
@@ -35,69 +35,73 @@ learn on your first badge is the layout you still have on your eighth.
 | Row 3 | MAP LNK MOD | ID OPT SAV |
 | Page 2 | EXT | MOD EXT |
 
-Three glyphs is what a 21px cell holds, so each caption is abbreviated to fit
-under its icon. A status bar across the top of the screen carries a clock, a
-battery, and three signal bars that fill while a link session is live.
+Everything you'd expect from the START menu is here — your Pokédex, party,
+bag, trainer card, options, and save — plus a MODS app for managing other
+mods, and EXT to quit. There's a clock and a signal bar up top too, and it
+lights up when you're in a link session.
 
-On Gen 1 this is a reskin of the menu, not the Gen 2 PokéGear. The real
-PokéGear had a clock, a map, a radio and a phone; Gen 1 has only the clock and
-the map. MAP opens the TOWN MAP and needs you to be carrying it, exactly as
-using the item from the bag does.
+On the older games (Red, Blue, Yellow), MAP and the rest are simple —
+MAP just opens the Town Map, the same as using it from your bag. On Gold,
+Silver and Crystal, though, MAP, RADIO and PHONE are the real deal: they
+open the actual in-game PokéGear, so you get the working map, radio and
+phone, unlocked exactly when the story normally gives them to you.
 
-On Gen 2 it is not a reskin at all. MAP, RADIO and PHONE open the engine's own
-PokéGear cards -- the actual town map, the tunable radio, the phone that can
-place calls. Each stays dimmed until the cart itself hands that card over: the
-Guide Gent for the map, the Radio Tower quiz for the radio, and Mom's call for
-the phone. SAVE closes the phone rather than returning to the grid, because
-that is what the cart's own save does.
+Only nine apps fit on the first page, so anything extra spills onto a
+second page — reachable with L and R, or by just walking off the edge of
+the grid.
 
-LINK is Gen 1 only. Gen 2 link runs through the engine's own `LinkBattle2`
-and the launcher arenas, a path this mod does not drive, so it comes off rather
-than shipping as a dead app.
+## Give other mods' menu icons a face
 
-Page one is nine apps on both generations, so anything past that pages: EXT on
-Gen 1, MOD then EXT on Gen 2, reached with L and R or by walking off the edge of
-the grid. The trainer card has to be on the grid: the START menu is the engine's
-only door to it, and this mod replaces the START menu.
+If another mod adds its own row to this menu, it normally just shows a
+plain "?" icon. You can change that: hold down A on that row (instead of
+tapping it) for about a second, and a little picker pops up letting you
+pick a sparkle, heart, flag, bolt, shield, moon, gem or leaf instead — or
+switch back to the "?" if you change your mind. Your choice is remembered.
 
-## Icons for other mods' rows
+A quick tap still opens the row like normal — only a proper hold brings up
+the picker, and only mod-added rows can be customized this way.
 
-A row another mod adds shows a "?" by default. Hold A over it, instead of
-tapping, to open a small picker offering a sparkle, a heart, a flag or a
-bolt in its place -- or "?" itself, to go back. The choice is saved and
-survives the phone closing and reopening. A short tap still opens the row
-as it always has; only a press held for about a second opens the picker,
-and only a foreign row offers it at all -- none of the phone's own nine can
-be recoloured this way.
+## Installing it
 
-## Install
+**Using a mod manager:** grab the zip from
+[Releases](../../releases) and import it — either through FIND MODS in the
+launcher, or by dropping the zip into your save folder's
+`imports/mods/` and rescanning.
 
-**Mod manager:** grab the release zip from
-[Releases](../../releases) and import it -- FIND MODS in the launcher, or drop
-the zip into the save directory's `imports/mods/` folder and rescan.
+**By hand:** unzip the release into your game's `mods/pokegear_menu/`
+folder. That's it — it takes over the START menu automatically.
 
-**Manual:** unzip the release into the game's `mods/pokegear_menu/` directory.
-It claims the `StartMenu` screen id, so it takes over the START menu with no
-further configuration.
+## About EXT (quit)
 
-## QUIT
+EXT lives on page two, drawn in red since it's the one option that doesn't
+bring you back. It'll ask you to confirm (defaulting to "no") before
+sending you back to the title screen — same as the original menu's quit.
 
-EXT on page two, in the pokeball red no other app uses, because it is the one
-that does not come back. It asks before it goes, starting on NO, and then
-returns you to the title -- the same confirm the built-in menu's own QUIT row
-puts up, on both generations.
+The Game Boy's classic soft reset still works too: hold A, B, SELECT and
+START together.
 
-The Game Boy's own soft reset still works too: hold A, B, SELECT and START
-together.
+## A few things worth knowing
 
-## Permissions
+- The clock in the status bar shows real-world time — Gen 1 has no in-game
+  clock of its own to pull from instead.
+- A row added by another mod always lands on page two, after this mod's
+  own nine apps, no matter where that mod tried to place it. Opening it
+  and backing out will bring you back to this menu, unless that mod
+  specifically asks not to.
+- Every letter you see on the phone — app names, the clock, the footer —
+  is drawn with this mod's own tiny font, because the game's normal font
+  is too big to fit.
 
-`engine_internals` is for re-running the START menu's own `ui.start_menu.items`
-hook and reaching its built-in SAVE flow. `network` is for the LINK app: it
-opens the engine's own `src.link.LinkState`, the vanilla peer-to-peer link play
-screen, unmodified.
+## Permissions this mod asks for
 
-## Try it
+- `engine_internals` — needed to keep other mods' menu items working, and
+  to reach the game's real save screen.
+- `network` — needed for the LINK app, which opens the game's own link
+  trade/battle screen.
+
+## For contributors
+
+Run the test suite and validation:
 
     cmd /c mklink /J game\mods\pokegear_menu <path to this repo>
     cd game && python3 tools/modkit.py validate mods/pokegear_menu --base imported
@@ -106,36 +110,19 @@ screen, unmodified.
     cd game && luajit mods/pokegear_menu/tests/phone_screen_test.lua
     cd game && luajit mods/pokegear_menu/tests/gen2_apps_test.lua
 
-## Regenerating the art
+Regenerate the icon sheet and font after editing `tools/gen_assets.py`:
 
     python tools/gen_assets.py
 
-Every pixel is declared as text in that script, so the art is original and
-carries its own provenance.
-
-## Limits
-
-- The status bar clock reads real-world time, which sits outside the fiction.
-  There is no in-game clock on Gen 1 to read instead.
-- If another mod adds a row to the START menu, it lands on page two. The phone
-  keeps its own nine apps on page one so an app never changes position, which
-  overrides where the injecting mod asked its row to sit. Selecting it also
-  defaults to keeping the phone on the stack, so closing whatever screen it
-  opens comes back to the phone rather than the overworld -- unless that
-  row sets its own `keepOpen` field, which always wins.
-- SAVE borrows the built-in START menu to reach the engine's own save flow, so
-  opening it re-runs the `ui.start_menu.items` hook. Another mod's wrapper
-  fires once more per save press as a result.
-- The phone draws its own 4x6 face for every label it shows, including the app
-  captions, the clock and the footer, because the engine font does not fit a
-  21px cell.
+Every pixel in this mod is hand-declared as plain text in that script —
+none of the art is pulled from the original game.
 
 ## Version
 
-Newest release: [releases/latest](https://github.com/Code-Grub/pokegear-menu/releases/latest) -- full history in [CHANGELOG.md](CHANGELOG.md).
+Latest release: [releases/latest](https://github.com/Code-Grub/pokegear-menu/releases/latest) — full history in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-MIT -- see [LICENSE](LICENSE). Fork it, bundle it, build on it; just keep the
-notice. The mod ships no game assets: the icons and the 4x6 label face are
+MIT — see [LICENSE](LICENSE). Fork it, bundle it, build on it, just keep
+the notice. No original game assets are included; the icons and font are
 generated by `tools/gen_assets.py`.
