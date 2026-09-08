@@ -476,23 +476,27 @@ ICONS = {
         "....11111111....",
         "................",
     ],
-    # A centre vein, the outline colour drawn straight through the fill --
-    # without it the lens shape reads as a plain almond, not a leaf.
+    # A diagonal lens read as a plain almond, sharp-pointed at both ends,
+    # with no room in its body for more than the one centre vein it had.
+    # This is a teardrop instead: one pointed tip and a rounded base, with
+    # the extra width that base leaves to carry a full midrib-and-branches
+    # vein pattern -- the cartridge label's own green, so it reads as
+    # foliage rather than another grey shape on the sheet.
     "leaf": [
         "................",
         "................",
-        "........111111..",
-        "......11133331..",
-        ".....133133331..",
-        "....1333133331..",
-        "...13333133331..",
-        "...13331333331..",
-        "..13333133331...",
-        "..13331333331...",
-        "..1331333331....",
-        "..131333331.....",
-        "..13333311......",
-        "..111111........",
+        ".......11.......",
+        "......1cc1......",
+        "....1cc1ccc1....",
+        "...1ccc1cccc1...",
+        "..1ccc111cccc1..",
+        ".1ccc1c1c1cccc1.",
+        ".1cc1cc1cc1ccc1.",
+        ".1cccc111ccccc1.",
+        ".1ccc1c1c1cccc1.",
+        "..1cccc1ccccc1..",
+        "...11cc1ccc11...",
+        ".....111111.....",
         "................",
         "................",
     ],
