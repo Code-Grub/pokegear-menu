@@ -35,6 +35,10 @@ function IconPicker.build(mod, M, deps)
     return self
   end
 
+  -- The options are laid out with Layout.cell, the same 3-wide grid the
+  -- phone itself uses, so down/up move by 3 exactly as PhoneScreen's own
+  -- _move does -- a delta of 1 for left/right would only ever step within
+  -- a row.
   function Screen:_move(delta)
     local n = #Icons.CUSTOM_ORDER
     self.index = ((self.index - 1 + delta) % n) + 1
@@ -68,6 +72,10 @@ function IconPicker.build(mod, M, deps)
       self:_move(1)
     elseif input:wasPressed("left") then
       self:_move(-1)
+    elseif input:wasPressed("down") then
+      self:_move(3)
+    elseif input:wasPressed("up") then
+      self:_move(-3)
     elseif input:wasPressed("a") then
       deps.sound.play(self.game.data, "Press_AB")
       self:_confirm()

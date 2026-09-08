@@ -55,6 +55,19 @@ T.eq(screen.index, n, "left from the first option wraps to the last")
 screen:_move(1)
 T.eq(screen.index, 1, "right from the last wraps back to the first")
 
+-- ---- down/up move by a whole row of the 3-wide grid the options are
+-- drawn in (Layout.cell), the same as PhoneScreen's own up/down; a picker
+-- that only wired left/right left the bottom row unreachable except by
+-- wrapping all the way around
+local downUpGame = newGame({})
+screen = factory.new(downUpGame, { label = "INJECTED" })
+screen.game.input = { wasPressed = function(_, key) return key == "down" end }
+screen:update(0)
+T.eq(screen.index, 4, "down moves from the first option to the one below it")
+screen.game.input = { wasPressed = function(_, key) return key == "up" end }
+screen:update(0)
+T.eq(screen.index, 1, "up moves back to the row above")
+
 -- ---- A saves the highlighted choice under the row's label, and closes
 local game = newGame({})
 local chosenViaCallback
