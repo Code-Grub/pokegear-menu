@@ -1,96 +1,62 @@
 # Changelog
 
-All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
-adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Written in the style described in [docs/changelog-style.md](docs/changelog-style.md):
+what changed for the player, with the reasoning left in the commit history.
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.3.0] - 2026-09-08
 
-### Added
-
-- A mod's own row on the grid can be given a different icon than the
-  fallback "?". Holding A over it (instead of tapping) opens a small picker
-  offering a sparkle, a heart, a flag, a bolt, a shield, a moon, a gem or a
-  leaf in place of the question mark, or "?" itself to go back to it. The
-  choice is saved per row label, the same way Save.lua already finds the
-  vanilla SAVE row again across a rebuilt menu, so it survives the phone
-  closing and reopening. Only ever offered for a row another mod injected
-  -- none of the phone's own nine can be recoloured this way, and a short
-  tap still selects a row exactly as it always has; only a press held for
-  about a second opens the picker.
-
-### Fixed
-
-- A row another mod injects now defaults to keepOpen, so closing whatever
-  screen it opens returns to the phone instead of the overworld. Previously
-  this depended on the injecting mod setting keepOpen itself: some did (and
-  came back to the phone correctly) and most didn't (and closed it instead,
-  same as tapping DEX or BAG does). A mod that sets the field itself, true
-  or false, is unaffected -- this only fills in a row that leaves it unset.
+- A row another mod adds to the grid can be given its own icon instead of the
+  fallback "?". Hold A over it to open a picker offering a sparkle, a heart, a
+  flag, a bolt, a shield, a moon, a gem or a leaf. The choice survives the
+  phone closing and reopening. A short tap still just selects the row, and the
+  phone's own nine apps cannot be changed this way.
+- Closing the screen a mod's row opens now returns to the phone rather than the
+  overworld. It used to depend on the injecting mod asking for that, and most
+  did not.
 
 ## [0.2.0] - 2026-09-03
 
 ### Added
 
 - The mod runs on Gold, Silver and Crystal. The Gen 2 grid is DEX PKM BAG /
-  MAP RAD PHN / ID OPT SAV, with MOD and QUIT on a second page. LINK comes off on
-  Gen 2 because Gen 2 link runs through `LinkBattle2` and the launcher
-  arenas, a path this mod does not drive, and shipping it would ship a dead
-  app. The trainer card stays on the grid because the START menu is the
-  engine's only door to it, and this mod replaces the START menu.
-- QUIT is back, as EXT on page two of both grids. It puts up the same
-  confirm the built-in menu does, defaulting to NO, and returns to the title
-  on yes. Earlier versions left it out and pointed at the Game Boy's soft
-  reset instead; that still works, but the menu no longer loses a row the
-  vanilla one had.
-- On Gen 2, MAP, RADIO and PHONE are not a reskin: they open the engine's own
-  PokéGear cards, the actual town map, the tunable radio and the phone that
-  can place calls. Each stays dimmed until the cart hands it over: the Guide
-  Gent for MAP, the Radio Tower quiz for RADIO, Mom for PHONE.
+  MAP RAD PHN / ID OPT SAV, with MOD and QUIT on a second page. LINK is left
+  off on Gen 2: that link path is one this mod does not drive, and shipping it
+  would ship a dead app.
+- QUIT is back, as EXT on page two of both grids. It puts up the same confirm
+  the built-in menu does, defaulting to NO. Earlier versions left it out and
+  pointed at the Game Boy soft reset instead; that still works, but the menu no
+  longer loses a row the vanilla one had.
+- On Gen 2, MAP, RADIO and PHONE are not a reskin -- they open the engine's own
+  PokéGear cards: the real town map, the tunable radio, and the phone that can
+  place calls. Each stays dimmed until the game hands it over, so MAP waits on
+  the Guide Gent, RADIO on the Radio Tower quiz and PHONE on Mom.
 
 ### Changed
 
-- SAVE closes the phone on Gen 2 rather than returning to the grid. That is
-  what the cart's own save does, inherited on purpose, not a bug. Cancelling
-  SAVE closes the phone too, not just confirming it: `SaveMenu:finish(false)`
-  fires the same `onDone` as a confirmed save, and this is exact parity with
-  the cart's own start menu, not a shortcut this mod added.
+- SAVE closes the phone on Gen 2 rather than returning to the grid, which is
+  what the cartridge's own save does. Cancelling SAVE closes it too, not just
+  confirming.
 
 ### Known limitations
 
-- During a Bug Catching Contest, PACK and SAVE are dimmed rather than
-  removed. The cart hides PACK entirely and swaps SAVE for QUIT for the
-  duration of the contest; this mod cannot reach QUIT, because `quitContest`
-  never leaves the engine's own StartMenu screen, so there is nothing to
-  delegate to. The contest cannot be quit from the phone as a result -- use
-  the contest's own exit, or let it end.
+- During a Bug Catching Contest, PACK and SAVE are dimmed rather than removed,
+  and the contest cannot be quit from the phone. Use the contest's own exit, or
+  let it end.
 
 ## [0.1.8] - 2026-08-30
 
-### Changed
-
-- The MODS icon is a plug. It was a puzzle piece, which is the usual symbol
-  for this, but a puzzle tab needs a narrow neck opening into a wider head
-  before it reads as a tab at all, and there is no room for that profile at
-  sixteen pixels beside a one pixel outline: every attempt came out a
-  rectangle with bumps. Two prongs survive the size, and a plug-in is the
-  same idea.
-- The icons carry colour beyond the Poke Ball. Red was the only hue on the
-  sheet, so the other eight were one value ramp of the same desaturated teal
-  and read as each other at a glance. The dex and the ID card have blue
-  screens, the LINK arrows are blue, and the SAVE cartridge has a green
-  label on a grey body, where the colour sits in the label rather than
-  splitting the card across the middle.
-- The BAG is redrawn as a satchel in brown leather. Its two strap tabs, its
-  horizontal band and the dark shape at its centre assembled into ears, a
-  stripe and a snout at sixteen pixels, so it read as a face. The flap is
-  now the leather in shadow, which separates it from the body without a hard
-  line through the middle, a clasp drops from the flap, and the bottom
-  corners are clipped so the silhouette is a bag and not a case.
+- The MODS icon is a plug rather than a puzzle piece. A puzzle tab needs a
+  narrow neck opening into a wider head before it reads as one at all, and
+  there is no room for that at sixteen pixels; two prongs survive the size.
+- The icons carry colour beyond the Poke Ball: blue screens on the dex and the
+  ID card, blue LINK arrows, and a green label on the SAVE cartridge. They used
+  to be a single teal ramp and read as each other at a glance.
+- The BAG is redrawn as a brown leather satchel. The old one's strap tabs, band
+  and dark centre assembled into ears, a stripe and a snout at sixteen pixels,
+  so it read as a face.
 
 ## [0.1.7] - 2026-08-26
-
-### Changed
 
 - Author and copyright are both Code-Grub, matching the previous mod.
 - The internal design spec and implementation plan are no longer part of the
@@ -98,9 +64,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.6] - 2026-08-26
 
-### Changed
-
-- Renamed to PokéGear Menu, and the mod id is now `pokegear_menu`. If you
+- Renamed to PokéGear Menu, with the mod id now `pokegear_menu`. If you
   installed an earlier build, remove the old `phone_start_menu` entry: the
   manager keys on the id, so it treats this as a separate mod rather than an
   update. Nothing is carried over, because the mod saves no state of its own.
@@ -110,66 +74,49 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.5] - 2026-08-26
 
-### Fixed
-
-- SAVE, MAP, LINK and MODS no longer close the phone. Those four screens
-  offer no way back to whatever opened them, so the phone now stays on the
-  stack and is revealed again when they close. The save prompt draws over
-  the phone rather than replacing it, which is how the original behaves.
+- SAVE, MAP, LINK and MODS no longer close the phone. Those four offer no way
+  back to whatever opened them, so the phone stays underneath and is revealed
+  again when they close -- the save prompt draws over it rather than replacing
+  it, which is how the original behaves.
 
 ## [0.1.4] - 2026-08-26
 
-### Changed
-
-- The Poke Ball icon is redrawn. Its centre button was a diagonal scatter of
-  pixels through the lower half rather than a button on the midline.
-- The LINK icon is now a pair of exchange arrows. The cable it used to draw
-  was an unreadable squiggle at sixteen pixels.
-- The SAVE icon is now a microSD card. It used to be a device with a screen
-  and buttons, which read as a sibling of the dex rather than as somewhere to
-  save.
-- The MAP pin is symmetric. Eleven of its sixteen rows were not, so its hole
-  sat off centre and its tip landed off the axis of its head.
+- The Poke Ball, LINK, SAVE and MAP icons are redrawn. The ball's centre button
+  was a diagonal scatter through its lower half rather than a button on the
+  midline, the LINK cable was an unreadable squiggle at sixteen pixels, SAVE
+  read as a sibling of the dex rather than as somewhere to save, and the MAP
+  pin was asymmetric enough that its hole sat off centre.
 
 ## [0.1.3] - 2026-08-26
 
-### Changed
-
-- The nameplate reads POKéGEAR. The caption face gained a real lowercase
-  e-acute for it, and the glyph lookup, measuring and drawing now walk UTF-8
-  sequences rather than bytes, which a multibyte character would otherwise
-  have split into two blanks.
+- The nameplate reads POKéGEAR, with a real lowercase e-acute added to the
+  caption face for it.
 - The selection cursor has rounded corners and is a pixel smaller, so it no
   longer sits flush against the screen's border in the first column.
-- The earpiece slot is centred on the phone body. It sat at a hardcoded
-  offset, four pixels left of centre.
+- The earpiece slot is centred on the phone body. It sat four pixels left of
+  centre.
 
 ## [0.1.2] - 2026-08-26
 
-### Changed
-
-- Page one is always the nine built-in apps, in a fixed order. Rows injected
-  by other mods now follow on page two, whatever position they asked for.
-  Nothing is dropped, only moved: a row that anchored itself before SAVE was
-  shifting SAVE, MAP, LINK and MODS down for as long as that mod stayed
-  installed, which defeats the point of a grid you learn by position.
+- Page one is always the nine built-in apps, in a fixed order, and rows
+  injected by other mods follow on page two whatever position they asked for.
+  Nothing is dropped, only moved: a mod that anchored its row before SAVE was
+  shifting SAVE, MAP, LINK and MODS down for as long as it stayed installed,
+  which defeats the point of a grid you learn by position.
 
 ## [0.1.1] - 2026-08-26
 
-### Changed
-
 - The phone body and its screen have slightly rounded corners. The overworld
-  shows through behind the phone, so the corners are left undrawn rather than
-  painted over.
-- The name at the bottom of the phone sits straight on the body. The outlined
-  plate behind it was a second frame inside the phone's own outline.
+  shows through behind them rather than being painted over.
+- The name at the bottom sits straight on the body, without the outlined plate
+  that made a second frame inside the phone's own outline.
 
 ## [0.1.0] - 2026-08-25
 
 ### Added
 
-- The START menu drawn as a phone home screen: nine apps in a 3x3 grid over
-  the overworld, in true colour.
+- The START menu drawn as a phone home screen: nine apps in a 3x3 grid over the
+  overworld, in true colour.
 - A MAP app opening the TOWN MAP, gated on holding the item.
 - A status bar showing the real time and whether a link session is live.
 - Page two and page dots when another mod injects extra rows.
@@ -177,11 +124,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - POKéMON dims with an empty party rather than listing and doing nothing.
-- SAVE reaches the engine's own save confirmation directly, so an engine
-  change to saving is inherited automatically rather than needing an update
-  here to match it.
+- SAVE reaches the engine's own save confirmation directly, so a change to how
+  the engine saves is inherited rather than needing an update here to match it.
 
 ### Removed
 
-- QUIT. A+B+SELECT+START performs the same return to the title from any
-  state, on every platform.
+- QUIT. A+B+SELECT+START performs the same return to the title from any state,
+  on every platform. (It came back in 0.2.0.)
