@@ -1,0 +1,9 @@
+# Internal design docs stay out of the public repository -- the same rule
+# pokebag-plus adopted in 6c5a300. They are already excluded from the mod
+# archive by .modkitignore; this keeps them out of the repo as well.
+docs/*
+# ...except the published style guide, which is meant to be read here
+!docs/changelog-style.md
+
+# Authoring-tool scratch, untracked but easy to commit by accident
+.superpowers/
