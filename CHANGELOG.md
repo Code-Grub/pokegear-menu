@@ -4,6 +4,13 @@ Written in the style described in [docs/changelog-style.md](docs/changelog-style
 what changed for the player, with the reasoning left in the commit history.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-09-18
+
+- On Gold, Silver and Crystal, some apps other mods add to the grid no
+  longer crash the game when opened. Untamed Tohjo's INCENSE settings are the
+  one that was reported; they now open from the phone the same as from the
+  normal START menu.
+
 ## [0.3.0] - 2026-09-08
 
 - A row another mod adds to the grid can be given its own icon instead of the
