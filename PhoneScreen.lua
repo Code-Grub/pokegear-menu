@@ -94,8 +94,13 @@ function PhoneScreen.build(mod, M, deps, profile)
       -- phone stays on the stack, and closing what the row opened reveals
       -- it again.  That is the only way back for a screen that ignores an
       -- onCancel option, which TownMap, ManagerState and LinkState all do.
+      --
+      -- The game goes in as the argument because Gold's menu passes it
+      -- (src/ui/gen2/StartMenu.lua:251) and an injected Gen 2 row may read
+      -- it: Untamed Tohjo's INCENSE row pushes its screen through it.  Gen 1
+      -- Menu passes nothing, and every row written for it ignores the extra.
       if not item.keepOpen then self.game.stack:pop() end
-      if item.onSelect then item.onSelect() end
+      if item.onSelect then item.onSelect(self.game) end
     end
   end
 

@@ -149,6 +149,21 @@ press("a") screen:update(0) release()
 T.eq(table.concat(events, ","), "pop,select",
   "the stack pops before onSelect runs")
 
+-- ---- onSelect is handed the game
+--
+-- Gold's START menu calls item.onSelect(self.game)
+-- (src/ui/gen2/StartMenu.lua:251), and a Gen 2 mod's injected row relies on
+-- it: Untamed Tohjo's INCENSE row is `function(g) mod.ui.push(g, ...) end`.
+-- Called bare, g is nil, Screens.resolve cannot see the mod's registry, and
+-- the push falls through to require("src.ui.OverworldmonsIncense") and dies.
+game = newGame()
+screen = factory.new(game)
+local received = "not called"
+screen.items[bagIndex].onSelect = function(g) received = g end
+screen.index = bagIndex
+press("a") screen:update(0) release()
+T.check(received == game, "onSelect receives the game, as Gold's menu passes it")
+
 run.release()
 -- Rows whose screen ignores an onCancel option must NOT pop the phone, or
 -- there is no way back to it: TownMap, ManagerState and LinkState carry no
