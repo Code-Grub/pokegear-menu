@@ -195,8 +195,17 @@ return function(mod)
   -- "Gen2StartMenu" and a Gen 2 boot never resolves "StartMenu", so
   -- registering both is how the mod covers two games without ever asking
   -- which one it is on.
+  -- isMenu opts a screen into MENU SPEED (Game.speedCategoryInStack, engine
+  -- #2578).  Vanilla Gen 1 StartMenu carries it, so its replacement must,
+  -- or the phone keeps following OVERWORLD SPEED.  Gen 2's own menus are not
+  -- marked by the engine, so the Gen 2 phone matches them and stays unmarked.
+  local function menuScreen(factory)
+    factory.isMenu = true
+    return factory
+  end
+
   mod.content.screens:register("StartMenu",
-    PhoneScreen.build(mod, modules, deps, Gen.GEN1))
+    menuScreen(PhoneScreen.build(mod, modules, deps, Gen.GEN1)))
   mod.content.screens:register("Gen2StartMenu",
     PhoneScreen.build(mod, modules, gen2Deps, Gen.GEN2))
 
@@ -204,7 +213,7 @@ return function(mod)
   -- same reason: each closes over its own deps.markTrueColor, and Gen 2's
   -- is a no-op where Gen 1's punches the phone rect true-colour.
   mod.content.screens:register(Gen.GEN1.iconPickerId,
-    IconPicker.build(mod, modules, deps))
+    menuScreen(IconPicker.build(mod, modules, deps)))
   mod.content.screens:register(Gen.GEN2.iconPickerId,
     IconPicker.build(mod, modules, gen2Deps))
 end
