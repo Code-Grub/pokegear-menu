@@ -4,6 +4,13 @@ Written in the style described in [docs/changelog-style.md](docs/changelog-style
 what changed for the player, with the reasoning left in the commit history.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-10-03
+
+### Fixed
+
+- On Red, Blue and Yellow, the phone menu now follows the MENU SPEED
+  option like the other menus, instead of running at the overworld's speed.
+
 ## [0.3.1] - 2026-09-18
 
 - On Gold, Silver and Crystal, some apps other mods add to the grid no
